@@ -27,11 +27,28 @@ import com.mopub.common.logging.MoPubLog;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THROWABLE;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.DID_APPEAR;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.DID_DISAPPEAR;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOULD_REWARD;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_FAILED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_APPEAR;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_DISAPPEAR;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_LEAVE_APPLICATION;
+
 public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener, AppLovinAdVideoPlaybackListener, AppLovinAdRewardListener {
 
     private static final String DEFAULT_ZONE = "";
     private static final String DEFAULT_TOKEN_ZONE = "token";
     private static final String ZONE_ID_SERVER_EXTRAS_KEY = "zone_id";
+    private static final String ADAPTER_NAME = AppLovinRewardedVideo.class.getSimpleName();
 
     // A map of Zone -> `AppLovinIncentivizedInterstitial` to be shared by instances of the custom event.
     // This prevents skipping of ads as this adapter will be re-created and preloaded (along with underlying `AppLovinIncentivizedInterstitial`)
@@ -62,7 +79,7 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
         boolean canCollectPersonalInfo = MoPub.canCollectPersonalInformation();
         AppLovinPrivacySettings.setHasUserConsent(canCollectPersonalInfo, activity.getApplicationContext());
 
-        MoPubLog.d("Initializing AppLovin rewarded video...");
+        MoPubLog.log(CUSTOM, "Initializing AppLovin rewarded video...");
 
         if (!initialized) {
             sdk = retrieveSdk(serverExtras, activity);
@@ -84,7 +101,8 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
         final String adMarkup = serverExtras.get(DataKeys.ADM_KEY);
         final boolean hasAdMarkup = !TextUtils.isEmpty(adMarkup);
 
-        MoPubLog.d("Requesting AppLovin banner with serverExtras: " + serverExtras + ", localExtras: " + localExtras + " and has ad markup: " + hasAdMarkup);
+        MoPubLog.log(CUSTOM, "Requesting AppLovin banner with serverExtras: " + serverExtras
+                + ", localExtras: " + localExtras + " and has ad markup: " + hasAdMarkup);
 
         // Determine zone
         final String zoneId;
@@ -107,26 +125,37 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
             isTokenEvent = true;
 
             sdk.getAdService().loadNextAdForAdToken(adMarkup, this);
+            MoPubLog.log(getAdNetworkId(), LOAD_ATTEMPTED, ADAPTER_NAME);
         }
         // Zone/regular ad load
         else {
             incentivizedInterstitial.preload(this);
+            MoPubLog.log(getAdNetworkId(), LOAD_ATTEMPTED, ADAPTER_NAME);
         }
     }
 
     @Override
     protected void showVideo() {
+        MoPubLog.log(SHOW_ATTEMPTED, ADAPTER_NAME);
+
         if (hasVideoAvailable()) {
             fullyWatched = false;
             reward = null;
 
             if (isTokenEvent) {
                 incentivizedInterstitial.show(tokenAd, parentActivity, this, this, this, this);
+                MoPubLog.log(WILL_APPEAR, ADAPTER_NAME);
             } else {
                 incentivizedInterstitial.show(parentActivity, null, this, this, this, this);
+                MoPubLog.log(WILL_APPEAR, ADAPTER_NAME);
             }
         } else {
-            MoPubLog.d("Failed to show an AppLovin rewarded video before one was loaded");
+            MoPubLog.log(SHOW_FAILED,
+                    ADAPTER_NAME,
+                    MoPubErrorCode.VIDEO_PLAYBACK_ERROR.getIntCode(),
+                    MoPubErrorCode.VIDEO_PLAYBACK_ERROR);
+
+            MoPubLog.log(CUSTOM, "Failed to show an AppLovin rewarded video before one was loaded");
             MoPubRewardedVideoManager.onRewardedVideoPlaybackError(getClass(), getAdNetworkId(), MoPubErrorCode.VIDEO_PLAYBACK_ERROR);
         }
     }
@@ -162,7 +191,7 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
 
     @Override
     public void adReceived(final AppLovinAd ad) {
-        MoPubLog.d("Rewarded video did load ad: " + ad.getAdIdNumber());
+        MoPubLog.log(CUSTOM, "Rewarded video did load ad: " + ad.getAdIdNumber());
 
         if (isTokenEvent) {
             tokenAd = ad;
@@ -173,8 +202,11 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
             public void run() {
                 try {
                     MoPubRewardedVideoManager.onRewardedVideoLoadSuccess(AppLovinRewardedVideo.this.getClass(), getAdNetworkId());
+
+                    MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
                 } catch (Throwable th) {
-                    MoPubLog.e("Unable to notify listener of successful ad load.", th);
+                    MoPubLog.log(CUSTOM_WITH_THROWABLE, "Unable to notify listener of " +
+                            "successful ad load.", th);
                 }
             }
         });
@@ -182,15 +214,21 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
 
     @Override
     public void failedToReceiveAd(final int errorCode) {
-        MoPubLog.d("Rewarded video failed to load with error: " + errorCode);
+        MoPubLog.log(CUSTOM, "Rewarded video failed to load with error: " + errorCode);
 
         parentActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    MoPubRewardedVideoManager.onRewardedVideoLoadFailure(AppLovinRewardedVideo.this.getClass(), getAdNetworkId(), toMoPubErrorCode(errorCode));
+                    MoPubRewardedVideoManager.onRewardedVideoLoadFailure(AppLovinRewardedVideo.this.
+                            getClass(), getAdNetworkId(), toMoPubErrorCode(errorCode));
+
+                    MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                            toMoPubErrorCode(errorCode).getIntCode(),
+                            toMoPubErrorCode(errorCode));
                 } catch (Throwable th) {
-                    MoPubLog.e("Unable to notify listener of failure to receive ad.", th);
+                    MoPubLog.log(CUSTOM_WITH_THROWABLE, "Unable to notify listener of failure" +
+                            " to receive ad.", th);
                 }
             }
         });
@@ -202,20 +240,31 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
 
     @Override
     public void adDisplayed(final AppLovinAd ad) {
-        MoPubLog.d("Rewarded video displayed");
+        MoPubLog.log(CUSTOM, "Rewarded video displayed");
+        MoPubLog.log(DID_APPEAR, ADAPTER_NAME);
+
         MoPubRewardedVideoManager.onRewardedVideoStarted(getClass(), getAdNetworkId());
+
+        MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
+
     }
 
     @Override
     public void adHidden(final AppLovinAd ad) {
-        MoPubLog.d("Rewarded video dismissed");
+        MoPubLog.log(CUSTOM, "Rewarded video dismissed");
 
         if (fullyWatched && reward != null) {
-            MoPubLog.d("Rewarded" + reward.getAmount() + " " + reward.getLabel());
+            MoPubLog.log(CUSTOM, "Rewarded" + reward.getAmount() + " " + reward.getLabel());
+            MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME);
+
             MoPubRewardedVideoManager.onRewardedVideoCompleted(getClass(), getAdNetworkId(), reward);
+
+            MoPubLog.log(WILL_DISAPPEAR, ADAPTER_NAME);
         }
 
         MoPubRewardedVideoManager.onRewardedVideoClosed(getClass(), getAdNetworkId());
+
+        MoPubLog.log(DID_DISAPPEAR, ADAPTER_NAME);
     }
 
     //
@@ -224,8 +273,11 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
 
     @Override
     public void adClicked(final AppLovinAd ad) {
-        MoPubLog.d("Rewarded video clicked");
+        MoPubLog.log(CUSTOM, "Rewarded video clicked");
         MoPubRewardedVideoManager.onRewardedVideoClicked(getClass(), getAdNetworkId());
+
+        MoPubLog.log(CLICKED, ADAPTER_NAME);
+        MoPubLog.log(WILL_LEAVE_APPLICATION, ADAPTER_NAME);
     }
 
     //
@@ -234,12 +286,12 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
 
     @Override
     public void videoPlaybackBegan(final AppLovinAd ad) {
-        MoPubLog.d("Rewarded video playback began");
+        MoPubLog.log(CUSTOM, "Rewarded video playback began");
     }
 
     @Override
     public void videoPlaybackEnded(final AppLovinAd ad, final double percentViewed, final boolean fullyWatched) {
-        MoPubLog.d("Rewarded video playback ended at playback percent: " + percentViewed);
+        MoPubLog.log(CUSTOM, "Rewarded video playback ended at playback percent: " + percentViewed);
 
         this.fullyWatched = fullyWatched;
     }
@@ -250,22 +302,25 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
 
     @Override
     public void userOverQuota(final AppLovinAd appLovinAd, final Map map) {
-        MoPubLog.d("Rewarded video validation request for ad did exceed quota with response: " + map);
+        MoPubLog.log(CUSTOM, "Rewarded video validation request for ad did exceed quota with " +
+                "response: " + map);
     }
 
     @Override
     public void validationRequestFailed(final AppLovinAd appLovinAd, final int errorCode) {
-        MoPubLog.d("Rewarded video validation request for ad failed with error code: " + errorCode);
+        MoPubLog.log(CUSTOM, "Rewarded video validation request for ad failed with error " +
+                "code: " + errorCode);
     }
 
     @Override
     public void userRewardRejected(final AppLovinAd appLovinAd, final Map map) {
-        MoPubLog.d("Rewarded video validation request was rejected with response: " + map);
+        MoPubLog.log(CUSTOM, "Rewarded video validation request was rejected with response: "
+                + map);
     }
 
     @Override
     public void userDeclinedToViewAd(final AppLovinAd appLovinAd) {
-        MoPubLog.d("User declined to view rewarded video");
+        MoPubLog.log(CUSTOM, "User declined to view rewarded video");
         MoPubRewardedVideoManager.onRewardedVideoClosed(getClass(), getAdNetworkId());
     }
 
@@ -274,7 +329,7 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
         final String currency = (String) map.get("currency");
         final int amount = (int) Double.parseDouble((String) map.get("amount")); // AppLovin returns amount as double
 
-        MoPubLog.d("Verified " + amount + " " + currency);
+        MoPubLog.log(CUSTOM, "Verified " + amount + " " + currency);
 
         reward = MoPubReward.success(currency, amount);
     }

@@ -25,6 +25,20 @@ import com.mopub.common.logging.MoPubLog;
 
 import java.util.Map;
 
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THROWABLE;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.DID_APPEAR;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.DID_DISAPPEAR;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_APPEAR;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_DISAPPEAR;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_LEAVE_APPLICATION;
+
 public class AppLovinBanner extends CustomEventBanner {
 
     private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
@@ -39,6 +53,8 @@ public class AppLovinBanner extends CustomEventBanner {
 
     private static final String ZONE_ID_SERVER_EXTRAS_KEY = "zone_id";
 
+    private static final String ADAPTER_NAME = AppLovinBanner.class.getSimpleName();
+
     //
     // MoPub Custom Event Methods
     //
@@ -52,10 +68,14 @@ public class AppLovinBanner extends CustomEventBanner {
 
         // SDK versions BELOW 7.1.0 require a instance of an Activity to be passed in as the context
         if (AppLovinSdk.VERSION_CODE < 710 && !(context instanceof Activity)) {
-            MoPubLog.d("Unable to request AppLovin banner. Invalid context provided.");
+            MoPubLog.log(CUSTOM, "Unable to request AppLovin banner. Invalid context provided");
 
             if (customEventBannerListener != null) {
                 customEventBannerListener.onBannerFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+
+                MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                        MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR.getIntCode(),
+                        MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
             }
 
             return;
@@ -66,7 +86,8 @@ public class AppLovinBanner extends CustomEventBanner {
             final String adMarkup = serverExtras.get(DataKeys.ADM_KEY);
             final boolean hasAdMarkup = !TextUtils.isEmpty(adMarkup);
 
-            MoPubLog.d("Requesting AppLovin banner with serverExtras: " + serverExtras + ", localExtras: " + localExtras + " and has ad markup: " + hasAdMarkup);
+            MoPubLog.log(CUSTOM, "Requesting AppLovin banner with serverExtras: " +
+                    serverExtras + ", localExtras: " + localExtras + " and has ad markup: " + hasAdMarkup);
 
             AppLovinSdk sdk = retrieveSdk(serverExtras, context);
             sdk.setPluginVersion("MoPub-3.1.0");
@@ -76,21 +97,24 @@ public class AppLovinBanner extends CustomEventBanner {
             adView.setAdDisplayListener(new AppLovinAdDisplayListener() {
                 @Override
                 public void adDisplayed(final AppLovinAd ad) {
-                    MoPubLog.d("Banner displayed");
+                    MoPubLog.log(CUSTOM, "Banner displayed");
                 }
 
                 @Override
                 public void adHidden(final AppLovinAd ad) {
-                    MoPubLog.d("Banner dismissed");
+                    MoPubLog.log(CUSTOM, "Banner dismissed");
                 }
             });
             adView.setAdClickListener(new AppLovinAdClickListener() {
                 @Override
                 public void adClicked(final AppLovinAd ad) {
-                    MoPubLog.d("Banner clicked");
+                    MoPubLog.log(CUSTOM, "Banner clicked");
 
                     if (customEventBannerListener != null) {
                         customEventBannerListener.onBannerClicked();
+
+                        MoPubLog.log(CLICKED, ADAPTER_NAME);
+                        MoPubLog.log(WILL_LEAVE_APPLICATION, ADAPTER_NAME);
                     }
                 }
             });
@@ -99,7 +123,7 @@ public class AppLovinBanner extends CustomEventBanner {
             adView.setAdViewEventListener(new AppLovinAdViewEventListener() {
                 @Override
                 public void adOpenedFullscreen(final AppLovinAd appLovinAd, final AppLovinAdView appLovinAdView) {
-                    MoPubLog.d("Banner opened fullscreen");
+                    MoPubLog.log(CUSTOM, "Banner opened fullscreen");
 
                     if (customEventBannerListener != null) {
                         customEventBannerListener.onBannerExpanded();
@@ -108,7 +132,7 @@ public class AppLovinBanner extends CustomEventBanner {
 
                 @Override
                 public void adClosedFullscreen(final AppLovinAd appLovinAd, final AppLovinAdView appLovinAdView) {
-                    MoPubLog.d("Banner closed fullscreen");
+                    MoPubLog.log(CUSTOM, "Banner closed fullscreen");
 
                     if (customEventBannerListener != null) {
                         customEventBannerListener.onBannerCollapsed();
@@ -117,7 +141,7 @@ public class AppLovinBanner extends CustomEventBanner {
 
                 @Override
                 public void adLeftApplication(final AppLovinAd appLovinAd, final AppLovinAdView appLovinAdView) {
-                    MoPubLog.d("Banner left application");
+                    MoPubLog.log(CUSTOM, "Banner left application");
                 }
 
                 @Override
@@ -132,16 +156,22 @@ public class AppLovinBanner extends CustomEventBanner {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            adView.renderAd(ad);
+                            MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
+                            MoPubLog.log(SHOW_ATTEMPTED, ADAPTER_NAME);
+                            MoPubLog.log(WILL_APPEAR, ADAPTER_NAME);
 
-                            MoPubLog.d("Successfully loaded banner ad");
+                            adView.renderAd(ad);
 
                             try {
                                 if (customEventBannerListener != null) {
                                     customEventBannerListener.onBannerLoaded(adView);
+
+                                    MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
+                                    MoPubLog.log(DID_APPEAR, ADAPTER_NAME);
                                 }
                             } catch (Throwable th) {
-                                MoPubLog.e("Unable to notify listener of successful ad load.", th);
+                                MoPubLog.log(CUSTOM_WITH_THROWABLE, "Unable to notify listener " +
+                                        "of successful ad load.", th);
                             }
                         }
                     });
@@ -153,14 +183,20 @@ public class AppLovinBanner extends CustomEventBanner {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            MoPubLog.d("Failed to load banner ad with code: " + errorCode);
+                            MoPubLog.log(CUSTOM, "Failed to load banner ad with code: ",
+                                    errorCode);
 
                             try {
                                 if (customEventBannerListener != null) {
                                     customEventBannerListener.onBannerFailed(toMoPubErrorCode(errorCode));
+
+                                    MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                                            toMoPubErrorCode(errorCode).getIntCode(),
+                                            toMoPubErrorCode(errorCode));
                                 }
                             } catch (Throwable th) {
-                                MoPubLog.e("Unable to notify listener of failure to receive ad.", th);
+                                MoPubLog.log(CUSTOM_WITH_THROWABLE, "Unable to notify " +
+                                        "listener of failure to receive ad.", th);
                             }
                         }
                     });
@@ -169,26 +205,36 @@ public class AppLovinBanner extends CustomEventBanner {
 
             if (hasAdMarkup) {
                 sdk.getAdService().loadNextAdForAdToken(adMarkup, adLoadListener);
+
+                MoPubLog.log(LOAD_ATTEMPTED, ADAPTER_NAME);
             } else {
                 // Determine zone
                 final String zoneId = serverExtras.get(ZONE_ID_SERVER_EXTRAS_KEY);
                 if (!TextUtils.isEmpty(zoneId)) {
                     sdk.getAdService().loadNextAdForZoneId(zoneId, adLoadListener);
+                    MoPubLog.log(LOAD_ATTEMPTED, ADAPTER_NAME);
                 } else {
                     sdk.getAdService().loadNextAd(adSize, adLoadListener);
+                    MoPubLog.log(LOAD_ATTEMPTED, ADAPTER_NAME);
                 }
             }
         } else {
-            MoPubLog.d("Unable to request AppLovin banner");
+            MoPubLog.log(CUSTOM, "Unable to request AppLovin banner");
 
             if (customEventBannerListener != null) {
                 customEventBannerListener.onBannerFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+
+                MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                        MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR.getIntCode(),
+                        MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
             }
         }
     }
 
     @Override
     protected void onInvalidate() {
+        MoPubLog.log(WILL_DISAPPEAR, ADAPTER_NAME);
+        MoPubLog.log(DID_DISAPPEAR, ADAPTER_NAME);
     }
 
     //
@@ -198,7 +244,7 @@ public class AppLovinBanner extends CustomEventBanner {
     private AppLovinAdSize appLovinAdSizeFromLocalExtras(final Map<String, Object> localExtras) {
         // Handle trivial case
         if (localExtras == null || localExtras.isEmpty()) {
-            MoPubLog.d("No serverExtras provided");
+            MoPubLog.log(CUSTOM, "No serverExtras provided");
             return null;
         }
 
@@ -208,7 +254,8 @@ public class AppLovinBanner extends CustomEventBanner {
 
             // We have valid dimensions
             if (width > 0 && height > 0) {
-                MoPubLog.d("Valid width (" + width + ") and height (" + height + ") provided");
+                MoPubLog.log(CUSTOM, "Valid width (" + width + ") and height " +
+                        "(" + height + ") provided");
 
                 // Assume fluid width, and check for height with offset tolerance
                 final int bannerOffset = Math.abs(BANNER_STANDARD_HEIGHT - height);
@@ -221,13 +268,16 @@ public class AppLovinBanner extends CustomEventBanner {
                 } else if (height <= AppLovinAdSize.MREC.getHeight()) {
                     return AppLovinAdSize.MREC;
                 } else {
-                    MoPubLog.d("Provided dimensions does not meet the dimensions required of banner or mrec ads");
+                    MoPubLog.log(CUSTOM, "Provided dimensions does not meet the dimensions " +
+                            "required of banner or mrec ads");
                 }
             } else {
-                MoPubLog.d("Invalid width (" + width + ") and height (" + height + ") provided");
+                MoPubLog.log(CUSTOM, "Invalid width (" + width + ") and height " +
+                        "(" + height + ") provided");
             }
         } catch (Throwable th) {
-            MoPubLog.d("Encountered error while parsing width and height from serverExtras", th);
+            MoPubLog.log(CUSTOM_WITH_THROWABLE, "Encountered error while parsing width and " +
+                    "height from serverExtras", th);
         }
 
         return null;
