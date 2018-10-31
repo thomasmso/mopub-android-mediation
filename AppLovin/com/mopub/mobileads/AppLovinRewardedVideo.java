@@ -40,8 +40,6 @@ import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_FAILED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_APPEAR;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_DISAPPEAR;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_LEAVE_APPLICATION;
 
 public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener, AppLovinAdVideoPlaybackListener, AppLovinAdRewardListener {
 
@@ -214,7 +212,6 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
 
     @Override
     public void failedToReceiveAd(final int errorCode) {
-        MoPubLog.log(CUSTOM, "Rewarded video failed to load with error: " + errorCode);
 
         parentActivity.runOnUiThread(new Runnable() {
             @Override
@@ -240,26 +237,21 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
 
     @Override
     public void adDisplayed(final AppLovinAd ad) {
-        MoPubLog.log(CUSTOM, "Rewarded video displayed");
         MoPubLog.log(DID_APPEAR, ADAPTER_NAME);
 
         MoPubRewardedVideoManager.onRewardedVideoStarted(getClass(), getAdNetworkId());
 
         MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
-
     }
 
     @Override
     public void adHidden(final AppLovinAd ad) {
-        MoPubLog.log(CUSTOM, "Rewarded video dismissed");
 
         if (fullyWatched && reward != null) {
             MoPubLog.log(CUSTOM, "Rewarded" + reward.getAmount() + " " + reward.getLabel());
             MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME);
 
             MoPubRewardedVideoManager.onRewardedVideoCompleted(getClass(), getAdNetworkId(), reward);
-
-            MoPubLog.log(WILL_DISAPPEAR, ADAPTER_NAME);
         }
 
         MoPubRewardedVideoManager.onRewardedVideoClosed(getClass(), getAdNetworkId());
@@ -273,11 +265,9 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
 
     @Override
     public void adClicked(final AppLovinAd ad) {
-        MoPubLog.log(CUSTOM, "Rewarded video clicked");
         MoPubRewardedVideoManager.onRewardedVideoClicked(getClass(), getAdNetworkId());
 
         MoPubLog.log(CLICKED, ADAPTER_NAME);
-        MoPubLog.log(WILL_LEAVE_APPLICATION, ADAPTER_NAME);
     }
 
     //

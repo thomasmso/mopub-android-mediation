@@ -40,8 +40,6 @@ import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_FAILED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_APPEAR;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_DISAPPEAR;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_LEAVE_APPLICATION;
 
 public class AppLovinInterstitial extends CustomEventInterstitial implements AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener, AppLovinAdVideoPlaybackListener {
 
@@ -82,12 +80,11 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
             MoPubLog.log(CUSTOM, "Unable to request AppLovin interstitial. Invalid context " +
                     "provided.");
 
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                    MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR.getIntCode(),
+                    MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
             if (listener != null) {
                 listener.onInterstitialFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
-
-                MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
-                        MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR.getIntCode(),
-                        MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
             }
             return;
         }
@@ -164,10 +161,6 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
 
             if (listener != null) {
                 listener.onInterstitialFailed(MoPubErrorCode.NETWORK_INVALID_STATE);
-
-                MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
-                        MoPubErrorCode.NETWORK_INVALID_STATE.getIntCode(),
-                        MoPubErrorCode.NETWORK_INVALID_STATE);
             }
         }
     }
@@ -182,7 +175,6 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
 
     @Override
     public void adReceived(final AppLovinAd ad) {
-        MoPubLog.log(CUSTOM, "Interstitial did load ad", ad.getAdIdNumber());
 
         if (isTokenEvent) {
             tokenAd = ad;
@@ -194,10 +186,10 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
             @Override
             public void run() {
                 try {
+                    MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
+
                     if (listener != null) {
                         listener.onInterstitialLoaded();
-
-                        MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
                     }
                 } catch (Throwable th) {
                     MoPubLog.log(CUSTOM_WITH_THROWABLE, "Unable to notify listener of " +
@@ -209,18 +201,17 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
 
     @Override
     public void failedToReceiveAd(final int errorCode) {
-        MoPubLog.log(CUSTOM, "Interstitial failed to load with error", errorCode);
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 try {
+                    MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                            toMoPubErrorCode(errorCode).getIntCode(),
+                            toMoPubErrorCode(errorCode));
+
                     if (listener != null) {
                         listener.onInterstitialFailed(toMoPubErrorCode(errorCode));
-
-                        MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
-                                toMoPubErrorCode(errorCode).getIntCode(),
-                                toMoPubErrorCode(errorCode));
                     }
                 } catch (Throwable th) {
                     MoPubLog.log(CUSTOM_WITH_THROWABLE, "Unable to notify listener of failure" +
@@ -236,25 +227,20 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
 
     @Override
     public void adDisplayed(final AppLovinAd appLovinAd) {
-        MoPubLog.log(CUSTOM, "Interstitial displayed");
+        MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
+        MoPubLog.log(DID_APPEAR, ADAPTER_NAME);
 
         if (listener != null) {
             listener.onInterstitialShown();
-            MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
-            MoPubLog.log(DID_APPEAR, ADAPTER_NAME);
         }
     }
 
     @Override
     public void adHidden(final AppLovinAd appLovinAd) {
-        MoPubLog.log(CUSTOM, "Interstitial dismissed");
-        MoPubLog.log(WILL_DISAPPEAR, ADAPTER_NAME);
-
+        MoPubLog.log(DID_DISAPPEAR, ADAPTER_NAME);
 
         if (listener != null) {
             listener.onInterstitialDismissed();
-            MoPubLog.log(DID_DISAPPEAR, ADAPTER_NAME);
-
         }
     }
 
@@ -264,13 +250,10 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
 
     @Override
     public void adClicked(final AppLovinAd appLovinAd) {
-        MoPubLog.log(CUSTOM, "Interstitial clicked");
+        MoPubLog.log(CLICKED, ADAPTER_NAME);
 
         if (listener != null) {
             listener.onInterstitialClicked();
-
-            MoPubLog.log(CLICKED, ADAPTER_NAME);
-            MoPubLog.log(WILL_LEAVE_APPLICATION, ADAPTER_NAME);
         }
     }
 

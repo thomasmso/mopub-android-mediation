@@ -28,16 +28,12 @@ import java.util.Map;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THROWABLE;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.DID_APPEAR;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.DID_DISAPPEAR;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_APPEAR;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_DISAPPEAR;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_LEAVE_APPLICATION;
 
 public class AppLovinBanner extends CustomEventBanner {
 
@@ -70,12 +66,12 @@ public class AppLovinBanner extends CustomEventBanner {
         if (AppLovinSdk.VERSION_CODE < 710 && !(context instanceof Activity)) {
             MoPubLog.log(CUSTOM, "Unable to request AppLovin banner. Invalid context provided");
 
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                    MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR.getIntCode(),
+                    MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+
             if (customEventBannerListener != null) {
                 customEventBannerListener.onBannerFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
-
-                MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
-                        MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR.getIntCode(),
-                        MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
             }
 
             return;
@@ -109,12 +105,10 @@ public class AppLovinBanner extends CustomEventBanner {
                 @Override
                 public void adClicked(final AppLovinAd ad) {
                     MoPubLog.log(CUSTOM, "Banner clicked");
+                    MoPubLog.log(CLICKED, ADAPTER_NAME);
 
                     if (customEventBannerListener != null) {
                         customEventBannerListener.onBannerClicked();
-
-                        MoPubLog.log(CLICKED, ADAPTER_NAME);
-                        MoPubLog.log(WILL_LEAVE_APPLICATION, ADAPTER_NAME);
                     }
                 }
             });
@@ -158,16 +152,13 @@ public class AppLovinBanner extends CustomEventBanner {
                         public void run() {
                             MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
                             MoPubLog.log(SHOW_ATTEMPTED, ADAPTER_NAME);
-                            MoPubLog.log(WILL_APPEAR, ADAPTER_NAME);
 
                             adView.renderAd(ad);
+                            MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
 
                             try {
                                 if (customEventBannerListener != null) {
                                     customEventBannerListener.onBannerLoaded(adView);
-
-                                    MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
-                                    MoPubLog.log(DID_APPEAR, ADAPTER_NAME);
                                 }
                             } catch (Throwable th) {
                                 MoPubLog.log(CUSTOM_WITH_THROWABLE, "Unable to notify listener " +
@@ -185,14 +176,12 @@ public class AppLovinBanner extends CustomEventBanner {
                         public void run() {
                             MoPubLog.log(CUSTOM, "Failed to load banner ad with code: ",
                                     errorCode);
-
+                            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                                    toMoPubErrorCode(errorCode).getIntCode(),
+                                    toMoPubErrorCode(errorCode));
                             try {
                                 if (customEventBannerListener != null) {
                                     customEventBannerListener.onBannerFailed(toMoPubErrorCode(errorCode));
-
-                                    MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
-                                            toMoPubErrorCode(errorCode).getIntCode(),
-                                            toMoPubErrorCode(errorCode));
                                 }
                             } catch (Throwable th) {
                                 MoPubLog.log(CUSTOM_WITH_THROWABLE, "Unable to notify " +
@@ -212,28 +201,27 @@ public class AppLovinBanner extends CustomEventBanner {
                 final String zoneId = serverExtras.get(ZONE_ID_SERVER_EXTRAS_KEY);
                 if (!TextUtils.isEmpty(zoneId)) {
                     sdk.getAdService().loadNextAdForZoneId(zoneId, adLoadListener);
-                    MoPubLog.log(LOAD_ATTEMPTED, ADAPTER_NAME);
+                    MoPubLog.log(zoneId, LOAD_ATTEMPTED, ADAPTER_NAME);
                 } else {
                     sdk.getAdService().loadNextAd(adSize, adLoadListener);
-                    MoPubLog.log(LOAD_ATTEMPTED, ADAPTER_NAME);
+                    MoPubLog.log(zoneId, LOAD_ATTEMPTED, ADAPTER_NAME);
                 }
             }
         } else {
             MoPubLog.log(CUSTOM, "Unable to request AppLovin banner");
 
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                    MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR.getIntCode(),
+                    MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+
             if (customEventBannerListener != null) {
                 customEventBannerListener.onBannerFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
-
-                MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
-                        MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR.getIntCode(),
-                        MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
             }
         }
     }
 
     @Override
     protected void onInvalidate() {
-        MoPubLog.log(WILL_DISAPPEAR, ADAPTER_NAME);
         MoPubLog.log(DID_DISAPPEAR, ADAPTER_NAME);
     }
 
