@@ -70,7 +70,7 @@ public class AppLovinBanner extends CustomEventBanner {
                     MoPubErrorCode.NETWORK_NO_FILL);
 
             if (customEventBannerListener != null) {
-                customEventBannerListener.onBannerFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+                customEventBannerListener.onBannerFailed(MoPubErrorCode.NETWORK_NO_FILL);
             }
 
             return;
@@ -213,7 +213,7 @@ public class AppLovinBanner extends CustomEventBanner {
                     MoPubErrorCode.NETWORK_NO_FILL);
 
             if (customEventBannerListener != null) {
-                customEventBannerListener.onBannerFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+                customEventBannerListener.onBannerFailed(MoPubErrorCode.NETWORK_NO_FILL);
             }
         }
     }

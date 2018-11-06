@@ -81,7 +81,7 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                     MoPubErrorCode.NETWORK_NO_FILL);
             if (listener != null) {
-                listener.onInterstitialFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+                listener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
             }
             return;
         }
@@ -156,7 +156,7 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
                     "loaded");
 
             if (listener != null) {
-                listener.onInterstitialFailed(MoPubErrorCode.NETWORK_INVALID_STATE);
+                listener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
             }
         }
     }
