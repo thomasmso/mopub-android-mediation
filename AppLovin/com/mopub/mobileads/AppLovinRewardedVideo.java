@@ -30,8 +30,6 @@ import java.util.Map;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THROWABLE;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.DID_APPEAR;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.DID_DISAPPEAR;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
@@ -39,7 +37,6 @@ import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOULD_REWARD;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_FAILED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_APPEAR;
 
 public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener, AppLovinAdVideoPlaybackListener, AppLovinAdRewardListener {
 
@@ -142,16 +139,14 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
 
             if (isTokenEvent) {
                 incentivizedInterstitial.show(tokenAd, parentActivity, this, this, this, this);
-                MoPubLog.log(WILL_APPEAR, ADAPTER_NAME);
             } else {
                 incentivizedInterstitial.show(parentActivity, null, this, this, this, this);
-                MoPubLog.log(WILL_APPEAR, ADAPTER_NAME);
             }
         } else {
             MoPubLog.log(SHOW_FAILED,
                     ADAPTER_NAME,
-                    MoPubErrorCode.VIDEO_PLAYBACK_ERROR.getIntCode(),
-                    MoPubErrorCode.VIDEO_PLAYBACK_ERROR);
+                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
 
             MoPubLog.log(CUSTOM, "Failed to show an AppLovin rewarded video before one was loaded");
             MoPubRewardedVideoManager.onRewardedVideoPlaybackError(getClass(), getAdNetworkId(), MoPubErrorCode.VIDEO_PLAYBACK_ERROR);
@@ -237,8 +232,6 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
 
     @Override
     public void adDisplayed(final AppLovinAd ad) {
-        MoPubLog.log(DID_APPEAR, ADAPTER_NAME);
-
         MoPubRewardedVideoManager.onRewardedVideoStarted(getClass(), getAdNetworkId());
 
         MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
@@ -255,8 +248,6 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
         }
 
         MoPubRewardedVideoManager.onRewardedVideoClosed(getClass(), getAdNetworkId());
-
-        MoPubLog.log(DID_DISAPPEAR, ADAPTER_NAME);
     }
 
     //

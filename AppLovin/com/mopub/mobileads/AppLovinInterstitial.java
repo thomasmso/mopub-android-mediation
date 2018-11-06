@@ -31,15 +31,12 @@ import java.util.Queue;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THROWABLE;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.DID_APPEAR;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.DID_DISAPPEAR;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_FAILED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_APPEAR;
 
 public class AppLovinInterstitial extends CustomEventInterstitial implements AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener, AppLovinAdVideoPlaybackListener {
 
@@ -81,8 +78,8 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
                     "provided.");
 
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
-                    MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR.getIntCode(),
-                    MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
             if (listener != null) {
                 listener.onInterstitialFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
             }
@@ -145,7 +142,6 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
         }
 
         if (preloadedAd != null) {
-            MoPubLog.log(WILL_APPEAR, ADAPTER_NAME);
 
             final AppLovinInterstitialAdDialog interstitialAd = AppLovinInterstitialAd.create(sdk, context);
             interstitialAd.setAdDisplayListener(this);
@@ -153,8 +149,8 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
             interstitialAd.setAdVideoPlaybackListener(this);
             interstitialAd.showAndRender(preloadedAd);
         } else {
-            MoPubLog.log(SHOW_FAILED, ADAPTER_NAME, MoPubErrorCode.UNSPECIFIED.getIntCode(),
-                    MoPubErrorCode.UNSPECIFIED);
+            MoPubLog.log(SHOW_FAILED, ADAPTER_NAME, MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
 
             MoPubLog.log(CUSTOM, "Failed to show an AppLovin interstitial before one was " +
                     "loaded");
@@ -228,7 +224,6 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
     @Override
     public void adDisplayed(final AppLovinAd appLovinAd) {
         MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
-        MoPubLog.log(DID_APPEAR, ADAPTER_NAME);
 
         if (listener != null) {
             listener.onInterstitialShown();
@@ -237,8 +232,6 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
 
     @Override
     public void adHidden(final AppLovinAd appLovinAd) {
-        MoPubLog.log(DID_DISAPPEAR, ADAPTER_NAME);
-
         if (listener != null) {
             listener.onInterstitialDismissed();
         }

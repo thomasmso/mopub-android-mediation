@@ -28,7 +28,6 @@ import java.util.Map;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THROWABLE;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.DID_DISAPPEAR;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
@@ -67,8 +66,8 @@ public class AppLovinBanner extends CustomEventBanner {
             MoPubLog.log(CUSTOM, "Unable to request AppLovin banner. Invalid context provided");
 
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
-                    MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR.getIntCode(),
-                    MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
 
             if (customEventBannerListener != null) {
                 customEventBannerListener.onBannerFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
@@ -104,7 +103,6 @@ public class AppLovinBanner extends CustomEventBanner {
             adView.setAdClickListener(new AppLovinAdClickListener() {
                 @Override
                 public void adClicked(final AppLovinAd ad) {
-                    MoPubLog.log(CUSTOM, "Banner clicked");
                     MoPubLog.log(CLICKED, ADAPTER_NAME);
 
                     if (customEventBannerListener != null) {
@@ -211,8 +209,8 @@ public class AppLovinBanner extends CustomEventBanner {
             MoPubLog.log(CUSTOM, "Unable to request AppLovin banner");
 
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
-                    MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR.getIntCode(),
-                    MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
 
             if (customEventBannerListener != null) {
                 customEventBannerListener.onBannerFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
@@ -222,7 +220,6 @@ public class AppLovinBanner extends CustomEventBanner {
 
     @Override
     protected void onInvalidate() {
-        MoPubLog.log(DID_DISAPPEAR, ADAPTER_NAME);
     }
 
     //
