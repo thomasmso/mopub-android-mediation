@@ -15,22 +15,24 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.mopub.common.MediationSettings;
+import com.mopub.common.logging.MoPubLog;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
+
 /**
  * The {@link GooglePlayServicesNative} class is used to load native Google mobile ads.
  */
 public class GooglePlayServicesNative extends CustomEventNative {
-    protected static final String TAG = "MoPubToAdMobNative";
-
-    /**
-     * The current version of the adapter.
-     */
-    private static final String ADAPTER_VERSION = "0.3.1";
 
     /**
      * Key to obtain AdMob application ID from the server extras provided by MoPub.
@@ -62,6 +64,11 @@ public class GooglePlayServicesNative extends CustomEventNative {
      */
     private static AtomicBoolean sIsInitialized = new AtomicBoolean(false);
 
+    /**
+     * String to store the simple class name for this adapter.
+     */
+    public static final String ADAPTER_NAME = GooglePlayServicesNative.class.getSimpleName();
+
     @Override
     protected void loadNativeAd(@NonNull final Context context,
                                 @NonNull final CustomEventNativeListener customEventNativeListener,
@@ -69,7 +76,6 @@ public class GooglePlayServicesNative extends CustomEventNative {
                                 @NonNull Map<String, String> serverExtras) {
 
         if (!sIsInitialized.getAndSet(true)) {
-            Log.i(TAG, "Adapter version - " + ADAPTER_VERSION);
             if (serverExtras.containsKey(KEY_EXTRA_APPLICATION_ID)
                     && !TextUtils.isEmpty(serverExtras.get(KEY_EXTRA_APPLICATION_ID))) {
                 MobileAds.initialize(context, serverExtras.get(KEY_EXTRA_APPLICATION_ID));
@@ -80,7 +86,11 @@ public class GooglePlayServicesNative extends CustomEventNative {
 
         String adUnitId = serverExtras.get(KEY_EXTRA_AD_UNIT_ID);
         if (TextUtils.isEmpty(adUnitId)) {
-            customEventNativeListener.onNativeAdFailed(NativeErrorCode.NETWORK_INVALID_REQUEST);
+            customEventNativeListener.onNativeAdFailed(NativeErrorCode.NETWORK_NO_FILL);
+
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                    NativeErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    NativeErrorCode.NETWORK_NO_FILL);
             return;
         }
 
@@ -327,10 +337,15 @@ public class GooglePlayServicesNative extends CustomEventNative {
                                 @Override
                                 public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
                                     if (!isValidUnifiedAd(unifiedNativeAd)) {
-                                        Log.i(TAG, "The Google native unified ad is missing one or "
-                                                + "more required assets, failing request.");
+                                        MoPubLog.log(CUSTOM, "The Google native unified ad " +
+                                                "is missing one or more required assets, failing request.");
+
                                         mCustomEventNativeListener.onNativeAdFailed(
-                                                NativeErrorCode.INVALID_RESPONSE);
+                                                NativeErrorCode.NETWORK_NO_FILL);
+
+                                        MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                                                NativeErrorCode.NETWORK_NO_FILL.getIntCode(),
+                                                NativeErrorCode.NETWORK_NO_FILL);
                                         return;
                                     }
 
@@ -355,38 +370,28 @@ public class GooglePlayServicesNative extends CustomEventNative {
                         public void onAdClicked() {
                             super.onAdClicked();
                             GooglePlayServicesNativeAd.this.notifyAdClicked();
+
+                            MoPubLog.log(CLICKED, ADAPTER_NAME);
                         }
 
                         @Override
                         public void onAdImpression() {
                             super.onAdImpression();
                             GooglePlayServicesNativeAd.this.notifyAdImpressed();
+
+                            MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
                         }
 
                         @Override
                         public void onAdFailedToLoad(int errorCode) {
                             super.onAdFailedToLoad(errorCode);
-                            switch (errorCode) {
-                                case AdRequest.ERROR_CODE_INTERNAL_ERROR:
-                                    mCustomEventNativeListener.onNativeAdFailed(
-                                            NativeErrorCode.NATIVE_ADAPTER_CONFIGURATION_ERROR);
-                                    break;
-                                case AdRequest.ERROR_CODE_INVALID_REQUEST:
-                                    mCustomEventNativeListener.onNativeAdFailed(
-                                            NativeErrorCode.NETWORK_INVALID_REQUEST);
-                                    break;
-                                case AdRequest.ERROR_CODE_NETWORK_ERROR:
-                                    mCustomEventNativeListener.onNativeAdFailed(
-                                            NativeErrorCode.CONNECTION_ERROR);
-                                    break;
-                                case AdRequest.ERROR_CODE_NO_FILL:
-                                    mCustomEventNativeListener.onNativeAdFailed(
-                                            NativeErrorCode.NETWORK_NO_FILL);
-                                    break;
-                                default:
-                                    mCustomEventNativeListener.onNativeAdFailed(
-                                            NativeErrorCode.UNSPECIFIED);
-                            }
+
+                            mCustomEventNativeListener.onNativeAdFailed(
+                                    getMoPubErrorCode(errorCode));
+
+                            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                                    getMoPubErrorCode(errorCode).getIntCode(),
+                                    getMoPubErrorCode(errorCode));
                         }
                     }).withNativeAdOptions(adOptions).build();
 
@@ -399,7 +404,10 @@ public class GooglePlayServicesNative extends CustomEventNative {
 
             AdRequest adRequest = requestBuilder.build();
             adLoader.loadAd(adRequest);
+
+            MoPubLog.log(LOAD_ATTEMPTED, ADAPTER_NAME);
         }
+
 
         private void forwardNpaIfSet(AdRequest.Builder builder) {
 
@@ -504,14 +512,35 @@ public class GooglePlayServicesNative extends CustomEventNative {
                                 prepareUnifiedNativeAd(mUnifiedNativeAd);
                                 mCustomEventNativeListener.onNativeAdLoaded(
                                         GooglePlayServicesNativeAd.this);
+
+                                MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
                             }
                         }
 
                         @Override
                         public void onImagesFailedToCache(NativeErrorCode errorCode) {
                             mCustomEventNativeListener.onNativeAdFailed(errorCode);
+
+                            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                                    errorCode.getIntCode(),
+                                    errorCode);
                         }
                     });
+        }
+
+        private NativeErrorCode getMoPubErrorCode(int errorCode) {
+            switch (errorCode) {
+                case AdRequest.ERROR_CODE_INTERNAL_ERROR:
+                    return NativeErrorCode.NATIVE_ADAPTER_CONFIGURATION_ERROR;
+                case AdRequest.ERROR_CODE_INVALID_REQUEST:
+                    return NativeErrorCode.NETWORK_INVALID_REQUEST;
+                case AdRequest.ERROR_CODE_NETWORK_ERROR:
+                    return NativeErrorCode.CONNECTION_ERROR;
+                case AdRequest.ERROR_CODE_NO_FILL:
+                    return NativeErrorCode.NETWORK_NO_FILL;
+                default:
+                    return NativeErrorCode.UNSPECIFIED;
+            }
         }
 
         /**

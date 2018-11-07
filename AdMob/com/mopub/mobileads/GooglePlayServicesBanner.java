@@ -2,7 +2,6 @@ package com.mopub.mobileads;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdListener;
@@ -10,6 +9,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.mopub.common.MediationSettings;
+import com.mopub.common.logging.MoPubLog;
 import com.mopub.common.util.Views;
 
 import java.util.Map;
@@ -19,6 +19,13 @@ import static com.google.android.gms.ads.AdSize.FULL_BANNER;
 import static com.google.android.gms.ads.AdSize.LEADERBOARD;
 import static com.google.android.gms.ads.AdSize.MEDIUM_RECTANGLE;
 
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
+
 public class GooglePlayServicesBanner extends CustomEventBanner {
     /*
      * These keys are intended for MoPub internal use. Do not modify.
@@ -26,6 +33,7 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
     public static final String AD_UNIT_ID_KEY = "adUnitID";
     public static final String AD_WIDTH_KEY = "adWidth";
     public static final String AD_HEIGHT_KEY = "adHeight";
+    public static final String ADAPTER_NAME = GooglePlayServicesBanner.class.getSimpleName();
 
     private CustomEventBannerListener mBannerListener;
     private AdView mGoogleAdView;
@@ -37,17 +45,21 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
             final Map<String, Object> localExtras,
             final Map<String, String> serverExtras) {
         mBannerListener = customEventBannerListener;
-        final String adUnitId;
+
         final int adWidth;
         final int adHeight;
 
-
+        String adUnitId = "";
         if (extrasAreValid(serverExtras)) {
             adUnitId = serverExtras.get(AD_UNIT_ID_KEY);
             adWidth = Integer.parseInt(serverExtras.get(AD_WIDTH_KEY));
             adHeight = Integer.parseInt(serverExtras.get(AD_HEIGHT_KEY));
         } else {
-            mBannerListener.onBannerFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
+
+            mBannerListener.onBannerFailed(MoPubErrorCode.NETWORK_NO_FILL);
             return;
         }
 
@@ -57,7 +69,11 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
 
         final AdSize adSize = calculateAdSize(adWidth, adHeight);
         if (adSize == null) {
-            mBannerListener.onBannerFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
+
+            mBannerListener.onBannerFailed(MoPubErrorCode.NETWORK_NO_FILL);
             return;
         }
 
@@ -74,8 +90,14 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
 
         try {
             mGoogleAdView.loadAd(adRequest);
+
+            MoPubLog.log(adUnitId, LOAD_ATTEMPTED, ADAPTER_NAME);
         } catch (NoClassDefFoundError e) {
             // This can be thrown by Play Services on Honeycomb.
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
+
             mBannerListener.onBannerFailed(MoPubErrorCode.NETWORK_NO_FILL);
         }
     }
@@ -83,6 +105,7 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
     @Override
     protected void onInvalidate() {
         Views.removeFromParent(mGoogleAdView);
+
         if (mGoogleAdView != null) {
             mGoogleAdView.setAdListener(null);
             mGoogleAdView.destroy();
@@ -136,7 +159,10 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
 
         @Override
         public void onAdFailedToLoad(int errorCode) {
-            Log.d("MoPub", "Google Play Services banner ad failed to load.");
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                    getMoPubErrorCode(errorCode).getIntCode(),
+                    getMoPubErrorCode(errorCode));
+
             if (mBannerListener != null) {
                 mBannerListener.onBannerFailed(getMoPubErrorCode(errorCode));
             }
@@ -144,12 +170,14 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
 
         @Override
         public void onAdLeftApplication() {
-
         }
 
         @Override
         public void onAdLoaded() {
-            Log.d("MoPub", "Google Play Services banner ad loaded successfully. Showing ad...");
+            MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
+            MoPubLog.log(SHOW_ATTEMPTED, ADAPTER_NAME);
+            MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
+
             if (mBannerListener != null) {
                 mBannerListener.onBannerLoaded(mGoogleAdView);
             }
@@ -157,7 +185,8 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
 
         @Override
         public void onAdOpened() {
-            Log.d("MoPub", "Google Play Services banner ad clicked.");
+            MoPubLog.log(CLICKED, ADAPTER_NAME);
+
             if (mBannerListener != null) {
                 mBannerListener.onBannerClicked();
             }
