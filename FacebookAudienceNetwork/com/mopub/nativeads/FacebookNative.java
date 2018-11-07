@@ -16,6 +16,13 @@ import com.mopub.common.DataKeys;
 import com.mopub.common.Preconditions;
 import com.mopub.common.logging.MoPubLog;
 
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class FacebookNative extends CustomEventNative {
     private static final String PLACEMENT_ID_KEY = "placement_id";
+    private static final String ADAPTER_NAME = FacebookNative.class.getSimpleName();
     private static AtomicBoolean sIsInitialized = new AtomicBoolean(false);
 
     // CustomEventNative implementation
@@ -46,7 +54,8 @@ public class FacebookNative extends CustomEventNative {
         if (extrasAreValid(serverExtras)) {
             placementId = serverExtras.get(PLACEMENT_ID_KEY);
         } else {
-            customEventNativeListener.onNativeAdFailed(NativeErrorCode.NATIVE_ADAPTER_CONFIGURATION_ERROR);
+            customEventNativeListener.onNativeAdFailed(NativeErrorCode.NETWORK_NO_FILL);
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, NativeErrorCode.NETWORK_NO_FILL.getIntCode(), NativeErrorCode.NETWORK_NO_FILL);
             return;
         }
 
@@ -82,12 +91,12 @@ public class FacebookNative extends CustomEventNative {
     private static void assembleChildViewsWithLimit(final View view,
                                                     final List<View> clickableViews, final int limit) {
         if (view == null) {
-            MoPubLog.d("View given is null. Ignoring");
+            MoPubLog.log(CUSTOM, "View given is null. Ignoring");
             return;
         }
 
         if (limit <= 0) {
-            MoPubLog.d("Depth limit reached; adding this view regardless of its type.");
+            MoPubLog.log(CUSTOM, "Depth limit reached; adding this view regardless of its type.");
             clickableViews.add(view);
             return;
         }
@@ -129,8 +138,10 @@ public class FacebookNative extends CustomEventNative {
             mNativeAd.setAdListener(this);
             if (!TextUtils.isEmpty(mBid)) {
                 mNativeAd.loadAdFromBid(mBid);
+                MoPubLog.log(mBid, LOAD_ATTEMPTED, ADAPTER_NAME);
             } else {
                 mNativeAd.loadAd();
+                MoPubLog.log(LOAD_ATTEMPTED, ADAPTER_NAME);
             }
         }
 
@@ -178,35 +189,43 @@ public class FacebookNative extends CustomEventNative {
             // This identity check is from Facebook's Native API sample code:
             // https://developers.facebook.com/docs/audience-network/android/native-api
             if (!mNativeAd.equals(ad) || !mNativeAd.isAdLoaded()) {
-                mCustomEventNativeListener.onNativeAdFailed(NativeErrorCode.NETWORK_INVALID_STATE);
+                mCustomEventNativeListener.onNativeAdFailed(NativeErrorCode.NETWORK_NO_FILL);
+                MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, NativeErrorCode.NETWORK_NO_FILL.getIntCode(), NativeErrorCode.NETWORK_NO_FILL);
                 return;
             }
 
             addExtra(SOCIAL_CONTEXT_FOR_AD, mNativeAd.getAdSocialContext());
             mCustomEventNativeListener.onNativeAdLoaded(FacebookVideoEnabledNativeAd.this);
+            MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
         }
 
         @Override
         public void onError(final Ad ad, final AdError adError) {
             if (adError == null) {
                 mCustomEventNativeListener.onNativeAdFailed(NativeErrorCode.UNSPECIFIED);
+                MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, NativeErrorCode.UNSPECIFIED.getIntCode(), NativeErrorCode.UNSPECIFIED);
             } else if (adError.getErrorCode() == AdError.NO_FILL.getErrorCode()) {
                 mCustomEventNativeListener.onNativeAdFailed(NativeErrorCode.NETWORK_NO_FILL);
+                MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, NativeErrorCode.NETWORK_NO_FILL.getIntCode(), NativeErrorCode.NETWORK_NO_FILL);
             } else if (adError.getErrorCode() == AdError.INTERNAL_ERROR.getErrorCode()) {
                 mCustomEventNativeListener.onNativeAdFailed(NativeErrorCode.NETWORK_INVALID_STATE);
+                MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, NativeErrorCode.NETWORK_INVALID_STATE.getIntCode(), NativeErrorCode.NETWORK_INVALID_STATE);
             } else {
                 mCustomEventNativeListener.onNativeAdFailed(NativeErrorCode.UNSPECIFIED);
+                MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, NativeErrorCode.UNSPECIFIED.getIntCode(), NativeErrorCode.UNSPECIFIED);
             }
         }
 
         @Override
         public void onAdClicked(final Ad ad) {
             notifyAdClicked();
+            MoPubLog.log(CLICKED, ADAPTER_NAME);
         }
 
         @Override
         public void onLoggingImpression(final Ad ad) {
             notifyAdImpressed();
+            MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
         }
 
         // BaseForwardingNativeAd
