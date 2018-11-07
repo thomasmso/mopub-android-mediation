@@ -5,7 +5,15 @@ import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import com.mopub.common.logging.MoPubLog;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_FAILED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
 
 import com.adcolony.sdk.AdColony;
 import com.adcolony.sdk.AdColonyAppOptions;
@@ -44,6 +52,7 @@ public class AdColonyInterstitial extends CustomEventInterstitial {
     public static final String APP_ID_KEY = "appId";
     public static final String ALL_ZONE_IDS_KEY = "allZoneIds";
     public static final String ZONE_ID_KEY = "zoneId";
+    public static final String ADAPTER_NAME = AdColonyInterstitial.class.getSimpleName();
 
     private CustomEventInterstitialListener mCustomEventInterstitialListener;
     private AdColonyInterstitialListener mAdColonyInterstitialListener;
@@ -62,6 +71,7 @@ public class AdColonyInterstitial extends CustomEventInterstitial {
                                     @NonNull Map<String, String> serverExtras) {
         if (!(context instanceof Activity)) {
             customEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR.getIntCode(), MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
             return;
         }
 
@@ -102,16 +112,19 @@ public class AdColonyInterstitial extends CustomEventInterstitial {
             AdColony.setAppOptions(mAdColonyAppOptions);
         }
         AdColony.requestInterstitial(zoneId, mAdColonyInterstitialListener);
+        MoPubLog.log(zoneId, LOAD_ATTEMPTED, ADAPTER_NAME);
     }
 
     @Override
     protected void showInterstitial() {
+        MoPubLog.log(SHOW_ATTEMPTED, ADAPTER_NAME);
         if (mAdColonyInterstitial == null || mAdColonyInterstitial.isExpired()) {
-            Log.e(TAG, "AdColony interstitial ad is null or has expired");
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.VIDEO_PLAYBACK_ERROR);
+                    mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
+                    MoPubLog.log(SHOW_FAILED, ADAPTER_NAME, MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                            MoPubErrorCode.NETWORK_NO_FILL);
                 }
             });
         } else {
@@ -141,29 +154,30 @@ public class AdColonyInterstitial extends CustomEventInterstitial {
                 @Override
                 public void onRequestFilled(@NonNull com.adcolony.sdk.AdColonyInterstitial adColonyInterstitial) {
                     mAdColonyInterstitial = adColonyInterstitial;
-                    Log.d(TAG, "AdColony interstitial ad has been successfully loaded.");
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             mCustomEventInterstitialListener.onInterstitialLoaded();
+                            MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
                         }
                     });
                 }
 
                 @Override
                 public void onRequestNotFilled(@NonNull AdColonyZone zone) {
-                    Log.d(TAG, "AdColony interstitial ad has no fill.");
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
+                            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                                    MoPubErrorCode.NETWORK_NO_FILL);
                         }
                     });
                 }
 
                 @Override
                 public void onClosed(@NonNull com.adcolony.sdk.AdColonyInterstitial ad) {
-                    Log.d(TAG, "AdColony interstitial ad has been dismissed.");
+                    MoPubLog.log(CUSTOM, "AdColony interstitial ad has been dismissed");
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -174,24 +188,25 @@ public class AdColonyInterstitial extends CustomEventInterstitial {
 
                 @Override
                 public void onOpened(@NonNull com.adcolony.sdk.AdColonyInterstitial ad) {
-                    Log.d(TAG, "AdColony interstitial ad shown: " + ad.getZoneID());
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             mCustomEventInterstitialListener.onInterstitialShown();
+                            MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
                         }
                     });
                 }
 
                 @Override
                 public void onExpiring(@NonNull com.adcolony.sdk.AdColonyInterstitial ad) {
-                    Log.d(TAG, "AdColony interstitial ad is expiring; requesting new ad");
+                    MoPubLog.log(CUSTOM, "Adcolony interstitial is expiring; requesting new ad" + ad.getZoneID());
                     AdColony.requestInterstitial(ad.getZoneID(), mAdColonyInterstitialListener);
                 }
 
                 @Override
                 public void onClicked(@NonNull com.adcolony.sdk.AdColonyInterstitial ad) {
                     mCustomEventInterstitialListener.onInterstitialClicked();
+                    MoPubLog.log(CLICKED, ADAPTER_NAME);
                 }
             };
         }
