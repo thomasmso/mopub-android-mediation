@@ -4,17 +4,23 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.chartboost.sdk.Chartboost;
 import com.mopub.common.Preconditions;
+import com.mopub.common.logging.MoPubLog;
 
 import java.util.Map;
+
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
 
 class ChartboostInterstitial extends CustomEventInterstitial {
 
     @NonNull
     private String mLocation = ChartboostShared.LOCATION_DEFAULT;
+
+    private static final String ADAPTER_NAME = ChartboostInterstitial.class.getSimpleName();
 
     /*
      * Note: Chartboost recommends implementing their specific Activity lifecycle callbacks in your
@@ -35,7 +41,11 @@ class ChartboostInterstitial extends CustomEventInterstitial {
         Preconditions.checkNotNull(serverExtras);
 
         if (!(context instanceof Activity)) {
-            interstitialListener.onInterstitialFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+            interstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
+
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
             return;
         }
 
@@ -48,7 +58,11 @@ class ChartboostInterstitial extends CustomEventInterstitial {
         // CustomEventInterstitial is still active and we should fail.
         if (ChartboostShared.getDelegate().hasInterstitialLocation(mLocation) &&
                 ChartboostShared.getDelegate().getInterstitialListener(mLocation) != interstitialListener) {
-            interstitialListener.onInterstitialFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+            interstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
+
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
             return;
         }
 
@@ -57,10 +71,18 @@ class ChartboostInterstitial extends CustomEventInterstitial {
             ChartboostShared.initializeSdk(activity, serverExtras);
             ChartboostShared.getDelegate().registerInterstitialListener(mLocation, interstitialListener);
         } catch (NullPointerException e) {
-            interstitialListener.onInterstitialFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+            interstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
+
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
             return;
         } catch (IllegalStateException e) {
-            interstitialListener.onInterstitialFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+            interstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
+
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
             return;
         }
 
@@ -70,12 +92,14 @@ class ChartboostInterstitial extends CustomEventInterstitial {
             ChartboostShared.getDelegate().didCacheInterstitial(mLocation);
         } else {
             Chartboost.cacheInterstitial(mLocation);
+            MoPubLog.log(mLocation, LOAD_ATTEMPTED, ADAPTER_NAME);
         }
     }
 
     @Override
     protected void showInterstitial() {
-        Log.d("MoPub", "Showing Chartboost interstitial ad.");
+        MoPubLog.log(SHOW_ATTEMPTED, ADAPTER_NAME);
+
         Chartboost.showInterstitial(mLocation);
     }
 

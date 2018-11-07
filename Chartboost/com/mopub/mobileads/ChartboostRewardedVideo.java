@@ -13,6 +13,11 @@ import com.mopub.common.logging.MoPubLog;
 
 import java.util.Map;
 
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_FAILED;
+
 public class ChartboostRewardedVideo extends CustomEventRewardedVideo {
     @NonNull
     private static final LifecycleListener sLifecycleListener =
@@ -22,6 +27,8 @@ public class ChartboostRewardedVideo extends CustomEventRewardedVideo {
     private String mLocation = ChartboostShared.LOCATION_DEFAULT;
     @NonNull
     private final Handler mHandler;
+
+    private static final String ADAPTER_NAME = ChartboostRewardedVideo.class.getSimpleName();
 
     public ChartboostRewardedVideo() {
         mHandler = new Handler();
@@ -79,6 +86,7 @@ public class ChartboostRewardedVideo extends CustomEventRewardedVideo {
                     ChartboostShared.getDelegate().didCacheRewardedVideo(mLocation);
                 } else {
                     Chartboost.cacheRewardedVideo(mLocation);
+                    MoPubLog.log(getAdNetworkId(), LOAD_ATTEMPTED, ADAPTER_NAME);
                 }
             }
         });
@@ -105,10 +113,22 @@ public class ChartboostRewardedVideo extends CustomEventRewardedVideo {
 
     @Override
     public void showVideo() {
+        MoPubLog.log(SHOW_ATTEMPTED, ADAPTER_NAME);
+
         if (hasVideoAvailable()) {
             Chartboost.showRewardedVideo(mLocation);
         } else {
-            MoPubLog.d("Attempted to show Chartboost rewarded video before it was available.");
+            MoPubRewardedVideoManager.onRewardedVideoPlaybackError(
+                    ChartboostRewardedVideo.class,
+                    getAdNetworkId(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
+
+            MoPubLog.log(CUSTOM, "Attempted to show Chartboost rewarded video before it " +
+                    "was available.");
+
+            MoPubLog.log(SHOW_FAILED, ADAPTER_NAME,
+                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
         }
     }
 
