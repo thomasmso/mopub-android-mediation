@@ -15,12 +15,19 @@ import com.vungle.warren.AdConfig;
 
 import java.util.Map;
 
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOULD_REWARD;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
+
 /**
  * A custom event for showing Vungle rewarded videos.
  */
 public class VungleRewardedVideo extends CustomEventRewardedVideo {
-
-    private static final String REWARDED_TAG = "Vungle Rewarded: ";
 
     /*
      * These constants are intended for MoPub internal use. Do not modify.
@@ -30,6 +37,8 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
 
     public static final String VUNGLE_NETWORK_ID_DEFAULT = "vngl_id";
     private static final String VUNGLE_DEFAULT_APP_ID = "YOUR_APP_ID_HERE";
+
+    private static final String ADAPTER_NAME = GooglePlayServicesRewardedVideo.class.getSimpleName();
 
     private static VungleRouter sVungleRouter;
     private VungleRewardedRouterListener mVungleRewardedRouterListener;
@@ -92,8 +101,11 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
         mIsPlaying = false;
 
         if (!validateIdsInServerExtras(serverExtras)) {
-            MoPubRewardedVideoManager.onRewardedVideoLoadFailure(VungleRewardedVideo.class, mPlacementId, MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+            MoPubRewardedVideoManager.onRewardedVideoLoadFailure(VungleRewardedVideo.class, mPlacementId, MoPubErrorCode.NETWORK_NO_FILL);
 
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
             return;
         }
 
@@ -109,9 +121,16 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
 
         if (sVungleRouter.isVungleInitialized()) {
             sVungleRouter.loadAdForPlacement(mPlacementId, mVungleRewardedRouterListener);
+
+            MoPubLog.log(getAdNetworkId(), LOAD_ATTEMPTED, ADAPTER_NAME);
         } else {
-            MoPubLog.d(REWARDED_TAG + "There should not be this case. loadWithSdkInitialized is called before the SDK starts initialization for Placement ID: " + mPlacementId);
-            MoPubRewardedVideoManager.onRewardedVideoLoadFailure(VungleRewardedVideo.class, mPlacementId, MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+            MoPubLog.log(CUSTOM, "There should not be this case. loadWithSdkInitialized is " +
+                    "called before the SDK starts initialization for Placement ID: " + mPlacementId);
+            MoPubRewardedVideoManager.onRewardedVideoLoadFailure(VungleRewardedVideo.class, mPlacementId, MoPubErrorCode.NETWORK_NO_FILL);
+
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
         }
     }
 
@@ -122,6 +141,8 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
 
     @Override
     protected void showVideo() {
+        MoPubLog.log(SHOW_ATTEMPTED, ADAPTER_NAME);
+
         final AdConfig adConfig = new AdConfig();
         setUpMediationSettingsForRequest(adConfig);
 
@@ -131,7 +152,7 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
 
     @Override
     protected void onInvalidate() {
-        MoPubLog.d(REWARDED_TAG + "onInvalidate is called for Placement ID:" + mPlacementId);
+        MoPubLog.log(CUSTOM, "onInvalidate is called for Placement ID:" + mPlacementId);
 
         sVungleRouter.removeRouterListener(mPlacementId);
         mVungleRewardedRouterListener = null;
@@ -145,22 +166,22 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
         if (serverExtras.containsKey(APP_ID_KEY)) {
             mAppId = serverExtras.get(APP_ID_KEY);
             if (mAppId.isEmpty()) {
-                MoPubLog.w(REWARDED_TAG + "App ID is empty.");
+                MoPubLog.log(CUSTOM, "App ID is empty.");
                 isAllDataValid = false;
             }
         } else {
-            MoPubLog.w(REWARDED_TAG + "AppID is not in serverExtras.");
+            MoPubLog.log(CUSTOM, "AppID is not in serverExtras.");
             isAllDataValid = false;
         }
 
         if (serverExtras.containsKey(PLACEMENT_ID_KEY)) {
             mPlacementId = serverExtras.get(PLACEMENT_ID_KEY);
             if (mPlacementId.isEmpty()) {
-                MoPubLog.w(REWARDED_TAG + "Placement ID for this Ad Unit is empty.");
+                MoPubLog.log(CUSTOM, "Placement ID for this Ad Unit is empty.");
                 isAllDataValid = false;
             }
         } else {
-            MoPubLog.w(REWARDED_TAG + "Placement ID for this Ad Unit is not in serverExtras.");
+            MoPubLog.log(CUSTOM, "Placement ID for this Ad Unit is not in serverExtras.");
             isAllDataValid = false;
         }
 
@@ -204,11 +225,15 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
         @Override
         public void onAdEnd(@NonNull String placementReferenceId, final boolean wasSuccessfulView, final boolean wasCallToActionClicked) {
             if (mPlacementId.equals(placementReferenceId)) {
-                MoPubLog.d(REWARDED_TAG + "onAdEnd - Placement ID: " + placementReferenceId + ", wasSuccessfulView: " + wasSuccessfulView + ", wasCallToActionClicked: " + wasCallToActionClicked);
+                MoPubLog.log(CUSTOM, "onAdEnd - Placement ID: " + placementReferenceId +
+                        ", wasSuccessfulView: " + wasSuccessfulView + ", wasCallToActionClicked: "
+                        + wasCallToActionClicked);
 
                 mIsPlaying = false;
 
                 if (wasSuccessfulView) {
+                    MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME);
+
                     // Vungle does not provide a callback when a user should be rewarded.
                     // You will need to provide your own reward logic if you receive a reward with
                     // "NO_REWARD_LABEL" && "NO_REWARD_AMOUNT"
@@ -221,6 +246,8 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
                 if (wasCallToActionClicked) {
                     MoPubRewardedVideoManager.onRewardedVideoClicked(VungleRewardedVideo.class,
                             mPlacementId);
+
+                    MoPubLog.log(CLICKED, ADAPTER_NAME);
                 }
 
                 MoPubRewardedVideoManager.onRewardedVideoClosed(VungleRewardedVideo.class,
@@ -233,23 +260,30 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
         @Override
         public void onAdStart(@NonNull String placementReferenceId) {
             if (mPlacementId.equals(placementReferenceId)) {
-                MoPubLog.d(REWARDED_TAG + "onAdStart - Placement ID: " + placementReferenceId);
+
+                MoPubLog.log(CUSTOM, "onAdStart - Placement ID: " + placementReferenceId);
 
                 mIsPlaying = true;
 
                 MoPubRewardedVideoManager.onRewardedVideoStarted(VungleRewardedVideo.class,
                         mPlacementId);
+
+                MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
             }
         }
 
         @Override
         public void onUnableToPlayAd(@NonNull String placementReferenceId, String reason) {
             if (mPlacementId.equals(placementReferenceId)) {
-                MoPubLog.d(REWARDED_TAG + "onUnableToPlayAd - Placement ID: " + placementReferenceId + ", reason: " + reason);
+                MoPubLog.log(CUSTOM, "onUnableToPlayAd - Placement ID: " +
+                        placementReferenceId + ", reason: " + reason);
 
                 mIsPlaying = false;
                 MoPubRewardedVideoManager.onRewardedVideoLoadFailure(VungleRewardedVideo.class,
                         mPlacementId, MoPubErrorCode.NETWORK_NO_FILL);
+
+                MoPubLog.log(LOAD_FAILED, MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                        MoPubErrorCode.NETWORK_NO_FILL);
             }
         }
 
@@ -258,13 +292,21 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
             if (mPlacementId.equals(placementReferenceId)) {
                 if (!mIsPlaying) {
                     if (isAdAvailable) {
-                        MoPubLog.d(REWARDED_TAG + "rewarded video ad successfully loaded - Placement ID: " + placementReferenceId);
+                        MoPubLog.log(CUSTOM, "rewarded video ad successfully loaded - " +
+                                "Placement ID: " + placementReferenceId);
                         MoPubRewardedVideoManager.onRewardedVideoLoadSuccess(VungleRewardedVideo.class,
                                 mPlacementId);
+
+                        MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
                     } else {
-                        MoPubLog.d(REWARDED_TAG + "rewarded video ad is not loaded - Placement ID: " + placementReferenceId);
+                        MoPubLog.log(CUSTOM, "rewarded video ad is not loaded - " +
+                                "Placement ID: " + placementReferenceId);
                         MoPubRewardedVideoManager.onRewardedVideoLoadFailure(VungleRewardedVideo.class,
                                 mPlacementId, MoPubErrorCode.NETWORK_NO_FILL);
+
+                        MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                                MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                                MoPubErrorCode.NETWORK_NO_FILL);
                     }
                 }
             }

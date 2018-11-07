@@ -10,19 +10,26 @@ import com.vungle.warren.AdConfig;
 
 import java.util.Map;
 
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_FAILED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
+
 /**
  * A custom event for showing Vungle Interstitial.
  */
 public class VungleInterstitial extends CustomEventInterstitial {
-
-    private static final String INTERSTITIAL_TAG = "Vungle Interstitial: ";
 
     /*
      * APP_ID_KEY is intended for MoPub internal use. Do not modify.
      */
     public static final String APP_ID_KEY = "appId";
     public static final String PLACEMENT_ID_KEY = "pid";
-    public static final String PLACEMENT_IDS_KEY = "pids";
+    public static final String ADAPTER_NAME = VungleInterstitial.class.getSimpleName();
 
     /*
      * These keys can be used with MoPubInterstitial.setLocalExtras()
@@ -49,9 +56,9 @@ public class VungleInterstitial extends CustomEventInterstitial {
 
     @Override
     protected void loadInterstitial(Context context,
-            CustomEventInterstitialListener customEventInterstitialListener,
-            Map<String, Object> localExtras,
-            Map<String, String> serverExtras) {
+                                    CustomEventInterstitialListener customEventInterstitialListener,
+                                    Map<String, Object> localExtras,
+                                    Map<String, String> serverExtras) {
         mCustomEventInterstitialListener = customEventInterstitialListener;
         mIsPlaying = false;
 
@@ -59,7 +66,11 @@ public class VungleInterstitial extends CustomEventInterstitial {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_INVALID_STATE);
+                    mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
+
+                    MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                            MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                            MoPubErrorCode.NETWORK_NO_FILL);
                 }
             });
 
@@ -70,7 +81,11 @@ public class VungleInterstitial extends CustomEventInterstitial {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+                    mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
+
+                    MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                            MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                            MoPubErrorCode.NETWORK_NO_FILL);
                 }
             });
 
@@ -100,22 +115,31 @@ public class VungleInterstitial extends CustomEventInterstitial {
         }
 
         sVungleRouter.loadAdForPlacement(mPlacementId, mVungleRouterListener);
+        MoPubLog.log(mPlacementId, LOAD_ATTEMPTED, ADAPTER_NAME);
     }
 
     @Override
     protected void showInterstitial() {
+        MoPubLog.log(SHOW_ATTEMPTED, ADAPTER_NAME);
+
         if (sVungleRouter.isAdPlayableForPlacement(mPlacementId)) {
+
             sVungleRouter.playAdForPlacement(mPlacementId, mAdConfig);
             mIsPlaying = true;
         } else {
-            MoPubLog.d(INTERSTITIAL_TAG + "SDK tried to show a Vungle interstitial ad before it finished loading. Please try again.");
+            MoPubLog.log(CUSTOM, "SDK tried to show a Vungle interstitial ad before it " +
+                    "finished loading. Please try again.");
             mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
+
+            MoPubLog.log(SHOW_FAILED, ADAPTER_NAME,
+                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
         }
     }
 
     @Override
     protected void onInvalidate() {
-        MoPubLog.d(INTERSTITIAL_TAG + "onInvalidate is called for Placement ID:" + mPlacementId);
+        MoPubLog.log(CUSTOM, "onInvalidate is called for Placement ID:" + mPlacementId);
         sVungleRouter.removeRouterListener(mPlacementId);
         mVungleRouterListener = null;
         mAdConfig = null;
@@ -128,28 +152,27 @@ public class VungleInterstitial extends CustomEventInterstitial {
         if (serverExtras.containsKey(APP_ID_KEY)) {
             mAppId = serverExtras.get(APP_ID_KEY);
             if (mAppId.isEmpty()) {
-                MoPubLog.w(INTERSTITIAL_TAG + "App ID is empty.");
+                MoPubLog.log(CUSTOM, "App ID is empty.");
                 isAllDataValid = false;
             }
         } else {
-            MoPubLog.w(INTERSTITIAL_TAG + "AppID is not in serverExtras.");
+            MoPubLog.log(CUSTOM, "AppID is not in serverExtras.");
             isAllDataValid = false;
         }
 
         if (serverExtras.containsKey(PLACEMENT_ID_KEY)) {
             mPlacementId = serverExtras.get(PLACEMENT_ID_KEY);
             if (mPlacementId.isEmpty()) {
-                MoPubLog.w(INTERSTITIAL_TAG + "Placement ID for this Ad Unit is empty.");
+                MoPubLog.log(CUSTOM, "Placement ID for this Ad Unit is empty.");
                 isAllDataValid = false;
             }
         } else {
-            MoPubLog.w(INTERSTITIAL_TAG + "Placement ID for this Ad Unit is not in serverExtras.");
+            MoPubLog.log(CUSTOM, "Placement ID for this Ad Unit is not in serverExtras.");
             isAllDataValid = false;
         }
 
         return isAllDataValid;
     }
-
 
     /*
      * VungleRouterListener
@@ -157,8 +180,12 @@ public class VungleInterstitial extends CustomEventInterstitial {
     private class VungleInterstitialRouterListener implements VungleRouterListener {
         @Override
         public void onAdEnd(@NonNull String placementReferenceId, final boolean wasSuccessfulView, final boolean wasCallToActionClicked) {
+
             if (mPlacementId.equals(placementReferenceId)) {
-                MoPubLog.d(INTERSTITIAL_TAG + "onAdEnd - Placement ID: " + placementReferenceId + ", wasSuccessfulView: " + wasSuccessfulView + ", wasCallToActionClicked: " + wasCallToActionClicked);
+                MoPubLog.log(CUSTOM, "onAdEnd - Placement ID: " + placementReferenceId +
+                        ", wasSuccessfulView: " + wasSuccessfulView + ", wasCallToActionClicked: "
+                        + wasCallToActionClicked);
+
                 mIsPlaying = false;
 
                 mHandler.post(new Runnable() {
@@ -166,11 +193,12 @@ public class VungleInterstitial extends CustomEventInterstitial {
                     public void run() {
                         if (wasCallToActionClicked) {
                             mCustomEventInterstitialListener.onInterstitialClicked();
+
+                            MoPubLog.log(CLICKED, ADAPTER_NAME);
                         }
                         mCustomEventInterstitialListener.onInterstitialDismissed();
                     }
                 });
-
                 sVungleRouter.removeRouterListener(mPlacementId);
             }
         }
@@ -178,13 +206,16 @@ public class VungleInterstitial extends CustomEventInterstitial {
         @Override
         public void onAdStart(@NonNull String placementReferenceId) {
             if (mPlacementId.equals(placementReferenceId)) {
-                MoPubLog.d(INTERSTITIAL_TAG + "onAdStart - Placement ID: " + placementReferenceId);
+                MoPubLog.log(CUSTOM, "onAdStart - Placement ID: " + placementReferenceId);
+
                 mIsPlaying = true;
 
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         mCustomEventInterstitialListener.onInterstitialShown();
+
+                        MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
                     }
                 });
             }
@@ -193,13 +224,18 @@ public class VungleInterstitial extends CustomEventInterstitial {
         @Override
         public void onUnableToPlayAd(@NonNull String placementReferenceId, String reason) {
             if (mPlacementId.equals(placementReferenceId)) {
-                MoPubLog.d(INTERSTITIAL_TAG + "onUnableToPlayAd - Placement ID: " + placementReferenceId + ", reason: " + reason);
+                MoPubLog.log(CUSTOM, "onUnableToPlayAd - Placement ID: " +
+                        placementReferenceId + ", reason: " + reason);
                 mIsPlaying = false;
 
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
+
+                        MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                                MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                                MoPubErrorCode.NETWORK_NO_FILL);
                     }
                 });
             }
@@ -210,21 +246,28 @@ public class VungleInterstitial extends CustomEventInterstitial {
             if (mPlacementId.equals(placementReferenceId)) {
                 if (!mIsPlaying) {
                     if (isAdAvailable) {
-                        MoPubLog.d(INTERSTITIAL_TAG + "interstitial ad successfully loaded - Placement ID: " + placementReferenceId);
+                        MoPubLog.log(CUSTOM, "interstitial ad successfully loaded - " +
+                                "Placement ID: " + placementReferenceId);
 
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
                                 mCustomEventInterstitialListener.onInterstitialLoaded();
+                                MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
                             }
                         });
                     } else {
-                        MoPubLog.d(INTERSTITIAL_TAG + "interstitial ad is not loaded - Placement ID: " + placementReferenceId);
+                        MoPubLog.log(CUSTOM, "interstitial ad is not loaded - Placement ID: "
+                                + placementReferenceId);
 
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
                                 mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
+
+                                MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                                        MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                                        MoPubErrorCode.NETWORK_NO_FILL);
                             }
                         });
                     }
