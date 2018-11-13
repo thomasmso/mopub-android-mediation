@@ -235,7 +235,7 @@ public class GooglePlayServicesRewardedVideo extends CustomEventRewardedVideo im
             MoPubRewardedVideoManager.onRewardedVideoPlaybackError(
                     GooglePlayServicesRewardedVideo.class,
                     getAdNetworkId(),
-                    getMoPubErrorCode(AdRequest.NETWORK_NO_FILL));
+                    getMoPubErrorCode(AdRequest.ERROR_CODE_NO_FILL));
         }
     }
 
