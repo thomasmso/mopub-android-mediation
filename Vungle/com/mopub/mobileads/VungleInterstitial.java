@@ -29,6 +29,7 @@ public class VungleInterstitial extends CustomEventInterstitial {
      */
     public static final String APP_ID_KEY = "appId";
     public static final String PLACEMENT_ID_KEY = "pid";
+    public static final String PLACEMENT_IDS_KEY = "pids";
     public static final String ADAPTER_NAME = VungleInterstitial.class.getSimpleName();
 
     /*
@@ -169,6 +170,12 @@ public class VungleInterstitial extends CustomEventInterstitial {
         } else {
             MoPubLog.log(CUSTOM, "Placement ID for this Ad Unit is not in serverExtras.");
             isAllDataValid = false;
+        }
+
+        if (serverExtras.containsKey(PLACEMENT_IDS_KEY)) {
+            MoPubLog.log(CUSTOM + "No need to set placement IDs " +
+                    "in MoPub dashboard with Vungle SDK version " +
+                    com.vungle.warren.BuildConfig.VERSION_NAME);
         }
 
         return isAllDataValid;

@@ -25,7 +25,7 @@ import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THRO
 public class VungleRouter {
 
     // Version of the adapter, intended for Vungle internal use.
-    private static final String VERSION = "6.3.0";
+    private static final String VERSION = "6.3.24";
 
     private static VungleRouter instance = new VungleRouter();
 
@@ -129,8 +129,12 @@ public class VungleRouter {
                 break;
 
             case INITIALIZED:
-                addRouterListener(placementId, routerListener);
-                Vungle.loadAd(placementId, loadAdCallback);
+                if (isValidPlacement(placementId)) {
+                    addRouterListener(placementId, routerListener);
+                    Vungle.loadAd(placementId, loadAdCallback);
+                } else {
+                    routerListener.onUnableToPlayAd(placementId, "Invalid/Inactive Placement Id");
+                }
                 break;
         }
     }
@@ -154,6 +158,17 @@ public class VungleRouter {
             MoPubLog.log(CUSTOM, "There should not be this case. playAdForPlacement is called " +
                     "before an ad is loaded for Placement ID: " + placementId);
         }
+    }
+
+    /**
+     * Checks and returns if the passed Placement ID is a valid placement for App ID
+     *
+     * @param placementId
+     * @return
+     */
+    public boolean isValidPlacement(String placementId) {
+        return Vungle.isInitialized() &&
+                Vungle.getValidPlacements().contains(placementId);
     }
 
     public void updateConsentStatus(Vungle.Consent status) {

@@ -120,8 +120,16 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
         }
 
         if (sVungleRouter.isVungleInitialized()) {
-            sVungleRouter.loadAdForPlacement(mPlacementId, mVungleRewardedRouterListener);
+            if (sVungleRouter.isValidPlacement(mPlacementId)) {
+                sVungleRouter.loadAdForPlacement(mPlacementId, mVungleRewardedRouterListener);
+            } else {
+                MoPubLog.log(CUSTOM, "Invalid or Inactive Placement ID: " + mPlacementId);
+                MoPubRewardedVideoManager.onRewardedVideoLoadFailure(VungleRewardedVideo.class, mPlacementId, MoPubErrorCode.NETWORK_NO_FILL);
 
+                MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                        MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                        MoPubErrorCode.NETWORK_NO_FILL);
+            }
             MoPubLog.log(getAdNetworkId(), LOAD_ATTEMPTED, ADAPTER_NAME);
         } else {
             MoPubLog.log(CUSTOM, "There should not be this case. loadWithSdkInitialized is " +
