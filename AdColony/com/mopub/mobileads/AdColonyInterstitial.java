@@ -59,9 +59,11 @@ public class AdColonyInterstitial extends CustomEventInterstitial {
     private final Handler mHandler;
     private com.adcolony.sdk.AdColonyInterstitial mAdColonyInterstitial;
     private static String[] previousAdColonyAllZoneIds;
+    @NonNull private AdColonyAdapterConfiguration mAdColonyAdapterConfiguration;
 
     public AdColonyInterstitial() {
         mHandler = new Handler();
+        mAdColonyAdapterConfiguration = new AdColonyAdapterConfiguration();
     }
 
     @Override
@@ -87,6 +89,7 @@ public class AdColonyInterstitial extends CustomEventInterstitial {
             appId = serverExtras.get(APP_ID_KEY);
             allZoneIds = extractAllZoneIds(serverExtras);
             zoneId = serverExtras.get(ZONE_ID_KEY);
+            mAdColonyAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
         }
         AdColonyAppOptions mAdColonyAppOptions = AdColonyAppOptions.getMoPubAppOptions(clientOptions);
         // Pass the user consent from the MoPub SDK to AdColony as per GDPR

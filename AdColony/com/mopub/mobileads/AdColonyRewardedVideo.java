@@ -69,6 +69,7 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
     private static boolean sInitialized = false;
     private static LifecycleListener sLifecycleListener = new BaseLifecycleListener();
     private static String[] previousAdColonyAllZoneIds;
+    @NonNull private AdColonyAdapterConfiguration mAdColonyAdapterConfiguration;
 
     AdColonyInterstitial mAd;
     @NonNull
@@ -88,6 +89,7 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
     public AdColonyRewardedVideo() {
         mScheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
         mHandler = new Handler();
+        mAdColonyAdapterConfiguration = new AdColonyAdapterConfiguration();
     }
 
     @Nullable
@@ -156,8 +158,9 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
     protected void loadWithSdkInitialized(@NonNull final Activity activity,
                                           @NonNull final Map<String, Object> localExtras,
                                           @NonNull final Map<String, String> serverExtras) throws Exception {
-                                          
+
         if (extrasAreValid(serverExtras)) {
+            mAdColonyAdapterConfiguration.setCachedInitializationParameters(activity, serverExtras);
             mZoneId = serverExtras.get(ZONE_ID_KEY);
             String adColonyClientOptions = serverExtras.get(CLIENT_OPTIONS_KEY);
             String adColonyAppId = serverExtras.get(APP_ID_KEY);
