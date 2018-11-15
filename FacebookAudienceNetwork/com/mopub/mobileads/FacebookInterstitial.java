@@ -15,18 +15,17 @@ import com.mopub.common.DataKeys;
 import com.mopub.common.MoPub;
 import com.mopub.common.logging.MoPubLog;
 
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_FAILED;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
-
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_FAILED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
 import static com.mopub.mobileads.MoPubErrorCode.EXPIRED;
 
 public class FacebookInterstitial extends CustomEventInterstitial implements InterstitialAdListener {
@@ -42,6 +41,7 @@ public class FacebookInterstitial extends CustomEventInterstitial implements Int
 
     public FacebookInterstitial() {
         mHandler = new Handler();
+
         mAdExpiration = new Runnable() {
             @Override
             public void run() {
@@ -67,9 +67,10 @@ public class FacebookInterstitial extends CustomEventInterstitial implements Int
                                     final CustomEventInterstitialListener customEventInterstitialListener,
                                     final Map<String, Object> localExtras,
                                     final Map<String, String> serverExtras) {
-        if(!sIsInitialized.getAndSet(true)) {
+        if (!sIsInitialized.getAndSet(true)) {
             AudienceNetworkAds.initialize(context);
         }
+
         setAutomaticImpressionAndClickTracking(false);
 
         mInterstitialListener = customEventInterstitialListener;

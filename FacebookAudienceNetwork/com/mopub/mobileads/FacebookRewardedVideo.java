@@ -18,19 +18,18 @@ import com.mopub.common.MoPub;
 import com.mopub.common.MoPubReward;
 import com.mopub.common.logging.MoPubLog;
 
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOULD_REWARD;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_FAILED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
-
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import static com.mopub.mobileads.MoPubErrorCode.EXPIRED;
 
 public class FacebookRewardedVideo extends CustomEventRewardedVideo implements RewardedVideoAdListener {
@@ -48,6 +47,7 @@ public class FacebookRewardedVideo extends CustomEventRewardedVideo implements R
 
     public FacebookRewardedVideo() {
         mHandler = new Handler();
+
         mAdExpiration = new Runnable() {
             @Override
             public void run() {
@@ -73,7 +73,7 @@ public class FacebookRewardedVideo extends CustomEventRewardedVideo implements R
     @Override
     protected boolean checkAndInitializeSdk(@NonNull Activity launcherActivity, @NonNull Map<String, Object> localExtras, @NonNull Map<String, String> serverExtras) throws Exception {
         boolean requiresInitialization = !sIsInitialized.getAndSet(true);
-        if(requiresInitialization) {
+        if (requiresInitialization) {
             AudienceNetworkAds.initialize(launcherActivity);
         }
         return requiresInitialization;
@@ -100,13 +100,13 @@ public class FacebookRewardedVideo extends CustomEventRewardedVideo implements R
             }
         }
 
-        if (mRewardedVideoAd.isAdLoaded()) {
-            MoPubRewardedVideoManager.onRewardedVideoLoadSuccess(FacebookRewardedVideo.class, mPlacementId);
-            MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
-            return;
-        }
-
         if (mRewardedVideoAd != null) {
+            if (mRewardedVideoAd.isAdLoaded()) {
+                MoPubRewardedVideoManager.onRewardedVideoLoadSuccess(FacebookRewardedVideo.class, mPlacementId);
+                MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
+                return;
+            }
+
             AdSettings.setMediationService("MOPUB_" + MoPub.SDK_VERSION);
 
             final String adm = serverExtras.get(DataKeys.ADM_KEY);
@@ -117,6 +117,7 @@ public class FacebookRewardedVideo extends CustomEventRewardedVideo implements R
                 mRewardedVideoAd.loadAd();
                 MoPubLog.log(mPlacementId, LOAD_ATTEMPTED, ADAPTER_NAME);
             }
+
         }
     }
 

@@ -17,6 +17,9 @@ import com.mopub.common.MoPub;
 import com.mopub.common.logging.MoPubLog;
 import com.mopub.common.util.Views;
 
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
@@ -24,9 +27,6 @@ import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
-
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FacebookBanner extends CustomEventBanner implements AdListener {
     private static final String PLACEMENT_ID_KEY = "placement_id";
@@ -44,9 +44,10 @@ public class FacebookBanner extends CustomEventBanner implements AdListener {
                               final CustomEventBannerListener customEventBannerListener,
                               final Map<String, Object> localExtras,
                               final Map<String, String> serverExtras) {
-        if(!sIsInitialized.getAndSet(true)) {
+        if (!sIsInitialized.getAndSet(true)) {
             AudienceNetworkAds.initialize(context);
         }
+
         setAutomaticImpressionAndClickTracking(false);
 
         mBannerListener = customEventBannerListener;

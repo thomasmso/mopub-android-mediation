@@ -16,18 +16,18 @@ import com.mopub.common.DataKeys;
 import com.mopub.common.Preconditions;
 import com.mopub.common.logging.MoPubLog;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * FacebookAdRenderer is also necessary in order to show video ads.
@@ -47,7 +47,7 @@ public class FacebookNative extends CustomEventNative {
                                 final Map<String, Object> localExtras,
                                 final Map<String, String> serverExtras) {
 
-        if(!sIsInitialized.getAndSet(true)) {
+        if (!sIsInitialized.getAndSet(true)) {
             AudienceNetworkAds.initialize(context);
         }
         final String placementId;
