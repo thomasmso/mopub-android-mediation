@@ -28,22 +28,23 @@ public class UnityRouter {
         // Pass the user consent from the MoPub SDK to Unity Ads as per GDPR
         PersonalInfoManager personalInfoManager = MoPub.getPersonalInformationManager();
 
-        if (personalInfoManager != null) {
-            ConsentStatus consentStatus = personalInfoManager.getPersonalInfoConsentStatus();
+        boolean canCollectPersonalInfo = MoPub.canCollectPersonalInformation();
+        boolean shouldAllowLegitimateInterest = MoPub.shouldAllowLegitimateInterest();
 
-            if(consentStatus == ConsentStatus.EXPLICIT_YES || consentStatus == ConsentStatus.EXPLICIT_NO) {
-                MetaData gdprMetaData = new MetaData(launcherActivity.getApplicationContext());
+        if (personalInfoManager != null && personalInfoManager.gdprApplies() == Boolean.TRUE) {
+            MetaData gdprMetaData = new MetaData(launcherActivity.getApplicationContext());
 
-                // Set if the user has explicitly said yes or no
-                if(consentStatus == ConsentStatus.EXPLICIT_YES) {
+            if (shouldAllowLegitimateInterest) {
+                if (personalInfoManager.getPersonalInfoConsentStatus() == ConsentStatus.EXPLICIT_NO
+                        || personalInfoManager.getPersonalInfoConsentStatus() == ConsentStatus.DNT) {
+                    gdprMetaData.set("gdpr.consent", false);
+                } else {
                     gdprMetaData.set("gdpr.consent", true);
                 }
-                else {
-                    gdprMetaData.set("gdpr.consent", false);
-                }
-                
-                gdprMetaData.commit();
+            } else {
+                gdprMetaData.set("gdpr.consent", canCollectPersonalInfo);
             }
+            gdprMetaData.commit();
         }
 
         String gameId = serverExtras.get(GAME_ID_KEY);
