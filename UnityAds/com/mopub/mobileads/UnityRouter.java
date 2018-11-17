@@ -15,6 +15,9 @@ import com.unity3d.ads.metadata.MetaData;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
+
 public class UnityRouter {
     private static String sCurrentPlacementId;
     private static final String GAME_ID_KEY = "gameId";
@@ -22,6 +25,7 @@ public class UnityRouter {
     private static final String PLACEMENT_ID_KEY = "placementId";
     private static final UnityAdsListener sUnityAdsListener = new UnityAdsListener();
     private static Map<String, IUnityAdsExtendedListener> mUnityAdsListeners = new HashMap<>();
+    private static final String ADAPTER_NAME = UnityRouter.class.getSimpleName();
 
     static boolean initUnityAds(Map<String, String> serverExtras, Activity launcherActivity) {
 
@@ -49,7 +53,7 @@ public class UnityRouter {
 
         String gameId = serverExtras.get(GAME_ID_KEY);
         if (gameId == null || gameId.isEmpty()) {
-            MoPubLog.e("gameId is missing or entered incorrectly in the MoPub UI");
+            MoPubLog.log(CUSTOM, "gameId is missing or entered incorrectly in the MoPub UI");
             return false;
         }
 
@@ -59,6 +63,8 @@ public class UnityRouter {
         mediationMetaData.commit();
 
         UnityAds.initialize(launcherActivity, gameId, sUnityAdsListener);
+        MoPubLog.log(gameId, LOAD_ATTEMPTED, ADAPTER_NAME);
+
         return true;
     }
 
