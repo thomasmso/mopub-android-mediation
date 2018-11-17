@@ -56,23 +56,18 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
                                          @NonNull final Map<String, Object> localExtras,
                                          @NonNull final Map<String, String> serverExtras) throws Exception {
         synchronized (UnityRewardedVideo.class) {
+            sPlacementId = UnityRouter.placementIdForServerExtras(serverExtras, sPlacementId);
             if (UnityAds.isInitialized()) {
                 return false;
             }
 
-            try {
-                UnityRouter.initUnityAds(serverExtras, launcherActivity);
-                UnityRouter.addListener(sPlacementId, sUnityAdsListener);
-            } catch (UnityRouter.UnityAdsException e) {
-                MoPubLog.log(CUSTOM, "Failed to initialize Unity Ads.");
-                MoPubRewardedVideoManager.onRewardedVideoLoadFailure(UnityRewardedVideo.class, sPlacementId, UnityRouter.UnityAdsUtils.getMoPubErrorCode(e.getErrorCode()));
-
-                MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
-                        UnityRouter.UnityAdsUtils.getMoPubErrorCode(e.getErrorCode()).getIntCode(),
-                        UnityRouter.UnityAdsUtils.getMoPubErrorCode(e.getErrorCode()));
+            UnityRouter.getInterstitialRouter().setCurrentPlacementId(sPlacementId);
+			if (UnityRouter.initUnityAds(serverExtras, launcherActivity)) {
+                UnityRouter.getInterstitialRouter().addListener(sPlacementId, sUnityAdsListener);
+                return true;
+            } else {
+                return false;
             }
-
-            return true;
         }
     }
 
@@ -84,15 +79,13 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
         sPlacementId = UnityRouter.placementIdForServerExtras(serverExtras, sPlacementId);
         mLauncherActivity = activity;
 
-        UnityRouter.addListener(sPlacementId, sUnityAdsListener);
         if (hasVideoAvailable()) {
             MoPubRewardedVideoManager.onRewardedVideoLoadSuccess(UnityRewardedVideo.class, sPlacementId);
 
             MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
-        } else if (UnityAds.getPlacementState(sPlacementId) == UnityAds.PlacementState.NO_FILL) {
+        } else if (UnityAds.getPlacementState(sPlacementId) == UnityAds.PlacementState.NO_FILL){
             MoPubRewardedVideoManager.onRewardedVideoLoadFailure(UnityRewardedVideo.class, sPlacementId, MoPubErrorCode.NETWORK_NO_FILL);
-            UnityRouter.removeListener(sPlacementId);
-
+            UnityRouter.getInterstitialRouter().removeListener(sPlacementId);
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                     MoPubErrorCode.NETWORK_NO_FILL);
@@ -122,7 +115,7 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
 
     @Override
     protected void onInvalidate() {
-        UnityRouter.removeListener(sPlacementId);
+        UnityRouter.getInterstitialRouter().removeListener(sPlacementId);
     }
 
     private static final class UnityLifecycleListener extends BaseLifecycleListener {
@@ -189,7 +182,7 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
                 MoPubLog.log(CUSTOM, "Unity ad was skipped, no reward will be given.");
             }
             MoPubRewardedVideoManager.onRewardedVideoClosed(UnityRewardedVideo.class, sPlacementId);
-            UnityRouter.removeListener(placementId);
+            UnityRouter.getInterstitialRouter().removeListener(placementId);
         }
 
         @Override
@@ -205,13 +198,14 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
         // @Override
         public void onUnityAdsPlacementStateChanged(String placementId, UnityAds.PlacementState oldState, UnityAds.PlacementState newState) {
             if (placementId.equals(sPlacementId)) {
-                if (newState == UnityAds.PlacementState.NO_FILL) {
+                if(newState == UnityAds.PlacementState.NO_FILL) {
                     MoPubRewardedVideoManager.onRewardedVideoLoadFailure(UnityRewardedVideo.class, sPlacementId, MoPubErrorCode.NETWORK_NO_FILL);
-                    UnityRouter.removeListener(sPlacementId);
 
                     MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
                             MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                             MoPubErrorCode.NETWORK_NO_FILL);
+
+                    UnityRouter.getInterstitialRouter().removeListener(sPlacementId);
                 }
             }
         }

@@ -37,28 +37,22 @@ public class UnityInterstitial extends CustomEventInterstitial implements IUnity
         mContext = context;
         loadRequested = true;
 
-        try {
-            UnityRouter.addListener(mPlacementId, this);
-            initializeUnityAdsSdk(serverExtras);
-            if (UnityAds.isReady(mPlacementId)) {
-                mCustomEventInterstitialListener.onInterstitialLoaded();
-                loadRequested = false;
+        UnityRouter.getInterstitialRouter().addListener(mPlacementId, this);
+        UnityRouter.getInterstitialRouter().setCurrentPlacementId(mPlacementId);
+        initializeUnityAdsSdk(serverExtras);
+            
+        if (UnityAds.isReady(mPlacementId)) {
+            mCustomEventInterstitialListener.onInterstitialLoaded();
+            loadRequested = false;
 
-                MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
-            } else if (UnityAds.getPlacementState(mPlacementId) == UnityAds.PlacementState.NO_FILL) {
-                mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
-                UnityRouter.removeListener(mPlacementId);
-
-                MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
-                        MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
-                        MoPubErrorCode.NETWORK_NO_FILL);
-            }
-        } catch (UnityRouter.UnityAdsException e) {
-            mCustomEventInterstitialListener.onInterstitialFailed(UnityRouter.UnityAdsUtils.getMoPubErrorCode(e.getErrorCode()));
+            MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
+        } else if (UnityAds.getPlacementState(mPlacementId) == UnityAds.PlacementState.NO_FILL) {
+            mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
+            UnityRouter.getInterstitialRouter().removeListener(mPlacementId);
 
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
-                    UnityRouter.UnityAdsUtils.getMoPubErrorCode(e.getErrorCode()).getIntCode(),
-                    UnityRouter.UnityAdsUtils.getMoPubErrorCode(e.getErrorCode()));
+                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                    MoPubErrorCode.NETWORK_NO_FILL);
         }
     }
 
@@ -90,12 +84,13 @@ public class UnityInterstitial extends CustomEventInterstitial implements IUnity
 
     @Override
     protected void onInvalidate() {
-        UnityRouter.removeListener(mPlacementId);
+        UnityRouter.getInterstitialRouter().removeListener(mPlacementId);
+        mCustomEventInterstitialListener = null;
     }
 
     @Override
     public void onUnityAdsReady(String placementId) {
-        if (loadRequested) {
+        if (loadRequested && mCustomEventInterstitialListener != null) {
             mCustomEventInterstitialListener.onInterstitialLoaded();
             loadRequested = false;
 
@@ -105,31 +100,37 @@ public class UnityInterstitial extends CustomEventInterstitial implements IUnity
 
     @Override
     public void onUnityAdsStart(String placementId) {
-        mCustomEventInterstitialListener.onInterstitialShown();
+        if (mCustomEventInterstitialListener != null) {
+            mCustomEventInterstitialListener.onInterstitialShown();
+        }
 
         MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
     }
 
     @Override
     public void onUnityAdsFinish(String placementId, UnityAds.FinishState finishState) {
-        if (finishState == UnityAds.FinishState.ERROR) {
-            MoPubLog.log(CUSTOM, "Unity interstitial video encountered a playback error for " +
-                    "placement " + placementId);
-            mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
+        if (mCustomEventInterstitialListener != null) {
+            if (finishState == UnityAds.FinishState.ERROR) {
+                MoPubLog.log(CUSTOM, "Unity interstitial video encountered a playback error for " +
+                        "placement " + placementId);
+                mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
 
-            MoPubLog.log(SHOW_FAILED, ADAPTER_NAME,
-                    MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
-                    MoPubErrorCode.NETWORK_NO_FILL);
-        } else {
-            MoPubLog.log(CUSTOM, "Unity interstitial video completed for placement " + placementId);
-            mCustomEventInterstitialListener.onInterstitialDismissed();
+                MoPubLog.log(SHOW_FAILED, ADAPTER_NAME,
+                        MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
+                        MoPubErrorCode.NETWORK_NO_FILL);
+            } else {
+                MoPubLog.log(CUSTOM, "Unity interstitial video completed for placement " + placementId);
+                mCustomEventInterstitialListener.onInterstitialDismissed();
+            }
         }
-        UnityRouter.removeListener(placementId);
+        UnityRouter.getInterstitialRouter().removeListener(placementId);
     }
 
     @Override
     public void onUnityAdsClick(String placementId) {
-        mCustomEventInterstitialListener.onInterstitialClicked();
+        if (mCustomEventInterstitialListener != null) {
+            mCustomEventInterstitialListener.onInterstitialClicked();
+        }
 
         MoPubLog.log(CLICKED, ADAPTER_NAME);
     }
@@ -137,10 +138,10 @@ public class UnityInterstitial extends CustomEventInterstitial implements IUnity
 
     // @Override
     public void onUnityAdsPlacementStateChanged(String placementId, UnityAds.PlacementState oldState, UnityAds.PlacementState newState) {
-        if (placementId.equals(mPlacementId)) {
+        if (placementId.equals(mPlacementId) && mCustomEventInterstitialListener != null) {
             if (newState == UnityAds.PlacementState.NO_FILL) {
                 mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
-                UnityRouter.removeListener(mPlacementId);
+                UnityRouter.getInterstitialRouter().removeListener(mPlacementId);
 
                 MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
                         MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
@@ -151,13 +152,16 @@ public class UnityInterstitial extends CustomEventInterstitial implements IUnity
 
     @Override
     public void onUnityAdsError(UnityAds.UnityAdsError unityAdsError, String message) {
-        MoPubLog.log(CUSTOM, "Unity interstitial video cache failed for placement " +
-                mPlacementId + ".");
-        MoPubErrorCode errorCode = UnityRouter.UnityAdsUtils.getMoPubErrorCode(unityAdsError);
-        mCustomEventInterstitialListener.onInterstitialFailed(errorCode);
+        
+        if (mCustomEventInterstitialListener != null) {
+            MoPubLog.log(CUSTOM, "Unity interstitial video cache failed for placement " +
+                    mPlacementId + ".");
+            MoPubErrorCode errorCode = UnityRouter.UnityAdsUtils.getMoPubErrorCode(unityAdsError);
+            mCustomEventInterstitialListener.onInterstitialFailed(errorCode);
 
-        MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
-                errorCode.getIntCode(),
-                errorCode);
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                    errorCode.getIntCode(),
+                    errorCode);
+        }
     }
 }
