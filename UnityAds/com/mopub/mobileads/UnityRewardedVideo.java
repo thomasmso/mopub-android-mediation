@@ -104,7 +104,7 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
         if (hasVideoAvailable()) {
             UnityAds.show(mLauncherActivity, sPlacementId);
         } else {
-            MoPubLog.log(CUSTOM, "Attempted to show Unity rewarded video before it was " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Attempted to show Unity rewarded video before it was " +
                     "available.");
 
             MoPubLog.log(SHOW_FAILED, ADAPTER_NAME,
@@ -135,7 +135,7 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
         @Override
         public void onUnityAdsReady(String placementId) {
             if (placementId.equals(sPlacementId)) {
-                MoPubLog.log(CUSTOM, "Unity rewarded video cached for placement " +
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unity rewarded video cached for placement " +
                         placementId + ".");
                 MoPubRewardedVideoManager.onRewardedVideoLoadSuccess(UnityRewardedVideo.class, placementId);
 
@@ -146,7 +146,7 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
         @Override
         public void onUnityAdsStart(String placementId) {
             MoPubRewardedVideoManager.onRewardedVideoStarted(UnityRewardedVideo.class, placementId);
-            MoPubLog.log(CUSTOM, "Unity rewarded video started for placement " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unity rewarded video started for placement " +
                     placementId + ".");
 
             MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
@@ -154,7 +154,7 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
 
         @Override
         public void onUnityAdsFinish(String placementId, UnityAds.FinishState finishState) {
-            MoPubLog.log(CUSTOM, "Unity Ad finished with finish state = " + finishState);
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unity Ad finished with finish state = " + finishState);
 
             if (finishState == UnityAds.FinishState.ERROR) {
                 MoPubRewardedVideoManager.onRewardedVideoPlaybackError(
@@ -162,7 +162,7 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
                         sPlacementId,
                         MoPubErrorCode.NETWORK_NO_FILL);
 
-                MoPubLog.log(CUSTOM, "Unity rewarded video encountered a playback error for " +
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unity rewarded video encountered a playback error for " +
                         "placement " + placementId);
 
                 MoPubLog.log(SHOW_FAILED, ADAPTER_NAME,
@@ -176,10 +176,10 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
                         sPlacementId,
                         MoPubReward.success(MoPubReward.NO_REWARD_LABEL, MoPubReward.NO_REWARD_AMOUNT));
 
-                MoPubLog.log(CUSTOM, "Unity rewarded video completed for placement " +
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unity rewarded video completed for placement " +
                         placementId);
             } else if (finishState == UnityAds.FinishState.SKIPPED) {
-                MoPubLog.log(CUSTOM, "Unity ad was skipped, no reward will be given.");
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unity ad was skipped, no reward will be given.");
             }
             MoPubRewardedVideoManager.onRewardedVideoClosed(UnityRewardedVideo.class, sPlacementId);
             UnityRouter.getInterstitialRouter().removeListener(placementId);
@@ -189,7 +189,7 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
         public void onUnityAdsClick(String placementId) {
             MoPubRewardedVideoManager.onRewardedVideoClicked(UnityRewardedVideo.class, placementId);
 
-            MoPubLog.log(CUSTOM, "Unity rewarded video clicked for placement " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unity rewarded video clicked for placement " +
                     placementId + ".");
 
             MoPubLog.log(CLICKED, ADAPTER_NAME);
@@ -212,7 +212,7 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
 
         @Override
         public void onUnityAdsError(UnityAds.UnityAdsError unityAdsError, String message) {
-            MoPubLog.log(CUSTOM, "Unity rewarded video cache failed for placement " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unity rewarded video cache failed for placement " +
                     sPlacementId + ".");
             MoPubErrorCode errorCode = UnityRouter.UnityAdsUtils.getMoPubErrorCode(unityAdsError);
             MoPubRewardedVideoManager.onRewardedVideoLoadFailure(UnityRewardedVideo.class, sPlacementId, errorCode);

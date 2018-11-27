@@ -115,7 +115,7 @@ final class MillennialRewardedVideo extends CustomEventRewardedVideo {
         String dcn = serverExtras.get(DCN_KEY);
 
         if (MillennialUtils.isEmpty(apid)) {
-            MoPubLog.log(CUSTOM, "Invalid extras-- Be sure you have a placement ID specified.");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Invalid extras-- Be sure you have a placement ID specified.");
             MoPubRewardedVideoManager.onRewardedVideoLoadFailure(MillennialRewardedVideo.class, "",
                     MoPubErrorCode.NETWORK_NO_FILL);
 
@@ -179,7 +179,7 @@ final class MillennialRewardedVideo extends CustomEventRewardedVideo {
             MoPubLog.log(SHOW_FAILED, ADAPTER_NAME,
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                     MoPubErrorCode.NETWORK_NO_FILL);
-            MoPubLog.log(CUSTOM, "showVideo called before MillennialInterstitial ad was loaded.");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "showVideo called before MillennialInterstitial ad was loaded.");
 
             MoPubRewardedVideoManager.onRewardedVideoLoadFailure(MillennialRewardedVideo.class, "",
                     MoPubErrorCode.NETWORK_NO_FILL);
@@ -239,7 +239,7 @@ final class MillennialRewardedVideo extends CustomEventRewardedVideo {
         public void onLoadFailed(final InterstitialAd interstitialAd, InterstitialErrorStatus
                 interstitialErrorStatus) {
 
-            MoPubLog.log(CUSTOM, "Millennial Rewarded Video Ad - load failed (" +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Rewarded Video Ad - load failed (" +
                     interstitialErrorStatus.getErrorCode() + "): " +
                     interstitialErrorStatus.getDescription());
 
@@ -258,7 +258,7 @@ final class MillennialRewardedVideo extends CustomEventRewardedVideo {
                             MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
                         }
                     });
-                    MoPubLog.log(CUSTOM, "Millennial Rewarded Video Ad - Attempted to load " +
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Rewarded Video Ad - Attempted to load " +
                             "ads when ads are already loaded.");
                     return;
                 case InterstitialErrorStatus.EXPIRED:
@@ -299,7 +299,7 @@ final class MillennialRewardedVideo extends CustomEventRewardedVideo {
             CreativeInfo creativeInfo = getCreativeInfo();
 
             if ((creativeInfo != null) && MMLog.isDebugEnabled()) {
-                MoPubLog.log(CUSTOM, "Rewarded Video Creative Info: " + creativeInfo);
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Rewarded Video Creative Info: " + creativeInfo);
             }
 
             MillennialUtils.postOnUiThread(new Runnable() {
@@ -317,7 +317,7 @@ final class MillennialRewardedVideo extends CustomEventRewardedVideo {
         public void onShowFailed(final InterstitialAd interstitialAd, InterstitialErrorStatus
                 interstitialErrorStatus) {
 
-            MoPubLog.log(CUSTOM, "Millennial Rewarded Video Ad - Show failed (" +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Rewarded Video Ad - Show failed (" +
                     interstitialErrorStatus.getErrorCode() + "): " +
                     interstitialErrorStatus.getDescription());
 
@@ -366,7 +366,7 @@ final class MillennialRewardedVideo extends CustomEventRewardedVideo {
 
         @Override
         public boolean onCustomEvent(XIncentiveEvent xIncentiveEvent) {
-            MoPubLog.log(CUSTOM, "Millennial Rewarded Video Ad - Custom event received: " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Rewarded Video Ad - Custom event received: " +
                     xIncentiveEvent.eventId + ", " + xIncentiveEvent.args);
 
             return false;

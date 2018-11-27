@@ -40,7 +40,7 @@ final class MillennialInterstitial extends CustomEventInterstitial {
     private CustomEventInterstitialListener interstitialListener;
 
     static {
-        MoPubLog.log(CUSTOM, "Millennial Media Adapter Version: " + MillennialUtils.MEDIATOR_ID);
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Media Adapter Version: " + MillennialUtils.MEDIATOR_ID);
     }
 
     private CreativeInfo getCreativeInfo() {
@@ -95,7 +95,7 @@ final class MillennialInterstitial extends CustomEventInterstitial {
                 return;
             }
         } else {
-            MoPubLog.log(CUSTOM, "MM SDK must be initialized with an Activity or " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "MM SDK must be initialized with an Activity or " +
                     "Application context.");
             MoPubLog.log(LOAD_FAILED,
                     ADAPTER_NAME,
@@ -112,7 +112,7 @@ final class MillennialInterstitial extends CustomEventInterstitial {
         String apid = serverExtras.get(APID_KEY);
 
         if (MillennialUtils.isEmpty(apid)) {
-            MoPubLog.log(CUSTOM, "Invalid extras-- Be sure you have an placement ID specified.");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Invalid extras-- Be sure you have an placement ID specified.");
             MoPubLog.log(LOAD_FAILED,
                     ADAPTER_NAME,
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
@@ -180,7 +180,7 @@ final class MillennialInterstitial extends CustomEventInterstitial {
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                     MoPubErrorCode.NETWORK_NO_FILL);
 
-            MoPubLog.log(CUSTOM, "showInterstitial called but interstitial is not ready.");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "showInterstitial called but interstitial is not ready.");
             interstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
         }
     }
@@ -248,7 +248,7 @@ final class MillennialInterstitial extends CustomEventInterstitial {
         @Override
         public void onLoadFailed(InterstitialAd interstitialAd, InterstitialErrorStatus interstitialErrorStatus) {
 
-            MoPubLog.log(CUSTOM, "Millennial Interstitial Ad - load failed (" +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Interstitial Ad - load failed (" +
                     interstitialErrorStatus.getErrorCode() + "): " +
                     interstitialErrorStatus.getDescription());
 
@@ -262,7 +262,7 @@ final class MillennialInterstitial extends CustomEventInterstitial {
                     if (interstitialListener != null) {
                         interstitialListener.onInterstitialLoaded();
                     }
-                    MoPubLog.log(CUSTOM, "Millennial Interstitial Ad - Attempted to load ads " +
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Interstitial Ad - Attempted to load ads " +
                             "when ads are already loaded.");
                     return;
                 case InterstitialErrorStatus.EXPIRED:
@@ -303,7 +303,7 @@ final class MillennialInterstitial extends CustomEventInterstitial {
             CreativeInfo creativeInfo = getCreativeInfo();
 
             if ((creativeInfo != null) && MMLog.isDebugEnabled()) {
-                MoPubLog.log(CUSTOM, "Interstitial Creative Info: " + creativeInfo);
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Interstitial Creative Info: " + creativeInfo);
             }
 
             MillennialUtils.postOnUiThread(new Runnable() {
@@ -321,7 +321,7 @@ final class MillennialInterstitial extends CustomEventInterstitial {
         @Override
         public void onShowFailed(InterstitialAd interstitialAd, InterstitialErrorStatus interstitialErrorStatus) {
 
-            MoPubLog.log(CUSTOM, "Millennial Interstitial Ad - Show failed (" +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Interstitial Ad - Show failed (" +
                     interstitialErrorStatus.getErrorCode() + "): " +
                     interstitialErrorStatus.getDescription());
 

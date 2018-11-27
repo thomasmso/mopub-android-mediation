@@ -46,7 +46,7 @@ public class FacebookInterstitial extends CustomEventInterstitial implements Int
             @Override
             public void run() {
                 if (mInterstitialListener != null) {
-                    MoPubLog.log(CUSTOM, "Expiring unused Facebook Interstitial ad due to Facebook's 60-minute expiration policy.");
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "Expiring unused Facebook Interstitial ad due to Facebook's 60-minute expiration policy.");
                     mInterstitialListener.onInterstitialFailed(EXPIRED);
                     MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, MoPubErrorCode.EXPIRED.getIntCode(), MoPubErrorCode.EXPIRED);
 
@@ -109,11 +109,11 @@ public class FacebookInterstitial extends CustomEventInterstitial implements Int
             cancelExpirationTimer();
         } else {
             MoPubLog.log(SHOW_FAILED, ADAPTER_NAME, MoPubErrorCode.NETWORK_NO_FILL.getIntCode(), MoPubErrorCode.NETWORK_NO_FILL);
-            MoPubLog.log(CUSTOM, "Tried to show a Facebook interstitial ad when it's not ready. Please try again.");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Tried to show a Facebook interstitial ad when it's not ready. Please try again.");
             if (mInterstitialListener != null) {
                 onError(mFacebookInterstitial, AdError.INTERNAL_ERROR);
             } else {
-                MoPubLog.log(CUSTOM, "Interstitial listener not instantiated. Please load interstitial again.");
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Interstitial listener not instantiated. Please load interstitial again.");
             }
         }
     }
@@ -178,7 +178,7 @@ public class FacebookInterstitial extends CustomEventInterstitial implements Int
 
     @Override
     public void onLoggingImpression(Ad ad) {
-        MoPubLog.log(CUSTOM, "Facebook interstitial ad logged impression.");
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Facebook interstitial ad logged impression.");
         if (mInterstitialListener != null) {
             mInterstitialListener.onInterstitialImpression();
         }

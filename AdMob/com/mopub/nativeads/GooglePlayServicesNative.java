@@ -337,7 +337,7 @@ public class GooglePlayServicesNative extends CustomEventNative {
                                 @Override
                                 public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
                                     if (!isValidUnifiedAd(unifiedNativeAd)) {
-                                        MoPubLog.log(CUSTOM, "The Google native unified ad " +
+                                        MoPubLog.log(CUSTOM, ADAPTER_NAME, "The Google native unified ad " +
                                                 "is missing one or more required assets, failing request.");
 
                                         mCustomEventNativeListener.onNativeAdFailed(

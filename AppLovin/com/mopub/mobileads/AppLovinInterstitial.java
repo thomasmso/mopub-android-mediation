@@ -74,7 +74,7 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
 
         // SDK versions BELOW 7.2.0 require a instance of an Activity to be passed in as the context
         if (AppLovinSdk.VERSION_CODE < 720 && !(context instanceof Activity)) {
-            MoPubLog.log(CUSTOM, "Unable to request AppLovin interstitial. Invalid context " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unable to request AppLovin interstitial. Invalid context " +
                     "provided.");
 
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
@@ -97,7 +97,7 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
         final String adMarkup = serverExtras.get(DataKeys.ADM_KEY);
         final boolean hasAdMarkup = !TextUtils.isEmpty(adMarkup);
 
-        MoPubLog.log(CUSTOM, "Requesting AppLovin interstitial with serverExtras: " +
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Requesting AppLovin interstitial with serverExtras: " +
                 serverExtras + ", localExtras: " + localExtras + " and has adMarkup: " + hasAdMarkup);
 
         if (hasAdMarkup) {
@@ -113,7 +113,7 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
             // Check if we already have a preloaded ad for the given zone
             final AppLovinAd preloadedAd = dequeueAd(zoneId);
             if (preloadedAd != null) {
-                MoPubLog.log(CUSTOM, "Found preloaded ad for zone: {" + zoneId + "}");
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Found preloaded ad for zone: {" + zoneId + "}");
                 adReceived(preloadedAd);
             }
             // No ad currently preloaded
@@ -152,7 +152,7 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
             MoPubLog.log(SHOW_FAILED, ADAPTER_NAME, MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                     MoPubErrorCode.NETWORK_NO_FILL);
 
-            MoPubLog.log(CUSTOM, "Failed to show an AppLovin interstitial before one was " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Failed to show an AppLovin interstitial before one was " +
                     "loaded");
 
             if (listener != null) {
@@ -256,12 +256,12 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
 
     @Override
     public void videoPlaybackBegan(final AppLovinAd ad) {
-        MoPubLog.log(CUSTOM, "Interstitial video playback began");
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Interstitial video playback began");
     }
 
     @Override
     public void videoPlaybackEnded(final AppLovinAd ad, final double percentViewed, final boolean fullyWatched) {
-        MoPubLog.log(CUSTOM, "Interstitial video playback ended at playback percent: ",
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Interstitial video playback ended at playback percent: ",
                 percentViewed);
     }
 

@@ -71,7 +71,7 @@ public class TapjoyInterstitial extends CustomEventInterstitial implements TJPla
 
         final String placementName = serverExtras.get(PLACEMENT_NAME);
         if (TextUtils.isEmpty(placementName)) {
-            MoPubLog.log(CUSTOM, "Tapjoy interstitial loaded with empty 'name' field. Request will fail.");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Tapjoy interstitial loaded with empty 'name' field. Request will fail.");
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, MoPubErrorCode.NETWORK_NO_FILL.getIntCode(), MoPubErrorCode.NETWORK_NO_FILL);
         }
 
@@ -85,17 +85,17 @@ public class TapjoyInterstitial extends CustomEventInterstitial implements TJPla
 
             String sdkKey = serverExtras.get(SDK_KEY);
             if (!TextUtils.isEmpty(sdkKey)) {
-                MoPubLog.log(CUSTOM, "Connecting to Tapjoy via MoPub dashboard settings...");
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Connecting to Tapjoy via MoPub dashboard settings...");
                 Tapjoy.connect(context, sdkKey, null, new TJConnectListener() {
                     @Override
                     public void onConnectSuccess() {
-                        MoPubLog.log(CUSTOM, "Tapjoy connected successfully");
+                        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Tapjoy connected successfully");
                         createPlacement(context, placementName, adm);
                     }
 
                     @Override
                     public void onConnectFailure() {
-                        MoPubLog.log(CUSTOM, "Tapjoy connect failed");
+                        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Tapjoy connect failed");
                     }
                 });
 
@@ -103,7 +103,7 @@ public class TapjoyInterstitial extends CustomEventInterstitial implements TJPla
                 // after auto-connect succeeds
                 canRequestPlacement = false;
             } else {
-                MoPubLog.log(CUSTOM,"Tapjoy interstitial is initialized with empty 'sdkKey'. You must call Tapjoy.connect()");
+                MoPubLog.log(CUSTOM, ADAPTER_NAME,"Tapjoy interstitial is initialized with empty 'sdkKey'. You must call Tapjoy.connect()");
             }
         }
 
@@ -122,7 +122,7 @@ public class TapjoyInterstitial extends CustomEventInterstitial implements TJPla
                 Map<String, String> auctionData = Json.jsonStringToMap(adm);
                 tjPlacement.setAuctionData(new HashMap<>(auctionData));
             } catch (JSONException e) {
-                MoPubLog.log(CUSTOM, "Unable to parse auction data.");
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unable to parse auction data.");
             }
         }
 
@@ -207,7 +207,7 @@ public class TapjoyInterstitial extends CustomEventInterstitial implements TJPla
 
     @Override
     public void onContentDismiss(TJPlacement placement) {
-        MoPubLog.log(CUSTOM, "Tapjoy interstitial dismissed");
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Tapjoy interstitial dismissed");
 
         mHandler.post(new Runnable() {
             @Override

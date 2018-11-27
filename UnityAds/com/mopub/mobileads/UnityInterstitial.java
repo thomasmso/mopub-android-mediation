@@ -59,7 +59,7 @@ public class UnityInterstitial extends CustomEventInterstitial implements IUnity
     private void initializeUnityAdsSdk(Map<String, String> serverExtras) {
         if (!UnityAds.isInitialized()) {
             if (!(mContext instanceof Activity)) {
-                MoPubLog.log(CUSTOM, "Context is null or is not an instanceof Activity.");
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Context is null or is not an instanceof Activity.");
                 return;
             }
             UnityRouter.initUnityAds(serverExtras, (Activity) mContext);
@@ -77,7 +77,7 @@ public class UnityInterstitial extends CustomEventInterstitial implements IUnity
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                     MoPubErrorCode.NETWORK_NO_FILL);
 
-            MoPubLog.log(CUSTOM, "Attempted to show Unity interstitial video before it was " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Attempted to show Unity interstitial video before it was " +
                     "available.");
         }
     }
@@ -111,7 +111,7 @@ public class UnityInterstitial extends CustomEventInterstitial implements IUnity
     public void onUnityAdsFinish(String placementId, UnityAds.FinishState finishState) {
         if (mCustomEventInterstitialListener != null) {
             if (finishState == UnityAds.FinishState.ERROR) {
-                MoPubLog.log(CUSTOM, "Unity interstitial video encountered a playback error for " +
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unity interstitial video encountered a playback error for " +
                         "placement " + placementId);
                 mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
 
@@ -119,7 +119,7 @@ public class UnityInterstitial extends CustomEventInterstitial implements IUnity
                         MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                         MoPubErrorCode.NETWORK_NO_FILL);
             } else {
-                MoPubLog.log(CUSTOM, "Unity interstitial video completed for placement " + placementId);
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unity interstitial video completed for placement " + placementId);
                 mCustomEventInterstitialListener.onInterstitialDismissed();
             }
         }
@@ -154,7 +154,7 @@ public class UnityInterstitial extends CustomEventInterstitial implements IUnity
     public void onUnityAdsError(UnityAds.UnityAdsError unityAdsError, String message) {
         
         if (mCustomEventInterstitialListener != null) {
-            MoPubLog.log(CUSTOM, "Unity interstitial video cache failed for placement " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unity interstitial video cache failed for placement " +
                     mPlacementId + ".");
             MoPubErrorCode errorCode = UnityRouter.UnityAdsUtils.getMoPubErrorCode(unityAdsError);
             mCustomEventInterstitialListener.onInterstitialFailed(errorCode);

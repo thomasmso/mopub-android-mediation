@@ -128,7 +128,7 @@ public class IronSourceRewardedVideo extends CustomEventRewardedVideo implements
                 onRewardedVideoLoadSuccess(IronSourceRewardedVideo.class, mInstanceId);
 
                 MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
-                MoPubLog.log(CUSTOM, "IronSource Rewarded Video loaded successfully for " +
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "IronSource Rewarded Video loaded successfully for " +
                         "instance " + mInstanceId);
             } else {
                 onRewardedVideoLoadFailure(IronSourceRewardedVideo.class, mInstanceId, MoPubErrorCode.NETWORK_NO_FILL);
@@ -136,7 +136,7 @@ public class IronSourceRewardedVideo extends CustomEventRewardedVideo implements
                 MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
                         MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                         MoPubErrorCode.NETWORK_NO_FILL);
-                MoPubLog.log(CUSTOM, "IronSource Rewarded Video failed to load for instance "
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "IronSource Rewarded Video failed to load for instance "
                         + mInstanceId);
             }
         }
@@ -181,14 +181,14 @@ public class IronSourceRewardedVideo extends CustomEventRewardedVideo implements
             IronSource.setISDemandOnlyRewardedVideoListener(this);
 
             if (mIsFirstInitFlow) {
-                MoPubLog.log(CUSTOM, "IronSource initialization succeeded for RewardedVideo");
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "IronSource initialization succeeded for RewardedVideo");
                 IronSource.setMediationType(MEDIATION_TYPE + ADAPTER_VERSION);
                 IronSource.initISDemandOnly(activity, appKey, IronSource.AD_UNIT.REWARDED_VIDEO);
 
                 MoPubLog.log(getAdNetworkId(), LOAD_ATTEMPTED, ADAPTER_NAME);
             }
         } else {
-            MoPubLog.log(CUSTOM, "IronSource initialization Failed, make sure that " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "IronSource initialization Failed, make sure that " +
                     "'applicationKey' server parameter is added");
             onRewardedVideoLoadFailure(IronSourceRewardedVideo.class, mInstanceId,
                     MoPubErrorCode.NETWORK_NO_FILL);
@@ -243,7 +243,7 @@ public class IronSourceRewardedVideo extends CustomEventRewardedVideo implements
     //Invoked when there is a change in the ad availability status.
     @Override
     public void onRewardedVideoAvailabilityChanged(String instanceId, boolean available) {
-        MoPubLog.log(CUSTOM, "IronSource Rewarded Video changed availability: " + available +
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "IronSource Rewarded Video changed availability: " + available +
                 " for instance " + mInstanceId);
 
         // Ignore callback
@@ -257,7 +257,7 @@ public class IronSourceRewardedVideo extends CustomEventRewardedVideo implements
                 onRewardedVideoLoadSuccess(IronSourceRewardedVideo.class, mInstanceId);
 
                 MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
-                MoPubLog.log(CUSTOM, "IronSource Rewarded Video loaded successfully for " +
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "IronSource Rewarded Video loaded successfully for " +
                         "instance " + mInstanceId);
             } else {
                 onRewardedVideoLoadFailure(IronSourceRewardedVideo.class, mInstanceId, MoPubErrorCode.NETWORK_NO_FILL);
@@ -266,7 +266,7 @@ public class IronSourceRewardedVideo extends CustomEventRewardedVideo implements
                         MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                         MoPubErrorCode.NETWORK_NO_FILL);
 
-                MoPubLog.log(CUSTOM, "IronSource Rewarded Video failed to load for instance "
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "IronSource Rewarded Video failed to load for instance "
                         + mInstanceId);
             }
             mIsFirstInitFlow = false;
@@ -276,7 +276,7 @@ public class IronSourceRewardedVideo extends CustomEventRewardedVideo implements
     //Invoked when the RewardedVideo ad view has opened.
     @Override
     public void onRewardedVideoAdOpened(String instanceId) {
-        MoPubLog.log(CUSTOM, "IronSource Rewarded Video opened ad for instance " + instanceId);
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "IronSource Rewarded Video opened ad for instance " + instanceId);
 
         onRewardedVideoStarted(IronSourceRewardedVideo.class, instanceId);
 
@@ -286,7 +286,7 @@ public class IronSourceRewardedVideo extends CustomEventRewardedVideo implements
     //Invoked when the user is about to return to the application after closing the RewardedVideo ad.
     @Override
     public void onRewardedVideoAdClosed(String instanceId) {
-        MoPubLog.log(CUSTOM, "IronSource Rewarded Video closed ad for instance " + instanceId);
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "IronSource Rewarded Video closed ad for instance " + instanceId);
 
         onRewardedVideoClosed(IronSourceRewardedVideo.class, instanceId);
     }
@@ -294,7 +294,7 @@ public class IronSourceRewardedVideo extends CustomEventRewardedVideo implements
     //Invoked when the user completed the video and should be rewarded.
     @Override
     public void onRewardedVideoAdRewarded(String instanceId, Placement placement) {
-        MoPubLog.log(CUSTOM, "IronSource Rewarded Video received reward for instance " +
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "IronSource Rewarded Video received reward for instance " +
                 instanceId);
 
         //Placement can return null if the placementName is not valid.
@@ -311,7 +311,7 @@ public class IronSourceRewardedVideo extends CustomEventRewardedVideo implements
     //Invoked when an Ad failed to display.
     @Override
     public void onRewardedVideoAdShowFailed(String instanceId, IronSourceError ironSourceError) {
-        MoPubLog.log(CUSTOM, "IronSource Rewarded Video failed to show for instance " +
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "IronSource Rewarded Video failed to show for instance " +
                 instanceId);
         onRewardedVideoPlaybackError(IronSourceRewardedVideo.class, instanceId, getMoPubErrorMessage(ironSourceError));
 
@@ -323,7 +323,7 @@ public class IronSourceRewardedVideo extends CustomEventRewardedVideo implements
     //Invoked when the video ad was clicked by the user.
     @Override
     public void onRewardedVideoAdClicked(String instanceId, Placement placement) {
-        MoPubLog.log(CUSTOM, "IronSource Rewarded Video clicked for instance " + instanceId);
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "IronSource Rewarded Video clicked for instance " + instanceId);
         onRewardedVideoClicked(IronSourceRewardedVideo.class, instanceId);
 
         MoPubLog.log(CLICKED, ADAPTER_NAME);

@@ -63,7 +63,7 @@ public class AppLovinBanner extends CustomEventBanner {
 
         // SDK versions BELOW 7.1.0 require a instance of an Activity to be passed in as the context
         if (AppLovinSdk.VERSION_CODE < 710 && !(context instanceof Activity)) {
-            MoPubLog.log(CUSTOM, "Unable to request AppLovin banner. Invalid context provided");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unable to request AppLovin banner. Invalid context provided");
 
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
@@ -81,7 +81,7 @@ public class AppLovinBanner extends CustomEventBanner {
             final String adMarkup = serverExtras.get(DataKeys.ADM_KEY);
             final boolean hasAdMarkup = !TextUtils.isEmpty(adMarkup);
 
-            MoPubLog.log(CUSTOM, "Requesting AppLovin banner with serverExtras: " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Requesting AppLovin banner with serverExtras: " +
                     serverExtras + ", localExtras: " + localExtras + " and has ad markup: " + hasAdMarkup);
 
             AppLovinSdk sdk = retrieveSdk(serverExtras, context);
@@ -92,12 +92,12 @@ public class AppLovinBanner extends CustomEventBanner {
             adView.setAdDisplayListener(new AppLovinAdDisplayListener() {
                 @Override
                 public void adDisplayed(final AppLovinAd ad) {
-                    MoPubLog.log(CUSTOM, "Banner displayed");
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "Banner displayed");
                 }
 
                 @Override
                 public void adHidden(final AppLovinAd ad) {
-                    MoPubLog.log(CUSTOM, "Banner dismissed");
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "Banner dismissed");
                 }
             });
             adView.setAdClickListener(new AppLovinAdClickListener() {
@@ -115,7 +115,7 @@ public class AppLovinBanner extends CustomEventBanner {
             adView.setAdViewEventListener(new AppLovinAdViewEventListener() {
                 @Override
                 public void adOpenedFullscreen(final AppLovinAd appLovinAd, final AppLovinAdView appLovinAdView) {
-                    MoPubLog.log(CUSTOM, "Banner opened fullscreen");
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "Banner opened fullscreen");
 
                     if (customEventBannerListener != null) {
                         customEventBannerListener.onBannerExpanded();
@@ -124,7 +124,7 @@ public class AppLovinBanner extends CustomEventBanner {
 
                 @Override
                 public void adClosedFullscreen(final AppLovinAd appLovinAd, final AppLovinAdView appLovinAdView) {
-                    MoPubLog.log(CUSTOM, "Banner closed fullscreen");
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME,  "Banner closed fullscreen");
 
                     if (customEventBannerListener != null) {
                         customEventBannerListener.onBannerCollapsed();
@@ -133,7 +133,7 @@ public class AppLovinBanner extends CustomEventBanner {
 
                 @Override
                 public void adLeftApplication(final AppLovinAd appLovinAd, final AppLovinAdView appLovinAdView) {
-                    MoPubLog.log(CUSTOM, "Banner left application");
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "Banner left application");
                 }
 
                 @Override
@@ -172,7 +172,7 @@ public class AppLovinBanner extends CustomEventBanner {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            MoPubLog.log(CUSTOM, "Failed to load banner ad with code: ",
+                            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Failed to load banner ad with code: ",
                                     errorCode);
                             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
                                     toMoPubErrorCode(errorCode).getIntCode(),
@@ -206,7 +206,7 @@ public class AppLovinBanner extends CustomEventBanner {
                 }
             }
         } else {
-            MoPubLog.log(CUSTOM, "Unable to request AppLovin banner");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unable to request AppLovin banner");
 
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
@@ -229,7 +229,7 @@ public class AppLovinBanner extends CustomEventBanner {
     private AppLovinAdSize appLovinAdSizeFromLocalExtras(final Map<String, Object> localExtras) {
         // Handle trivial case
         if (localExtras == null || localExtras.isEmpty()) {
-            MoPubLog.log(CUSTOM, "No serverExtras provided");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "No serverExtras provided");
             return null;
         }
 
@@ -239,7 +239,7 @@ public class AppLovinBanner extends CustomEventBanner {
 
             // We have valid dimensions
             if (width > 0 && height > 0) {
-                MoPubLog.log(CUSTOM, "Valid width (" + width + ") and height " +
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Valid width (" + width + ") and height " +
                         "(" + height + ") provided");
 
                 // Assume fluid width, and check for height with offset tolerance
@@ -253,11 +253,11 @@ public class AppLovinBanner extends CustomEventBanner {
                 } else if (height <= AppLovinAdSize.MREC.getHeight()) {
                     return AppLovinAdSize.MREC;
                 } else {
-                    MoPubLog.log(CUSTOM, "Provided dimensions does not meet the dimensions " +
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "Provided dimensions does not meet the dimensions " +
                             "required of banner or mrec ads");
                 }
             } else {
-                MoPubLog.log(CUSTOM, "Invalid width (" + width + ") and height " +
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Invalid width (" + width + ") and height " +
                         "(" + height + ") provided");
             }
         } catch (Throwable th) {

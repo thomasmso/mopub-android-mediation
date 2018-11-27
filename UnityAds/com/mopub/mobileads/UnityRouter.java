@@ -29,7 +29,7 @@ public class UnityRouter {
 
         String gameId = serverExtras.get(GAME_ID_KEY);
         if (gameId == null || gameId.isEmpty()) {
-            MoPubLog.log(CUSTOM, "gameId is missing or entered incorrectly in the MoPub UI");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "gameId is missing or entered incorrectly in the MoPub UI");
             return false;
         }
         initMediationMetadata(launcherActivity);

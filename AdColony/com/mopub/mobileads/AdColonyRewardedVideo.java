@@ -118,7 +118,7 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
             ad.setListener(null);
             ad.destroy();
             sZoneIdToAdMap.remove(mZoneId);
-            MoPubLog.log(CUSTOM, "AdColony rewarded video destroyed");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "AdColony rewarded video destroyed");
         }
     }
 
@@ -341,11 +341,11 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
         public void onReward(@NonNull AdColonyReward a) {
             MoPubReward reward;
             if (a.success()) {
-                MoPubLog.log(CUSTOM, "AdColonyReward name - " + a.getRewardName());
-                MoPubLog.log(CUSTOM, "AdColonyReward amount - " + a.getRewardAmount());
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "AdColonyReward name - " + a.getRewardName());
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "AdColonyReward amount - " + a.getRewardAmount());
                 reward = MoPubReward.success(a.getRewardName(), a.getRewardAmount());
             } else {
-                MoPubLog.log(CUSTOM, "AdColonyReward failed");
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "AdColonyReward failed");
                 reward = MoPubReward.failure();
             }
 
@@ -362,7 +362,7 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
 
         @Override
         public void onRequestNotFilled(@NonNull AdColonyZone zone) {
-            MoPubLog.log(CUSTOM, "AdColony rewarded ad has no fill");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "AdColony rewarded ad has no fill");
             MoPubRewardedVideoManager.onRewardedVideoLoadFailure(
                     AdColonyRewardedVideo.class,
                     zone.getZoneID(),
@@ -372,7 +372,7 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
 
         @Override
         public void onClosed(@NonNull AdColonyInterstitial ad) {
-            MoPubLog.log(CUSTOM, "Adcolony rewarded ad has been dismissed");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Adcolony rewarded ad has been dismissed");
             MoPubRewardedVideoManager.onRewardedVideoClosed(
                     AdColonyRewardedVideo.class,
                     ad.getZoneID());

@@ -123,7 +123,7 @@ public class ChartboostRewardedVideo extends CustomEventRewardedVideo {
                     getAdNetworkId(),
                     MoPubErrorCode.NETWORK_NO_FILL);
 
-            MoPubLog.log(CUSTOM, "Attempted to show Chartboost rewarded video before it " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Attempted to show Chartboost rewarded video before it " +
                     "was available.");
 
             MoPubLog.log(SHOW_FAILED, ADAPTER_NAME,

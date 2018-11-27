@@ -45,7 +45,7 @@ final class MillennialBanner extends CustomEventBanner {
     private FrameLayout internalView;
 
     static {
-        MoPubLog.log(CUSTOM, "Millennial Media Adapter Version: " + MillennialUtils.MEDIATOR_ID);
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Media Adapter Version: " + MillennialUtils.MEDIATOR_ID);
     }
 
     private CreativeInfo getCreativeInfo() {
@@ -88,7 +88,7 @@ final class MillennialBanner extends CustomEventBanner {
                 return;
             }
         } else {
-            MoPubLog.log(CUSTOM, "MM SDK must be initialized with an Activity or " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "MM SDK must be initialized with an Activity or " +
                     "Application context.");
             bannerListener.onBannerFailed(MoPubErrorCode.NETWORK_NO_FILL);
 
@@ -106,7 +106,7 @@ final class MillennialBanner extends CustomEventBanner {
         int height = Integer.parseInt(serverExtras.get(AD_HEIGHT_KEY));
 
         if (MillennialUtils.isEmpty(apid) || (width < 0) || (height < 0)) {
-            MoPubLog.log(CUSTOM, "We were given invalid extras! Make sure placement ID, " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "We were given invalid extras! Make sure placement ID, " +
                     "width, and height are specified.");
 
             bannerListener.onBannerFailed(MoPubErrorCode.NETWORK_NO_FILL);
@@ -171,7 +171,7 @@ final class MillennialBanner extends CustomEventBanner {
         @Override
         public void onAdLeftApplication(InlineAd inlineAd) {
             // onLeaveApplication is an alias to on clicked. We are not required to call this.
-            MoPubLog.log(CUSTOM, "Millennial Inline Ad - Leaving application");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Inline Ad - Leaving application");
         }
 
         @Override
@@ -188,7 +188,7 @@ final class MillennialBanner extends CustomEventBanner {
 
         @Override
         public void onCollapsed(InlineAd inlineAd) {
-            MoPubLog.log(CUSTOM, "Millennial Inline Ad - Banner collapsed");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Inline Ad - Banner collapsed");
             MillennialUtils.postOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -199,7 +199,7 @@ final class MillennialBanner extends CustomEventBanner {
 
         @Override
         public void onExpanded(InlineAd inlineAd) {
-            MoPubLog.log(CUSTOM, "Millennial Inline Ad - Banner expanded");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Inline Ad - Banner expanded");
             MillennialUtils.postOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -210,7 +210,7 @@ final class MillennialBanner extends CustomEventBanner {
 
         @Override
         public void onRequestFailed(InlineAd inlineAd, InlineErrorStatus inlineErrorStatus) {
-            MoPubLog.log(CUSTOM, "Millennial Inline Ad - Banner failed (" +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Inline Ad - Banner failed (" +
                     inlineErrorStatus.getErrorCode() + "): " + inlineErrorStatus.getDescription());
 
             MoPubErrorCode mopubErrorCode;
@@ -258,7 +258,7 @@ final class MillennialBanner extends CustomEventBanner {
             CreativeInfo creativeInfo = getCreativeInfo();
 
             if ((creativeInfo != null) && MMLog.isDebugEnabled()) {
-                MoPubLog.log(CUSTOM, "Banner Creative Info: " + creativeInfo);
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Banner Creative Info: " + creativeInfo);
             }
 
             MillennialUtils.postOnUiThread(new Runnable() {
@@ -271,13 +271,13 @@ final class MillennialBanner extends CustomEventBanner {
 
         @Override
         public void onResize(InlineAd inlineAd, int w, int h) {
-            MoPubLog.log(CUSTOM, "Millennial Inline Ad - Banner about to resize (width: " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Inline Ad - Banner about to resize (width: " +
                     w + ", height: " + h + ")");
         }
 
         @Override
         public void onResized(InlineAd inlineAd, int w, int h, boolean isClosed) {
-            MoPubLog.log(CUSTOM, "Millennial Inline Ad - Banner resized (width: " + w + ", " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Inline Ad - Banner resized (width: " + w + ", " +
                     "height: " + h + "). " + (isClosed ? "Returned to original placement." :
                     "Got a fresh, new place."));
         }

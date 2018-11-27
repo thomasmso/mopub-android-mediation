@@ -5,7 +5,9 @@ import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
 import com.mopub.common.logging.MoPubLog;
+
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
@@ -59,7 +61,8 @@ public class AdColonyInterstitial extends CustomEventInterstitial {
     private final Handler mHandler;
     private com.adcolony.sdk.AdColonyInterstitial mAdColonyInterstitial;
     private static String[] previousAdColonyAllZoneIds;
-    @NonNull private AdColonyAdapterConfiguration mAdColonyAdapterConfiguration;
+    @NonNull
+    private AdColonyAdapterConfiguration mAdColonyAdapterConfiguration;
 
     public AdColonyInterstitial() {
         mHandler = new Handler();
@@ -180,7 +183,7 @@ public class AdColonyInterstitial extends CustomEventInterstitial {
 
                 @Override
                 public void onClosed(@NonNull com.adcolony.sdk.AdColonyInterstitial ad) {
-                    MoPubLog.log(CUSTOM, "AdColony interstitial ad has been dismissed");
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "AdColony interstitial ad has been dismissed");
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -202,7 +205,7 @@ public class AdColonyInterstitial extends CustomEventInterstitial {
 
                 @Override
                 public void onExpiring(@NonNull com.adcolony.sdk.AdColonyInterstitial ad) {
-                    MoPubLog.log(CUSTOM, "Adcolony interstitial is expiring; requesting new ad" + ad.getZoneID());
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "Adcolony interstitial is expiring; requesting new ad" + ad.getZoneID());
                     AdColony.requestInterstitial(ad.getZoneID(), mAdColonyInterstitialListener);
                 }
 

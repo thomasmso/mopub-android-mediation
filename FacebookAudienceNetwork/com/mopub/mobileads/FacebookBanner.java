@@ -115,7 +115,7 @@ public class FacebookBanner extends CustomEventBanner implements AdListener {
 
     @Override
     public void onAdLoaded(Ad ad) {
-        MoPubLog.log(CUSTOM, "Facebook banner ad loaded successfully. Showing ad...");
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Facebook banner ad loaded successfully. Showing ad...");
 
         if (mBannerListener != null) {
             mBannerListener.onBannerLoaded(mFacebookBanner);
@@ -127,7 +127,7 @@ public class FacebookBanner extends CustomEventBanner implements AdListener {
 
     @Override
     public void onError(final Ad ad, final AdError error) {
-        MoPubLog.log(CUSTOM, "Facebook banner ad failed to load.");
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Facebook banner ad failed to load.");
 
         if (mBannerListener != null) {
             if (error == AdError.NO_FILL) {
@@ -154,7 +154,7 @@ public class FacebookBanner extends CustomEventBanner implements AdListener {
 
     @Override
     public void onLoggingImpression(Ad ad) {
-        MoPubLog.log(CUSTOM, "Facebook banner ad logged impression.");
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Facebook banner ad logged impression.");
         if (mBannerListener != null) {
             mBannerListener.onBannerImpression();
         }

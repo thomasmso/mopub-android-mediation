@@ -97,7 +97,7 @@ public class GooglePlayServicesAdRenderer implements MoPubAdRenderer<GooglePlayS
         wrappingView.setId(ID_WRAPPING_FRAME);
         wrappingView.addView(view);
 
-        MoPubLog.log(CUSTOM, "Ad view created.");
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Ad view created.");
         return wrappingView;
     }
 
@@ -164,7 +164,7 @@ public class GooglePlayServicesAdRenderer implements MoPubAdRenderer<GooglePlayS
             googleUnifiedAdView.addView(actualView);
             outerFrame.addView(googleUnifiedAdView);
         } else {
-            MoPubLog.log(CUSTOM, "Couldn't add Google native ad view. Wrapping view not found.");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Couldn't add Google native ad view. Wrapping view not found.");
         }
     }
 

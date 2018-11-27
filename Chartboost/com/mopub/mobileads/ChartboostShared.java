@@ -200,7 +200,7 @@ public class ChartboostShared {
         @Override
         public void didFailToLoadInterstitial(String location, CBError.CBImpressionError error) {
             String suffix = error != null ? "Error: " + error.name() : "";
-            MoPubLog.log(CUSTOM, "Chartboost interstitial ad failed to load." + suffix);
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Chartboost interstitial ad failed to load." + suffix);
 
             getInterstitialListener(location).onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
 
@@ -217,7 +217,7 @@ public class ChartboostShared {
 
         @Override
         public void didCloseInterstitial(String location) {
-            MoPubLog.log(CUSTOM, "Chartboost interstitial ad closed.");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Chartboost interstitial ad closed.");
         }
 
         @Override
@@ -247,7 +247,7 @@ public class ChartboostShared {
                 mRewardedVideoLocationsToLoad.remove(location);
 
                 MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
-                MoPubLog.log(CUSTOM, "Chartboost rewarded video cached for location " +
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Chartboost rewarded video cached for location " +
                         location + ".");
             }
         }
@@ -268,7 +268,7 @@ public class ChartboostShared {
                 MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
                         errorCode.getIntCode(),
                         errorCode);
-                MoPubLog.log(CUSTOM, "Chartboost rewarded video cache failed for location " +
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Chartboost rewarded video cache failed for location " +
                         location + suffix);
             }
         }
@@ -279,7 +279,7 @@ public class ChartboostShared {
             super.didDismissRewardedVideo(location);
             MoPubRewardedVideoManager.onRewardedVideoClosed(ChartboostRewardedVideo.class, location);
 
-            MoPubLog.log(CUSTOM, "Chartboost rewarded video dismissed for location " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Chartboost rewarded video dismissed for location " +
                     location + ".");
         }
 
@@ -287,7 +287,7 @@ public class ChartboostShared {
         public void didCloseRewardedVideo(String location) {
             super.didCloseRewardedVideo(location);
 
-            MoPubLog.log(CUSTOM, "Chartboost rewarded video closed for location " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Chartboost rewarded video closed for location " +
                     location + ".");
         }
 
@@ -298,7 +298,7 @@ public class ChartboostShared {
             MoPubRewardedVideoManager.onRewardedVideoClicked(ChartboostRewardedVideo.class, location);
 
             MoPubLog.log(CLICKED, ADAPTER_NAME);
-            MoPubLog.log(CUSTOM, "Chartboost rewarded video clicked for location " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Chartboost rewarded video clicked for location " +
                     location + ".");
         }
 
@@ -313,7 +313,7 @@ public class ChartboostShared {
                     location,
                     MoPubReward.success(MoPubReward.NO_REWARD_LABEL, reward));
 
-            MoPubLog.log(CUSTOM, "Chartboost rewarded video completed for location " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Chartboost rewarded video completed for location " +
                     location + " with " + "reward amount " + reward);
         }
 
@@ -324,7 +324,7 @@ public class ChartboostShared {
             MoPubRewardedVideoManager.onRewardedVideoStarted(ChartboostRewardedVideo.class, location);
 
             MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
-            MoPubLog.log(CUSTOM, "Chartboost rewarded video displayed for location " +
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Chartboost rewarded video displayed for location " +
                     location + ".");
         }
 

@@ -74,7 +74,7 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
         boolean canCollectPersonalInfo = MoPub.canCollectPersonalInformation();
         AppLovinPrivacySettings.setHasUserConsent(canCollectPersonalInfo, activity.getApplicationContext());
 
-        MoPubLog.log(CUSTOM, "Initializing AppLovin rewarded video...");
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Initializing AppLovin rewarded video...");
 
         if (!initialized) {
             sdk = retrieveSdk(serverExtras, activity);
@@ -96,7 +96,7 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
         final String adMarkup = serverExtras.get(DataKeys.ADM_KEY);
         final boolean hasAdMarkup = !TextUtils.isEmpty(adMarkup);
 
-        MoPubLog.log(CUSTOM, "Requesting AppLovin banner with serverExtras: " + serverExtras
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Requesting AppLovin banner with serverExtras: " + serverExtras
                 + ", localExtras: " + localExtras + " and has ad markup: " + hasAdMarkup);
 
         // Determine zone
@@ -148,7 +148,7 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                     MoPubErrorCode.NETWORK_NO_FILL);
 
-            MoPubLog.log(CUSTOM, "Failed to show an AppLovin rewarded video before one was loaded");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Failed to show an AppLovin rewarded video before one was loaded");
             MoPubRewardedVideoManager.onRewardedVideoPlaybackError(getClass(), getAdNetworkId(), MoPubErrorCode.VIDEO_PLAYBACK_ERROR);
         }
     }
@@ -184,7 +184,7 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
 
     @Override
     public void adReceived(final AppLovinAd ad) {
-        MoPubLog.log(CUSTOM, "Rewarded video did load ad: " + ad.getAdIdNumber());
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Rewarded video did load ad: " + ad.getAdIdNumber());
 
         if (isTokenEvent) {
             tokenAd = ad;
@@ -241,7 +241,7 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
     public void adHidden(final AppLovinAd ad) {
 
         if (fullyWatched && reward != null) {
-            MoPubLog.log(CUSTOM, "Rewarded" + reward.getAmount() + " " + reward.getLabel());
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Rewarded" + reward.getAmount() + " " + reward.getLabel());
             MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME);
 
             MoPubRewardedVideoManager.onRewardedVideoCompleted(getClass(), getAdNetworkId(), reward);
@@ -267,12 +267,12 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
 
     @Override
     public void videoPlaybackBegan(final AppLovinAd ad) {
-        MoPubLog.log(CUSTOM, "Rewarded video playback began");
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Rewarded video playback began");
     }
 
     @Override
     public void videoPlaybackEnded(final AppLovinAd ad, final double percentViewed, final boolean fullyWatched) {
-        MoPubLog.log(CUSTOM, "Rewarded video playback ended at playback percent: " + percentViewed);
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Rewarded video playback ended at playback percent: " + percentViewed);
 
         this.fullyWatched = fullyWatched;
     }
@@ -283,25 +283,25 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
 
     @Override
     public void userOverQuota(final AppLovinAd appLovinAd, final Map map) {
-        MoPubLog.log(CUSTOM, "Rewarded video validation request for ad did exceed quota with " +
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Rewarded video validation request for ad did exceed quota with " +
                 "response: " + map);
     }
 
     @Override
     public void validationRequestFailed(final AppLovinAd appLovinAd, final int errorCode) {
-        MoPubLog.log(CUSTOM, "Rewarded video validation request for ad failed with error " +
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Rewarded video validation request for ad failed with error " +
                 "code: " + errorCode);
     }
 
     @Override
     public void userRewardRejected(final AppLovinAd appLovinAd, final Map map) {
-        MoPubLog.log(CUSTOM, "Rewarded video validation request was rejected with response: "
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Rewarded video validation request was rejected with response: "
                 + map);
     }
 
     @Override
     public void userDeclinedToViewAd(final AppLovinAd appLovinAd) {
-        MoPubLog.log(CUSTOM, "User declined to view rewarded video");
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "User declined to view rewarded video");
         MoPubRewardedVideoManager.onRewardedVideoClosed(getClass(), getAdNetworkId());
     }
 
@@ -310,7 +310,7 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
         final String currency = (String) map.get("currency");
         final int amount = (int) Double.parseDouble((String) map.get("amount")); // AppLovin returns amount as double
 
-        MoPubLog.log(CUSTOM, "Verified " + amount + " " + currency);
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Verified " + amount + " " + currency);
 
         reward = MoPubReward.success(currency, amount);
     }

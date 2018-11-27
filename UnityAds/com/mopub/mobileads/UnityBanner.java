@@ -60,7 +60,7 @@ public class UnityBanner extends CustomEventBanner implements IUnityBannerListen
                 MoPubLog.log(placementId, LOAD_ATTEMPTED, ADAPTER_NAME);
             }
         } else {
-            MoPubLog.log(CUSTOM, "Failed to initialize Unity Ads");
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Failed to initialize Unity Ads");
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                     MoPubErrorCode.NETWORK_NO_FILL);
@@ -101,12 +101,12 @@ public class UnityBanner extends CustomEventBanner implements IUnityBannerListen
 
     @Override
     public void onUnityBannerUnloaded(String placementId) {
-        MoPubLog.log(CUSTOM, String.format("Banner did unload for placement %s", placementId));
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, String.format("Banner did unload for placement %s", placementId));
     }
 
     @Override
     public void onUnityBannerShow(String placementId) {
-        MoPubLog.log(CUSTOM, String.format("Banner did show for placement %s", placementId));
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, String.format("Banner did show for placement %s", placementId));
 
         if (customEventBannerListener != null) {
             customEventBannerListener.onBannerImpression();
@@ -124,12 +124,12 @@ public class UnityBanner extends CustomEventBanner implements IUnityBannerListen
 
     @Override
     public void onUnityBannerHide(String placementIds) {
-        MoPubLog.log(CUSTOM, String.format("Banner did hide for placement %s", placementIds));
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, String.format("Banner did hide for placement %s", placementIds));
     }
 
     @Override
     public void onUnityBannerError(String message) {
-        MoPubLog.log(CUSTOM, String.format("Banner did error for placement %s with error %s",
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, String.format("Banner did error for placement %s with error %s",
                 placementId, message));
 
         if (customEventBannerListener != null) {
