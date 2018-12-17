@@ -33,7 +33,7 @@ import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
 
 final class MillennialBanner extends CustomEventBanner {
 
-    private static final String ADAPTER_NAME = GooglePlayServicesBanner.class.getSimpleName();
+    private static final String ADAPTER_NAME = MillennialBanner.class.getSimpleName();
 
     private static final String DCN_KEY = "dcn";
     private static final String APID_KEY = "adUnitID";

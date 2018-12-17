@@ -3,6 +3,7 @@ package com.mopub.nativeads;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.millennialmedia.AppInfo;
@@ -13,6 +14,7 @@ import com.millennialmedia.MMSDK;
 import com.millennialmedia.NativeAd;
 import com.millennialmedia.internal.ActivityListenerManager;
 import com.mopub.common.logging.MoPubLog;
+import com.mopub.mobileads.MillennialAdapterConfiguration;
 import com.mopub.mobileads.MillennialUtils;
 
 import java.util.ArrayList;
@@ -36,6 +38,9 @@ public class MillennialNative extends CustomEventNative {
     private static final String ADAPTER_NAME = MillennialNative.class.getSimpleName();
 
     MillennialStaticNativeAd staticNativeAd;
+    @NonNull
+    private MillennialAdapterConfiguration mMillennialAdapterConfiguration;
+
 
     static {
         MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Media Adapter Version: " + MillennialUtils.MEDIATOR_ID);
@@ -48,13 +53,17 @@ public class MillennialNative extends CustomEventNative {
         return staticNativeAd.getCreativeInfo();
     }
 
+    public MillennialNative() {
+        mMillennialAdapterConfiguration = new MillennialAdapterConfiguration();
+    }
     @Override
     protected void loadNativeAd(final Context context, final CustomEventNativeListener customEventNativeListener,
-                                Map<String, Object> localExtras, Map<String, String> serverExtras) {
+                                final Map<String, Object> localExtras, final Map<String, String> serverExtras) {
 
         if (context instanceof Activity) {
             try {
                 MMSDK.initialize((Activity) context, ActivityListenerManager.LifecycleState.RESUMED);
+                mMillennialAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
             } catch (IllegalStateException e) {
                 MoPubLog.log(CUSTOM_WITH_THROWABLE, "Exception occurred initializing the " +
                         "MM SDK.", e);
@@ -69,6 +78,7 @@ public class MillennialNative extends CustomEventNative {
         } else if (context instanceof Application) {
             try {
                 MMSDK.initialize((Application) context);
+                mMillennialAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
             } catch (MMException e) {
                 MoPubLog.log(CUSTOM_WITH_THROWABLE, "Exception occurred initializing the MM SDK.", e);
                 customEventNativeListener.onNativeAdFailed(NativeErrorCode.NETWORK_NO_FILL);

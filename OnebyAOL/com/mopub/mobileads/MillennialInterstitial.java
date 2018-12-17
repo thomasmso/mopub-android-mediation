@@ -3,6 +3,7 @@ package com.mopub.mobileads;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.millennialmedia.AppInfo;
 import com.millennialmedia.CreativeInfo;
@@ -38,6 +39,8 @@ final class MillennialInterstitial extends CustomEventInterstitial {
     private InterstitialAd millennialInterstitial;
     private Context context;
     private CustomEventInterstitialListener interstitialListener;
+    @NonNull
+    private MillennialAdapterConfiguration mMillennialAdapterConfiguration;
 
     static {
         MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial Media Adapter Version: " + MillennialUtils.MEDIATOR_ID);
@@ -50,6 +53,9 @@ final class MillennialInterstitial extends CustomEventInterstitial {
         return millennialInterstitial.getCreativeInfo();
     }
 
+    public MillennialInterstitial() {
+        mMillennialAdapterConfiguration = new MillennialAdapterConfiguration();
+    }
     @Override
     protected void loadInterstitial(final Context context,
                                     final CustomEventInterstitialListener customEventInterstitialListener, final Map<String, Object> localExtras,
@@ -63,6 +69,7 @@ final class MillennialInterstitial extends CustomEventInterstitial {
         if (context instanceof Activity) {
             try {
                 MMSDK.initialize((Activity) context, ActivityListenerManager.LifecycleState.RESUMED);
+                mMillennialAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
             } catch (IllegalStateException e) {
                 MoPubLog.log(CUSTOM_WITH_THROWABLE, "Exception occurred initializing the " +
                         "MM SDK.", e);
@@ -80,6 +87,7 @@ final class MillennialInterstitial extends CustomEventInterstitial {
         } else if (context instanceof Application) {
             try {
                 MMSDK.initialize((Application) context);
+                mMillennialAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
             } catch (MMException e) {
                 MoPubLog.log(CUSTOM_WITH_THROWABLE, "Exception occurred initializing the " +
                         "MM SDK.", e);

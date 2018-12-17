@@ -47,6 +47,8 @@ final class MillennialRewardedVideo extends CustomEventRewardedVideo {
     private Activity activity;
     @NonNull
     private String apid = "";
+    @NonNull
+    private MillennialAdapterConfiguration mMillennialAdapterConfiguration;
 
     static {
         MoPubLog.d("Millennial Media Adapter Version: " + MillennialUtils.MEDIATOR_ID);
@@ -88,11 +90,16 @@ final class MillennialRewardedVideo extends CustomEventRewardedVideo {
         }
     }
 
+    public MillennialRewardedVideo() {
+        mMillennialAdapterConfiguration = new MillennialAdapterConfiguration();
+    }
+
     @Override
-    protected boolean checkAndInitializeSdk(@NonNull Activity launcherActivity,
-                                            @NonNull Map<String, Object> localExtras, @NonNull Map<String, String> serverExtras) throws Exception {
+    protected boolean checkAndInitializeSdk(@NonNull final Activity launcherActivity,
+                                            @NonNull final Map<String, Object> localExtras, @NonNull final Map<String, String> serverExtras) throws Exception {
         try {
             MMSDK.initialize(launcherActivity, ActivityListenerManager.LifecycleState.RESUMED);
+            mMillennialAdapterConfiguration.setCachedInitializationParameters(launcherActivity, serverExtras);
         } catch (IllegalStateException e) {
             MoPubLog.log(CUSTOM_WITH_THROWABLE, "An exception occurred initializing the MM SDK", e);
             MoPubRewardedVideoManager.onRewardedVideoLoadFailure(MillennialRewardedVideo.class, "",
