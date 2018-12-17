@@ -2,6 +2,7 @@ package com.mopub.mobileads;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.mopub.common.logging.MoPubLog;
 import com.unity3d.ads.mediation.IUnityAdsExtendedListener;
@@ -25,6 +26,12 @@ public class UnityInterstitial extends CustomEventInterstitial implements IUnity
     private Context mContext;
     private String mPlacementId = "video";
     private boolean loadRequested = false;
+    @NonNull
+    private UnityAdsAdapterConfiguration mUnityAdsAdapterConfiguration;
+
+    public UnityInterstitial() {
+        mUnityAdsAdapterConfiguration = new UnityAdsAdapterConfiguration();
+    }
 
     @Override
     protected void loadInterstitial(Context context,
@@ -37,6 +44,19 @@ public class UnityInterstitial extends CustomEventInterstitial implements IUnity
         mContext = context;
         loadRequested = true;
 
+        try {
+            UnityRouter.addListener(mPlacementId, this);
+            initializeUnityAdsSdk(serverExtras);
+            mUnityAdsAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
+            if (UnityAds.isReady(mPlacementId)) {
+                mCustomEventInterstitialListener.onInterstitialLoaded();
+                loadRequested = false;
+            } else if (UnityAds.getPlacementState(mPlacementId) == UnityAds.PlacementState.NO_FILL){
+                mCustomEventInterstitialListener.onInterstitialFailed(MoPubErrorCode.NO_FILL);
+                UnityRouter.removeListener(mPlacementId);
+            }
+        } catch (UnityRouter.UnityAdsException e) {
+            mCustomEventInterstitialListener.onInterstitialFailed(UnityRouter.UnityAdsUtils.getMoPubErrorCode(e.getErrorCode()));
         UnityRouter.getInterstitialRouter().addListener(mPlacementId, this);
         UnityRouter.getInterstitialRouter().setCurrentPlacementId(mPlacementId);
         initializeUnityAdsSdk(serverExtras);

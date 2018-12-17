@@ -29,6 +29,8 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
 
     @NonNull
     private static String sPlacementId = "";
+    @NonNull
+    private UnityAdsAdapterConfiguration mUnityAdsAdapterConfiguration;
 
     @Nullable
     private Activity mLauncherActivity;
@@ -51,6 +53,10 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
         return sPlacementId;
     }
 
+    public UnityRewardedVideo() {
+        mUnityAdsAdapterConfiguration = new UnityAdsAdapterConfiguration();
+    }
+
     @Override
     public boolean checkAndInitializeSdk(@NonNull final Activity launcherActivity,
                                          @NonNull final Map<String, Object> localExtras,
@@ -61,6 +67,13 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
                 return false;
             }
 
+            try {
+                UnityRouter.initUnityAds(serverExtras, launcherActivity);
+                mUnityAdsAdapterConfiguration.setCachedInitializationParameters(launcherActivity, serverExtras);
+                UnityRouter.addListener(sPlacementId, sUnityAdsListener);
+            } catch (UnityRouter.UnityAdsException e) {
+                MoPubLog.e("Failed to initialize Unity Ads.");
+                MoPubRewardedVideoManager.onRewardedVideoLoadFailure(UnityRewardedVideo.class, sPlacementId, UnityRouter.UnityAdsUtils.getMoPubErrorCode(e.getErrorCode()));
             UnityRouter.getInterstitialRouter().setCurrentPlacementId(sPlacementId);
 			if (UnityRouter.initUnityAds(serverExtras, launcherActivity)) {
                 UnityRouter.getInterstitialRouter().addListener(sPlacementId, sUnityAdsListener);
