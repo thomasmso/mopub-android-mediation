@@ -11,6 +11,7 @@ package com.mopub.mobileads;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.mopub.common.MoPub;
@@ -48,7 +49,8 @@ public class TapjoyInterstitial extends CustomEventInterstitial implements TJPla
     public static final String PLACEMENT_NAME = "name";
     public static final String ADAPTER_NAME = TapjoyInterstitial.class.getSimpleName();
     private static final String ADM_KEY = "adm";
-
+    @NonNull
+    private TapjoyAdapterConfiguration mTapjoyAdapterConfiguration;
 
     private TJPlacement tjPlacement;
     private CustomEventInterstitialListener mInterstitialListener;
@@ -58,11 +60,15 @@ public class TapjoyInterstitial extends CustomEventInterstitial implements TJPla
         TapjoyLog.i(TAG, "Class initialized with network adapter version " + TJC_MOPUB_ADAPTER_VERSION_NUMBER);
     }
 
+    public TapjoyInterstitial() {
+        mTapjoyAdapterConfiguration = new TapjoyAdapterConfiguration();
+    }
+
     @Override
     protected void loadInterstitial(final Context context,
-                                    CustomEventInterstitialListener customEventInterstitialListener,
-                                    Map<String, Object> localExtras,
-                                    Map<String, String> serverExtras) {
+                                    final CustomEventInterstitialListener customEventInterstitialListener,
+                                    final Map<String, Object> localExtras,
+                                    final Map<String, String> serverExtras) {
 
         mInterstitialListener = customEventInterstitialListener;
         mHandler = new Handler(Looper.getMainLooper());
@@ -89,6 +95,8 @@ public class TapjoyInterstitial extends CustomEventInterstitial implements TJPla
                 Tapjoy.connect(context, sdkKey, null, new TJConnectListener() {
                     @Override
                     public void onConnectSuccess() {
+                        MoPubLog.log(CUSTOM, "Tapjoy connected successfully");
+                        mTapjoyAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
                         MoPubLog.log(CUSTOM, ADAPTER_NAME, "Tapjoy connected successfully");
                         createPlacement(context, placementName, adm);
                     }

@@ -55,6 +55,9 @@ public class TapjoyRewardedVideo extends CustomEventRewardedVideo {
     private TJPlacement tjPlacement;
     private boolean isAutoConnect = false;
     private static TapjoyRewardedVideoListener sTapjoyListener = new TapjoyRewardedVideoListener();
+    @NonNull
+    private TapjoyAdapterConfiguration mTapjoyAdapterConfiguration;
+
 
     static {
         TapjoyLog.i(TAG, "Class initialized with network adapter version " + TJC_MOPUB_ADAPTER_VERSION_NUMBER);
@@ -79,6 +82,9 @@ public class TapjoyRewardedVideo extends CustomEventRewardedVideo {
     @Override
     protected void onInvalidate() {
     }
+    public TapjoyRewardedVideo() {
+        mTapjoyAdapterConfiguration = new TapjoyAdapterConfiguration();
+    }
 
     @Override
     protected boolean checkAndInitializeSdk(@NonNull Activity launcherActivity,
@@ -94,12 +100,11 @@ public class TapjoyRewardedVideo extends CustomEventRewardedVideo {
         }
 
         final String adm = serverExtras.get(ADM_KEY);
-
         if (!Tapjoy.isConnected()) {
             if (checkAndInitMediationSettings()) {
                 MoPubLog.log(CUSTOM, ADAPTER_NAME, "Connecting to Tapjoy via MoPub mediation settings...");
                 connectToTapjoy(launcherActivity, adm);
-
+                mTapjoyAdapterConfiguration.setCachedInitializationParameters(launcherActivity, serverExtras);
                 isAutoConnect = true;
                 return true;
             } else {
