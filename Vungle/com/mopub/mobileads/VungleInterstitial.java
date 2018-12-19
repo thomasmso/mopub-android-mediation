@@ -44,6 +44,8 @@ public class VungleInterstitial extends CustomEventInterstitial {
     private final Handler mHandler;
     private CustomEventInterstitialListener mCustomEventInterstitialListener;
     private VungleInterstitialRouterListener mVungleRouterListener;
+    @NonNull
+    private VungleAdapterConfiguration mVungleAdapterConfiguration;
     private String mAppId;
     private String mPlacementId;
     private AdConfig mAdConfig;
@@ -53,6 +55,7 @@ public class VungleInterstitial extends CustomEventInterstitial {
     public VungleInterstitial() {
         mHandler = new Handler(Looper.getMainLooper());
         sVungleRouter = VungleRouter.getInstance();
+        mVungleAdapterConfiguration = new VungleAdapterConfiguration();
     }
 
     @Override
@@ -100,6 +103,7 @@ public class VungleInterstitial extends CustomEventInterstitial {
         if (!sVungleRouter.isVungleInitialized()) {
             // No longer passing the placement IDs (pids) param per Vungle 6.3.17
             sVungleRouter.initVungle(context, mAppId);
+            mVungleAdapterConfiguration.setCachedInitializationParameters(context,serverExtras);
         }
 
         if (localExtras != null) {
@@ -173,6 +177,7 @@ public class VungleInterstitial extends CustomEventInterstitial {
         }
 
         if (serverExtras.containsKey(PLACEMENT_IDS_KEY)) {
+            MoPubLog.log(CUSTOM, "No need to set placement IDs " +
             MoPubLog.log(CUSTOM, ADAPTER_NAME + "No need to set placement IDs " +
                     "in MoPub dashboard with Vungle SDK version " +
                     com.vungle.warren.BuildConfig.VERSION_NAME);

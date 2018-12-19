@@ -38,10 +38,12 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
     public static final String VUNGLE_NETWORK_ID_DEFAULT = "vngl_id";
     private static final String VUNGLE_DEFAULT_APP_ID = "YOUR_APP_ID_HERE";
 
-    private static final String ADAPTER_NAME = GooglePlayServicesRewardedVideo.class.getSimpleName();
+    private static final String ADAPTER_NAME = VungleRewardedVideo.class.getSimpleName();
 
     private static VungleRouter sVungleRouter;
     private VungleRewardedRouterListener mVungleRewardedRouterListener;
+    @NonNull
+    private VungleAdapterConfiguration mVungleAdapterConfiguration;
     private static boolean sInitialized;
     private String mAppId;
     @NonNull
@@ -58,6 +60,7 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
         if (mVungleRewardedRouterListener == null) {
             mVungleRewardedRouterListener = new VungleRewardedRouterListener();
         }
+        mVungleAdapterConfiguration = new VungleAdapterConfiguration();
     }
 
     @Nullable
@@ -88,6 +91,7 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
             if (!sVungleRouter.isVungleInitialized()) {
                 // No longer passing the placement IDs (pids) param per Vungle 6.3.17
                 sVungleRouter.initVungle(launcherActivity, mAppId);
+                mVungleAdapterConfiguration.setCachedInitializationParameters(launcherActivity, serverExtras);
             }
 
             sInitialized = true;
@@ -123,6 +127,7 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
             if (sVungleRouter.isValidPlacement(mPlacementId)) {
                 sVungleRouter.loadAdForPlacement(mPlacementId, mVungleRewardedRouterListener);
             } else {
+                MoPubLog.log(CUSTOM, "Invalid or Inactive Placement ID: " + mPlacementId);
                 MoPubLog.log(CUSTOM, ADAPTER_NAME, "Invalid or Inactive Placement ID: " + mPlacementId);
                 MoPubRewardedVideoManager.onRewardedVideoLoadFailure(VungleRewardedVideo.class, mPlacementId, MoPubErrorCode.NETWORK_NO_FILL);
 
