@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
 import com.mopub.common.logging.MoPubLog;
+
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
@@ -29,6 +31,7 @@ import com.mopub.common.LifecycleListener;
 import com.mopub.common.MediationSettings;
 import com.mopub.common.MoPub;
 import com.mopub.common.MoPubReward;
+import com.mopub.common.privacy.ConsentStatus;
 import com.mopub.common.privacy.PersonalInfoManager;
 import com.mopub.common.util.Json;
 
@@ -165,16 +168,32 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
             String adColonyClientOptions = serverExtras.get(CLIENT_OPTIONS_KEY);
             String adColonyAppId = serverExtras.get(APP_ID_KEY);
             String[] adColonyAllZoneIds = extractAllZoneIds(serverExtras);
+
             // Pass the user consent from the MoPub SDK to AdColony as per GDPR
             PersonalInfoManager personalInfoManager = MoPub.getPersonalInformationManager();
-            mAdColonyAppOptions = AdColonyAppOptions.getMoPubAppOptions(adColonyClientOptions);
-            mAdColonyAppOptions = mAdColonyAppOptions == null ? new AdColonyAppOptions() : mAdColonyAppOptions;
-            if (personalInfoManager != null && personalInfoManager.gdprApplies() != null) {
-                if (personalInfoManager.gdprApplies()) {
+
+            boolean canCollectPersonalInfo = MoPub.canCollectPersonalInformation();
+            boolean shouldAllowLegitimateInterest = MoPub.shouldAllowLegitimateInterest();
+
+            mAdColonyAppOptions = mAdColonyAppOptions == null ? new AdColonyAppOptions() :
+                    mAdColonyAppOptions;
+
+            if (personalInfoManager != null && personalInfoManager.gdprApplies() == Boolean.TRUE) {
+                if (shouldAllowLegitimateInterest) {
+                    if (personalInfoManager.getPersonalInfoConsentStatus() == ConsentStatus.EXPLICIT_NO
+                            || personalInfoManager.getPersonalInfoConsentStatus() == ConsentStatus.DNT) {
+                        mAdColonyAppOptions.setOption(CONSENT_GIVEN, true)
+                                .setOption(CONSENT_RESPONSE, false);
+                    } else {
+                        mAdColonyAppOptions.setOption(CONSENT_GIVEN, true)
+                                .setOption(CONSENT_RESPONSE, true);
+                    }
+                } else {
                     mAdColonyAppOptions.setOption(CONSENT_GIVEN, true)
-                            .setOption(CONSENT_RESPONSE, MoPub.canCollectPersonalInformation());
+                            .setOption(CONSENT_RESPONSE, canCollectPersonalInfo);
                 }
             }
+
             setUpGlobalSettings();
 
             // Need to check the zone IDs sent from the MoPub portal and reconfigure if they are
@@ -367,7 +386,7 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
                     AdColonyRewardedVideo.class,
                     zone.getZoneID(),
                     MoPubErrorCode.NETWORK_NO_FILL);
-            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),MoPubErrorCode.NETWORK_NO_FILL);
+            MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, MoPubErrorCode.NETWORK_NO_FILL.getIntCode(), MoPubErrorCode.NETWORK_NO_FILL);
         }
 
         @Override

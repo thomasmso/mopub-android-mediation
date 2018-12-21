@@ -22,6 +22,7 @@ import com.adcolony.sdk.AdColonyAppOptions;
 import com.adcolony.sdk.AdColonyInterstitialListener;
 import com.adcolony.sdk.AdColonyZone;
 import com.mopub.common.MoPub;
+import com.mopub.common.privacy.ConsentStatus;
 import com.mopub.common.privacy.PersonalInfoManager;
 import com.mopub.common.util.Json;
 
@@ -95,15 +96,32 @@ public class AdColonyInterstitial extends CustomEventInterstitial {
             mAdColonyAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
         }
         AdColonyAppOptions mAdColonyAppOptions = AdColonyAppOptions.getMoPubAppOptions(clientOptions);
+
         // Pass the user consent from the MoPub SDK to AdColony as per GDPR
         PersonalInfoManager personalInfoManager = MoPub.getPersonalInformationManager();
-        mAdColonyAppOptions = mAdColonyAppOptions == null ? new AdColonyAppOptions() : mAdColonyAppOptions;
-        if (personalInfoManager != null && personalInfoManager.gdprApplies() != null) {
-            if (personalInfoManager.gdprApplies()) {
+
+        boolean canCollectPersonalInfo = MoPub.canCollectPersonalInformation();
+        boolean shouldAllowLegitimateInterest = MoPub.shouldAllowLegitimateInterest();
+
+        mAdColonyAppOptions = mAdColonyAppOptions == null ? new AdColonyAppOptions() :
+                mAdColonyAppOptions;
+
+        if (personalInfoManager != null && personalInfoManager.gdprApplies() == Boolean.TRUE) {
+            if (shouldAllowLegitimateInterest) {
+                if (personalInfoManager.getPersonalInfoConsentStatus() == ConsentStatus.EXPLICIT_NO
+                        || personalInfoManager.getPersonalInfoConsentStatus() == ConsentStatus.DNT) {
+                    mAdColonyAppOptions.setOption(CONSENT_GIVEN, true)
+                            .setOption(CONSENT_RESPONSE, false);
+                } else {
+                    mAdColonyAppOptions.setOption(CONSENT_GIVEN, true)
+                            .setOption(CONSENT_RESPONSE, true);
+                }
+            } else {
                 mAdColonyAppOptions.setOption(CONSENT_GIVEN, true)
-                        .setOption(CONSENT_RESPONSE, MoPub.canCollectPersonalInformation());
+                        .setOption(CONSENT_RESPONSE, canCollectPersonalInfo);
             }
         }
+
         mAdColonyInterstitialListener = getAdColonyInterstitialListener();
         if (!isAdColonyConfigured()) {
             AdColony.configure((Activity) context, mAdColonyAppOptions, appId, allZoneIds);
