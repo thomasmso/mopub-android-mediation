@@ -12,6 +12,8 @@ import com.mopub.common.MoPubReward;
 import com.mopub.common.Preconditions;
 import com.mopub.common.VisibleForTesting;
 import com.mopub.common.logging.MoPubLog;
+import com.mopub.common.privacy.ConsentStatus;
+import com.mopub.common.privacy.PersonalInfoManager;
 import com.mopub.mobileads.CustomEventInterstitial.CustomEventInterstitialListener;
 
 import java.util.Collections;
@@ -35,11 +37,11 @@ public class ChartboostShared {
     /*
      * These keys are intended for MoPub internal use. Do not modify.
      */
+    public static final String ADAPTER_NAME = ChartboostShared.class.getSimpleName();
     public static final String APP_ID_KEY = "appId";
     public static final String APP_SIGNATURE_KEY = "appSignature";
     public static final String LOCATION_KEY = "location";
     public static final String LOCATION_DEFAULT = "Default";
-    public static final String ADAPTER_NAME = ChartboostShared.class.getSimpleName();
 
     @Nullable
     private static String mAppId;
@@ -55,8 +57,28 @@ public class ChartboostShared {
         Preconditions.checkNotNull(serverExtras);
 
         // Pass the user consent from the MoPub SDK to Chartboost as per GDPR
-        boolean canCollectPersonalInfo = MoPub.canCollectPersonalInformation();
-        Chartboost.restrictDataCollection(launcherActivity.getApplicationContext(), !canCollectPersonalInfo);
+        PersonalInfoManager personalInfoManager = MoPub.getPersonalInformationManager();
+
+        final boolean canCollectPersonalInfo = MoPub.canCollectPersonalInformation();
+        final boolean shouldAllowLegitimateInterest = MoPub.shouldAllowLegitimateInterest();
+
+        if (personalInfoManager != null && personalInfoManager.gdprApplies() == Boolean.TRUE) {
+
+            if (shouldAllowLegitimateInterest) {
+                if (personalInfoManager.getPersonalInfoConsentStatus() == ConsentStatus.EXPLICIT_NO
+                        || personalInfoManager.getPersonalInfoConsentStatus() == ConsentStatus.DNT) {
+                    Chartboost.setPIDataUseConsent(launcherActivity.getApplicationContext(),
+                            Chartboost.CBPIDataUseConsent.NO_BEHAVIORAL);
+                } else {
+                    Chartboost.setPIDataUseConsent(launcherActivity.getApplicationContext(),
+                            Chartboost.CBPIDataUseConsent.YES_BEHAVIORAL);
+                }
+            } else {
+                Chartboost.setPIDataUseConsent(launcherActivity.getApplicationContext(),
+                        canCollectPersonalInfo ? Chartboost.CBPIDataUseConsent.YES_BEHAVIORAL :
+                                Chartboost.CBPIDataUseConsent.NO_BEHAVIORAL);
+            }
+        }
 
         // Validate Chartboost args
         if (!serverExtras.containsKey(APP_ID_KEY)) {
