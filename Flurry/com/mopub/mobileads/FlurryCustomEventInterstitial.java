@@ -2,6 +2,7 @@ package com.mopub.mobileads;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.flurry.android.ads.FlurryAdErrorType;
@@ -30,6 +31,13 @@ class FlurryCustomEventInterstitial extends com.mopub.mobileads.CustomEventInter
 
     private FlurryAdInterstitial mInterstitial;
 
+    @NonNull
+    private FlurryAdapterConfiguration mFlurryAdapterConfiguration;
+
+    public FlurryCustomEventInterstitial() {
+        mFlurryAdapterConfiguration = new FlurryAdapterConfiguration();
+    }
+
     @Override
     protected void loadInterstitial(Context context,
                                     CustomEventInterstitialListener listener,
@@ -37,7 +45,7 @@ class FlurryCustomEventInterstitial extends com.mopub.mobileads.CustomEventInter
                                     Map<String, String> serverExtras) {
         if (context == null) {
             MoPubLog.log(CUSTOM, ADAPTER_NAME, "Context cannot be null.");
-            listener.onInterstitialFailed(NETWORK_NO_FILL);
+            listener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
 
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
@@ -53,7 +61,7 @@ class FlurryCustomEventInterstitial extends com.mopub.mobileads.CustomEventInter
         if (!(context instanceof Activity)) {
             MoPubLog.log(CUSTOM, ADAPTER_NAME, "Ad can be rendered only in Activity context.");
 
-            listener.onInterstitialFailed(NETWORK_NO_FILL);
+            listener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
 
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
@@ -64,7 +72,7 @@ class FlurryCustomEventInterstitial extends com.mopub.mobileads.CustomEventInter
         if (!validateExtras(serverExtras)) {
             MoPubLog.log(CUSTOM, ADAPTER_NAME, "Failed interstitial ad fetch: Missing required server " +
                     "extras [FLURRY_APIKEY and/or FLURRY_ADSPACE].");
-            listener.onInterstitialFailed(NETWORK_NO_FILL);
+            listener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
 
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
@@ -80,6 +88,8 @@ class FlurryCustomEventInterstitial extends com.mopub.mobileads.CustomEventInter
 
         String apiKey = serverExtras.get(FlurryAgentWrapper.PARAM_API_KEY);
         mAdSpaceName = serverExtras.get(FlurryAgentWrapper.PARAM_AD_SPACE_NAME);
+
+        mFlurryAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
 
         FlurryAgentWrapper.getInstance().startSession(context, apiKey, null);
 

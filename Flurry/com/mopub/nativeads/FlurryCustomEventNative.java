@@ -14,6 +14,7 @@ import com.flurry.android.ads.FlurryAdNativeAsset;
 import com.flurry.android.ads.FlurryAdNativeListener;
 import com.flurry.android.ads.FlurryAdTargeting;
 import com.mopub.common.logging.MoPubLog;
+import com.mopub.mobileads.FlurryAdapterConfiguration;
 import com.mopub.mobileads.FlurryAgentWrapper;
 
 import java.util.ArrayList;
@@ -86,9 +87,15 @@ public final class FlurryCustomEventNative extends CustomEventNative {
     private static final double MOPUB_STAR_RATING_SCALE = StaticNativeAd.MAX_STAR_RATING;
 
     private FlurryAgentListener mFlurryAgentListener;
+    @NonNull
+    private FlurryAdapterConfiguration mFlurryAdapterConfiguration;
 
     /* Static reference of the ads to ensure they don't get garbage collected */
     private final static List<FlurryAdNative> sFlurryNativeAds = new ArrayList<>();
+
+    public FlurryCustomEventNative() {
+        mFlurryAdapterConfiguration = new FlurryAdapterConfiguration();
+    }
 
     @Override
     protected void loadNativeAd(@NonNull final Context context,
@@ -114,7 +121,7 @@ public final class FlurryCustomEventNative extends CustomEventNative {
                                 customEventNativeListener);
                     }
                 };
-
+                mFlurryAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
                 FlurryAgentWrapper.getInstance().startSession(context, flurryApiKey,
                         mFlurryAgentListener);
             }

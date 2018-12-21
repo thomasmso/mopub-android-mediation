@@ -24,8 +24,6 @@ public class FlurryNativeAdRenderer implements
     @NonNull
     private final WeakHashMap<View, FlurryNativeViewHolder> mViewHolderMap;
 
-    private static final String ADAPTER_NAME = FlurryNativeAdRenderer.class.getSimpleName();
-
     public FlurryNativeAdRenderer(@NonNull final FlurryViewBinder viewBinder) {
         mViewBinder = viewBinder;
         mViewHolderMap = new WeakHashMap<>();
