@@ -43,7 +43,6 @@ public final class FlurryAgentWrapper {
         if (!FlurryAgent.isSessionActive()) {
             mAgentBuilder.withListener(flurryAgentListener) // withListener allows nulls
                     .build(context, apiKey);
-
             FlurryAgent.onStartSession(context);
         }
     }

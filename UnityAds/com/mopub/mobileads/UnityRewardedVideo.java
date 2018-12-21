@@ -234,5 +234,4 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
                     errorCode.getIntCode(),
                     errorCode);
         }
-    }
 }

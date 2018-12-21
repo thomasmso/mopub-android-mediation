@@ -21,7 +21,6 @@ import java.util.Map;
 
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THROWABLE;
-
 public class VungleRouter {
 
     // Version of the adapter, intended for Vungle internal use.
