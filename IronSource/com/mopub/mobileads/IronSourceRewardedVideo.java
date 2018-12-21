@@ -58,9 +58,16 @@ public class IronSourceRewardedVideo extends CustomEventRewardedVideo implements
     // Indicates if IronSource RV adapter is in its first init flow
     private static boolean mIsFirstInitFlow = true;
 
+    @NonNull
+    private IronSourceAdapterConfiguration mIronSourceAdapterConfiguration;
+
     /**
      * Mopub API
      */
+
+    public IronSourceRewardedVideo() {
+        mIronSourceAdapterConfiguration = new IronSourceAdapterConfiguration();
+    }
 
     @Nullable
     @Override
@@ -122,6 +129,7 @@ public class IronSourceRewardedVideo extends CustomEventRewardedVideo implements
     protected void loadWithSdkInitialized(@NonNull Activity activity, @NonNull Map<String, Object> localExtras, @NonNull Map<String, String> serverExtras) throws Exception {
 
         setCredentials(serverExtras);
+        mIronSourceAdapterConfiguration.setCachedInitializationParameters(activity, serverExtras);
 
         if (!mIsFirstInitFlow) {
             if (hasVideoAvailable()) {

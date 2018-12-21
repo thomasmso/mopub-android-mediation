@@ -51,9 +51,16 @@ public class IronSourceInterstitial extends CustomEventInterstitial implements I
 
     private static CustomEventInterstitialListener mMoPubListener;
 
+    @NonNull
+    private IronSourceAdapterConfiguration mIronSourceAdapterConfiguration;
+
     /**
      * Mopub API
      */
+
+    public IronSourceInterstitial() {
+        mIronSourceAdapterConfiguration = new IronSourceAdapterConfiguration();
+    }
 
     @Override
     protected void loadInterstitial(Context context, CustomEventInterstitialListener customEventInterstitialListener, Map<String, Object> map0, Map<String, String> serverExtras) {
@@ -101,6 +108,8 @@ public class IronSourceInterstitial extends CustomEventInterstitial implements I
             if (!TextUtils.isEmpty(applicationKey)) {
                 initIronSourceSDK(((Activity) context), applicationKey);
                 loadInterstitial();
+
+                mIronSourceAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
             } else {
                 MoPubLog.log(CUSTOM, ADAPTER_NAME, "IronSource initialization failed, make sure that " +
                         "'applicationKey' server parameter is added");
