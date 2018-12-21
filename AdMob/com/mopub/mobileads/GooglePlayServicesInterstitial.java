@@ -2,6 +2,7 @@ package com.mopub.mobileads;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdListener;
@@ -23,11 +24,17 @@ public class GooglePlayServicesInterstitial extends CustomEventInterstitial {
     /*
      * These keys are intended for MoPub internal use. Do not modify.
      */
-    public static final String AD_UNIT_ID_KEY = "adUnitID";
-    public static final String ADAPTER_NAME = GooglePlayServicesInterstitial.class.getSimpleName();
+    private static final String AD_UNIT_ID_KEY = "adUnitID";
+    private static final String ADAPTER_NAME = GooglePlayServicesInterstitial.class.getSimpleName();
 
+    @NonNull
+    private GooglePlayServicesAdapterConfiguration mGooglePlayServicesAdapterConfiguration;
     private CustomEventInterstitialListener mInterstitialListener;
     private InterstitialAd mGoogleInterstitialAd;
+
+    public GooglePlayServicesInterstitial() {
+        mGooglePlayServicesAdapterConfiguration = new GooglePlayServicesAdapterConfiguration();
+    }
 
     @Override
     protected void loadInterstitial(
@@ -43,6 +50,8 @@ public class GooglePlayServicesInterstitial extends CustomEventInterstitial {
 
         if (extrasAreValid(serverExtras)) {
             adUnitId = serverExtras.get(AD_UNIT_ID_KEY);
+
+            mGooglePlayServicesAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
         } else {
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),

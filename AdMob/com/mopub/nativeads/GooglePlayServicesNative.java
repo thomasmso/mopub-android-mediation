@@ -16,6 +16,7 @@ import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.mopub.common.MediationSettings;
 import com.mopub.common.logging.MoPubLog;
+import com.mopub.mobileads.GooglePlayServicesAdapterConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,14 +61,21 @@ public class GooglePlayServicesNative extends CustomEventNative {
     public static final String KEY_EXPERIMENTAL_EXTRA_SWAP_MARGINS = "swap_margins";
 
     /**
+     * String to store the simple class name for this adapter.
+     */
+    private static final String ADAPTER_NAME = GooglePlayServicesNative.class.getSimpleName();
+
+    /**
      * Flag to determine whether or not the adapter has been initialized.
      */
     private static AtomicBoolean sIsInitialized = new AtomicBoolean(false);
 
-    /**
-     * String to store the simple class name for this adapter.
-     */
-    public static final String ADAPTER_NAME = GooglePlayServicesNative.class.getSimpleName();
+    @NonNull
+    private GooglePlayServicesAdapterConfiguration mGooglePlayServicesAdapterConfiguration;
+
+    public GooglePlayServicesNative() {
+        mGooglePlayServicesAdapterConfiguration = new GooglePlayServicesAdapterConfiguration();
+    }
 
     @Override
     protected void loadNativeAd(@NonNull final Context context,
@@ -96,6 +104,8 @@ public class GooglePlayServicesNative extends CustomEventNative {
 
         GooglePlayServicesNativeAd nativeAd = new GooglePlayServicesNativeAd(customEventNativeListener);
         nativeAd.loadAd(context, adUnitId, localExtras);
+
+        mGooglePlayServicesAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
     }
 
     /**

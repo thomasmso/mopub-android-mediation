@@ -35,6 +35,11 @@ public class GooglePlayServicesRewardedVideo extends CustomEventRewardedVideo im
         RewardedVideoAdListener {
 
     /**
+     * String to represent the simple class name to be used in log entries.
+     */
+    private static final String ADAPTER_NAME = GooglePlayServicesRewardedVideo.class.getSimpleName();
+
+    /**
      * Key to obtain AdMob application ID from the server extras provided by MoPub.
      */
     private static final String KEY_EXTRA_APPLICATION_ID = "appid";
@@ -68,9 +73,10 @@ public class GooglePlayServicesRewardedVideo extends CustomEventRewardedVideo im
     private boolean isAdLoaded;
 
     /**
-     * String to represent the simple class name to be used in log entries.
+     * The AdMob adapter configuration to use to cache network IDs from AdMob
      */
-    public static final String ADAPTER_NAME = GooglePlayServicesRewardedVideo.class.getSimpleName();
+    @NonNull
+    private GooglePlayServicesAdapterConfiguration mGooglePlayServicesAdapterConfiguration;
 
     /**
      * A {@link LifecycleListener} used to forward the activity lifecycle events from MoPub SDK to
@@ -96,6 +102,7 @@ public class GooglePlayServicesRewardedVideo extends CustomEventRewardedVideo im
 
     public GooglePlayServicesRewardedVideo() {
         sIsInitialized = new AtomicBoolean(false);
+        mGooglePlayServicesAdapterConfiguration = new GooglePlayServicesAdapterConfiguration();
     }
 
     @Nullable
@@ -149,6 +156,8 @@ public class GooglePlayServicesRewardedVideo extends CustomEventRewardedVideo im
 
             mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(launcherActivity);
             mRewardedVideoAd.setRewardedVideoAdListener(GooglePlayServicesRewardedVideo.this);
+
+            mGooglePlayServicesAdapterConfiguration.setCachedInitializationParameters(launcherActivity, serverExtras);
             return true;
         }
 
