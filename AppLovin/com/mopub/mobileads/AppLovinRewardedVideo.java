@@ -63,9 +63,16 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
     private AppLovinAd tokenAd;
     private String serverExtrasZoneId = DEFAULT_ZONE;
 
+    @NonNull
+    private AppLovinAdapterConfiguration mAppLovinAdapterConfiguration;
+
     //
     // MoPub Custom Event Methods
     //
+
+    public AppLovinRewardedVideo() {
+        mAppLovinAdapterConfiguration = new AppLovinAdapterConfiguration();
+    }
 
     @Override
     protected boolean checkAndInitializeSdk(@NonNull final Activity activity, @NonNull final Map<String, Object> localExtras, @NonNull final Map<String, String> serverExtras) throws Exception {
@@ -98,6 +105,8 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
 
         MoPubLog.log(CUSTOM, ADAPTER_NAME, "Requesting AppLovin banner with serverExtras: " + serverExtras
                 + ", localExtras: " + localExtras + " and has ad markup: " + hasAdMarkup);
+
+        mAppLovinAdapterConfiguration.setCachedInitializationParameters(activity, serverExtras);
 
         // Determine zone
         final String zoneId;

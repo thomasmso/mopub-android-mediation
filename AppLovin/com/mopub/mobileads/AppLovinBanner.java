@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.applovin.adview.AppLovinAdView;
@@ -50,9 +51,15 @@ public class AppLovinBanner extends CustomEventBanner {
 
     private static final String ADAPTER_NAME = AppLovinBanner.class.getSimpleName();
 
+    @NonNull
+    private AppLovinAdapterConfiguration mAppLovinAdapterConfiguration;
     //
     // MoPub Custom Event Methods
     //
+
+    public AppLovinBanner() {
+        mAppLovinAdapterConfiguration = new AppLovinAdapterConfiguration();
+    }
 
     @Override
     protected void loadBanner(final Context context, final CustomEventBannerListener customEventBannerListener, final Map<String, Object> localExtras, final Map<String, String> serverExtras) {
@@ -87,6 +94,8 @@ public class AppLovinBanner extends CustomEventBanner {
             AppLovinSdk sdk = retrieveSdk(serverExtras, context);
             sdk.setPluginVersion("MoPub-3.1.0");
             sdk.setMediationProvider(AppLovinMediationProvider.MOPUB);
+
+            mAppLovinAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
 
             final AppLovinAdView adView = new AppLovinAdView(sdk, adSize, context);
             adView.setAdDisplayListener(new AppLovinAdDisplayListener() {

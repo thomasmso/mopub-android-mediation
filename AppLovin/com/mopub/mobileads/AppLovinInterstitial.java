@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.applovin.adview.AppLovinInterstitialAd;
@@ -61,9 +62,16 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
     private boolean isTokenEvent;
     private AppLovinAd tokenAd;
 
+    @NonNull
+    private AppLovinAdapterConfiguration mAppLovinAdapterConfiguration;
+
     //
     // MoPub Custom Event Methods
     //
+
+    public AppLovinInterstitial() {
+        mAppLovinAdapterConfiguration = new AppLovinAdapterConfiguration();
+    }
 
     @Override
     public void loadInterstitial(final Context context, final CustomEventInterstitialListener listener, final Map<String, Object> localExtras, final Map<String, String> serverExtras) {
@@ -99,6 +107,8 @@ public class AppLovinInterstitial extends CustomEventInterstitial implements App
 
         MoPubLog.log(CUSTOM, ADAPTER_NAME, "Requesting AppLovin interstitial with serverExtras: " +
                 serverExtras + ", localExtras: " + localExtras + " and has adMarkup: " + hasAdMarkup);
+
+        mAppLovinAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
 
         if (hasAdMarkup) {
             isTokenEvent = true;
