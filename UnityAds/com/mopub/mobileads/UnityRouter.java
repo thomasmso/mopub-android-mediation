@@ -21,6 +21,8 @@ public class UnityRouter {
     private static final String GAME_ID_KEY = "gameId";
     private static final String ZONE_ID_KEY = "zoneId";
     private static final String PLACEMENT_ID_KEY = "placementId";
+    private static final String ADAPTER_NAME = UnityRouter.class.getSimpleName();
+
     private static final UnityInterstitialCallbackRouter interstitialRouter = new UnityInterstitialCallbackRouter();
     private static final UnityBannerCallbackRouter bannerRouter = new UnityBannerCallbackRouter();
 

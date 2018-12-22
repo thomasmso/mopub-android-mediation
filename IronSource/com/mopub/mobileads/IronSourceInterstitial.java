@@ -117,7 +117,7 @@ public class IronSourceInterstitial extends CustomEventInterstitial implements I
             }
 
         } catch (Exception e) {
-            MoPubLog.log(CUSTOM, ADAPTER_NAME_WITH_THROWABLE, e);
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, e);
             sendMoPubInterstitialFailed(MoPubErrorCode.INTERNAL_ERROR);
         }
     }
@@ -147,7 +147,7 @@ public class IronSourceInterstitial extends CustomEventInterstitial implements I
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                     MoPubErrorCode.NETWORK_NO_FILL);
 
-            MoPubLog.log(CUSTOM, ADAPTER_NAME_WITH_THROWABLE, e);
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, e);
         }
     }
 

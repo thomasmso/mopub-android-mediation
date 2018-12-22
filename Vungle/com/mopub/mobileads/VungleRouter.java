@@ -25,6 +25,7 @@ public class VungleRouter {
 
     // Version of the adapter, intended for Vungle internal use.
     private static final String VERSION = "6.3.24";
+    private static final String ADAPTER_NAME = VungleRouter.class.getSimpleName();
 
     private static VungleRouter instance = new VungleRouter();
 
