@@ -17,10 +17,13 @@ import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
 
 class ChartboostInterstitial extends CustomEventInterstitial {
 
+    private static final String ADAPTER_NAME = ChartboostInterstitial.class.getSimpleName();
+
     @NonNull
     private String mLocation = ChartboostShared.LOCATION_DEFAULT;
 
-    private static final String ADAPTER_NAME = ChartboostInterstitial.class.getSimpleName();
+    @NonNull
+    private ChartboostAdapterConfiguration mChartboostAdapterConfiguration;
 
     /*
      * Note: Chartboost recommends implementing their specific Activity lifecycle callbacks in your
@@ -31,6 +34,11 @@ class ChartboostInterstitial extends CustomEventInterstitial {
     /*
      * Abstract methods from CustomEventInterstitial
      */
+
+    public ChartboostInterstitial() {
+        mChartboostAdapterConfiguration = new ChartboostAdapterConfiguration();
+    }
+
     @Override
     protected void loadInterstitial(@NonNull Context context,
                                     @NonNull CustomEventInterstitialListener interstitialListener,
@@ -70,6 +78,8 @@ class ChartboostInterstitial extends CustomEventInterstitial {
         try {
             ChartboostShared.initializeSdk(activity, serverExtras);
             ChartboostShared.getDelegate().registerInterstitialListener(mLocation, interstitialListener);
+
+            mChartboostAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
         } catch (NullPointerException e) {
             interstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);
 

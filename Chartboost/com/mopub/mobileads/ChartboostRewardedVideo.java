@@ -19,19 +19,25 @@ import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_FAILED;
 
 public class ChartboostRewardedVideo extends CustomEventRewardedVideo {
+
+    @NonNull
+    public String mLocation = ChartboostShared.LOCATION_DEFAULT;
+
     @NonNull
     private static final LifecycleListener sLifecycleListener =
             new ChartboostLifecycleListener();
 
     @NonNull
-    private String mLocation = ChartboostShared.LOCATION_DEFAULT;
-    @NonNull
     private final Handler mHandler;
 
     private static final String ADAPTER_NAME = ChartboostRewardedVideo.class.getSimpleName();
 
+    @NonNull
+    private ChartboostAdapterConfiguration mChartboostAdapterConfiguration;
+
     public ChartboostRewardedVideo() {
         mHandler = new Handler();
+        mChartboostAdapterConfiguration = new ChartboostAdapterConfiguration();
     }
 
     @Override
@@ -73,6 +79,8 @@ public class ChartboostRewardedVideo extends CustomEventRewardedVideo {
         if (serverExtras.containsKey(ChartboostShared.LOCATION_KEY)) {
             String location = serverExtras.get(ChartboostShared.LOCATION_KEY);
             mLocation = TextUtils.isEmpty(location) ? mLocation : location;
+
+            mChartboostAdapterConfiguration.setCachedInitializationParameters(activity, serverExtras);
         }
 
         ChartboostShared.getDelegate().registerRewardedVideoLocation(mLocation);

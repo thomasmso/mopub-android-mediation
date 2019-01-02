@@ -37,16 +37,24 @@ public class ChartboostShared {
     /*
      * These keys are intended for MoPub internal use. Do not modify.
      */
-    public static final String ADAPTER_NAME = ChartboostShared.class.getSimpleName();
-    public static final String APP_ID_KEY = "appId";
-    public static final String APP_SIGNATURE_KEY = "appSignature";
     public static final String LOCATION_KEY = "location";
     public static final String LOCATION_DEFAULT = "Default";
+
+    private static final String APP_ID_KEY = "appId";
+    private static final String APP_SIGNATURE_KEY = "appSignature";
+    private static final String ADAPTER_NAME = ChartboostShared.class.getSimpleName();
 
     @Nullable
     private static String mAppId;
     @Nullable
     private static String mAppSignature;
+
+    @NonNull
+    private static ChartboostAdapterConfiguration mChartboostAdapterConfiguration;
+
+    public ChartboostShared() {
+        mChartboostAdapterConfiguration = new ChartboostAdapterConfiguration();
+    }
 
     /**
      * Initialize the Chartboost SDK for the provided application id and app signature.
@@ -109,6 +117,8 @@ public class ChartboostShared {
 
         mAppId = appId;
         mAppSignature = appSignature;
+
+        mChartboostAdapterConfiguration.setCachedInitializationParameters(launcherActivity, serverExtras);
 
         // Perform all the common SDK initialization steps including startAppWithId
         Chartboost.startWithAppId(launcherActivity, mAppId, mAppSignature);
