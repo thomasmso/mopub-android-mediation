@@ -133,7 +133,7 @@ public class AppLovinBanner extends CustomEventBanner {
 
                 @Override
                 public void adClosedFullscreen(final AppLovinAd appLovinAd, final AppLovinAdView appLovinAdView) {
-                    MoPubLog.log(CUSTOM, ADAPTER_NAME,  "Banner closed fullscreen");
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "Banner closed fullscreen");
 
                     if (customEventBannerListener != null) {
                         customEventBannerListener.onBannerCollapsed();

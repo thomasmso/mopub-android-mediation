@@ -250,8 +250,8 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
     public void adHidden(final AppLovinAd ad) {
 
         if (fullyWatched && reward != null) {
-            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Rewarded" + reward.getAmount() + " " + reward.getLabel());
-            MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME);
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Rewarded: " + reward.getAmount() + " " + reward.getLabel());
+            MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME, reward.getAmount(), reward.getLabel());
 
             MoPubRewardedVideoManager.onRewardedVideoCompleted(getClass(), getAdNetworkId(), reward);
         }
