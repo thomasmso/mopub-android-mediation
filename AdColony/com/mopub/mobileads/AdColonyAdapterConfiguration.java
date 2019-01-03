@@ -28,7 +28,7 @@ public class AdColonyAdapterConfiguration extends BaseAdapterConfiguration {
 
     // Adapter's keys
     private static final String ADAPTER_NAME = AdColonyAdapterConfiguration.class.getSimpleName();
-    private static final String ADAPTER_VERSION = "3.3.6.1";
+    private static final String ADAPTER_VERSION = "3.3.7.1";
     private static final String BIDDING_TOKEN = "1";
     private static final String MOPUB_NETWORK_NAME = "adcolony";
 
@@ -86,7 +86,8 @@ public class AdColonyAdapterConfiguration extends BaseAdapterConfiguration {
                             || adColonyAllZoneIds.length == 0) {
                         MoPubLog.log(CUSTOM, ADAPTER_NAME, "AdColony's initialization not " +
                                 "started. Ensure AdColony's appId, zoneId, and/or clientOptions " +
-                                "are populated on the MoPub dashboard.");
+                                "are populated on the MoPub dashboard. Note that initialization " +
+                                "on the first app launch is a no-op.");
                     } else {
                         final AdColonyAppOptions adColonyAppOptions =
                                 AdColonyAppOptions.getMoPubAppOptions(adColonyClientOptions);

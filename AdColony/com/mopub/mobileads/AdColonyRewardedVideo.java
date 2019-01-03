@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.mopub.common.logging.MoPubLog;
 
@@ -41,11 +42,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Please reference the Supported Mediation Partner page at http://bit.ly/2mqsuFH for the latest version and ad format certifications.
- */
 public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
-    private static final String TAG = "AdColonyRewardedVideo";
     /*
      * We recommend passing the AdColony client options, app ID, all zone IDs, and current zone ID
      * in the serverExtras Map by specifying Custom Event Data in MoPub's web interface.
@@ -72,9 +69,10 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
     private static boolean sInitialized = false;
     private static LifecycleListener sLifecycleListener = new BaseLifecycleListener();
     private static String[] previousAdColonyAllZoneIds;
-    @NonNull private AdColonyAdapterConfiguration mAdColonyAdapterConfiguration;
+    @NonNull
+    private AdColonyAdapterConfiguration mAdColonyAdapterConfiguration;
 
-    AdColonyInterstitial mAd;
+    private AdColonyInterstitial mAd;
     @NonNull
     private String mZoneId = DEFAULT_ZONE_ID;
     private AdColonyListener mAdColonyListener;
@@ -118,7 +116,6 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
         mScheduledThreadPoolExecutor.shutdownNow();
         AdColonyInterstitial ad = sZoneIdToAdMap.get(mZoneId);
         if (ad != null) {
-            ad.setListener(null);
             ad.destroy();
             sZoneIdToAdMap.remove(mZoneId);
             MoPubLog.log(CUSTOM, ADAPTER_NAME, "AdColony rewarded video destroyed");
@@ -145,9 +142,11 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
                 adColonyAllZoneIds = extractAllZoneIds(serverExtras);
             }
 
-            mAdColonyAppOptions = AdColonyAppOptions.getMoPubAppOptions(adColonyClientOptions);
+            if (!TextUtils.isEmpty(adColonyClientOptions)) {
+                mAdColonyAppOptions = AdColonyAppOptions.getMoPubAppOptions(adColonyClientOptions);
+            }
 
-            if (!isAdColonyConfigured()) {
+            if (!isAdColonyConfigured() && !TextUtils.isEmpty(adColonyAppId)) {
                 previousAdColonyAllZoneIds = adColonyAllZoneIds;
                 AdColony.configure(launcherActivity, mAdColonyAppOptions, adColonyAppId, adColonyAllZoneIds);
             }
@@ -165,7 +164,6 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
         if (extrasAreValid(serverExtras)) {
             mAdColonyAdapterConfiguration.setCachedInitializationParameters(activity, serverExtras);
             mZoneId = serverExtras.get(ZONE_ID_KEY);
-            String adColonyClientOptions = serverExtras.get(CLIENT_OPTIONS_KEY);
             String adColonyAppId = serverExtras.get(APP_ID_KEY);
             String[] adColonyAllZoneIds = extractAllZoneIds(serverExtras);
 
@@ -199,7 +197,9 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
             // Need to check the zone IDs sent from the MoPub portal and reconfigure if they are
             // different than the zones we initially called AdColony.configure() with
             if (shouldReconfigure(previousAdColonyAllZoneIds, adColonyAllZoneIds)) {
-                AdColony.configure(activity, mAdColonyAppOptions, adColonyAppId, adColonyAllZoneIds);
+                if (!TextUtils.isEmpty(adColonyAppId)) {
+                    AdColony.configure(activity, mAdColonyAppOptions, adColonyAppId, adColonyAllZoneIds);
+                }
                 previousAdColonyAllZoneIds = adColonyAllZoneIds;
             } else {
                 // If we aren't reconfiguring we should update the app options via setAppOptions() in case
@@ -209,7 +209,7 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
         }
 
         Object adUnitObject = localExtras.get(DataKeys.AD_UNIT_ID_KEY);
-        if (adUnitObject != null && adUnitObject instanceof String) {
+        if (adUnitObject instanceof String) {
             mAdUnitId = (String) adUnitObject;
         }
 
@@ -349,7 +349,6 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
 
     private static class AdColonyListener extends AdColonyInterstitialListener
             implements AdColonyRewardListener, CustomEventRewardedVideoListener {
-        private static final String TAG = "AdColonyListener";
         private AdColonyAdOptions mAdOptions;
 
         AdColonyListener(AdColonyAdOptions adOptions) {

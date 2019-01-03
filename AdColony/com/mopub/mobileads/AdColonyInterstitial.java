@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.mopub.common.logging.MoPubLog;
 
@@ -29,11 +30,7 @@ import com.mopub.common.util.Json;
 import java.util.Arrays;
 import java.util.Map;
 
-/**
- * Please reference the Supported Mediation Partner page at http://bit.ly/2mqsuFH for the latest version and ad format certifications.
- */
 public class AdColonyInterstitial extends CustomEventInterstitial {
-    private static final String TAG = "AdColonyInterstitial";
     /*
      * We recommend passing the AdColony client options, app ID, all zone IDs, and current zone ID
      * in the serverExtras Map by specifying Custom Event Data in MoPub's web interface.
@@ -95,7 +92,11 @@ public class AdColonyInterstitial extends CustomEventInterstitial {
             zoneId = serverExtras.get(ZONE_ID_KEY);
             mAdColonyAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
         }
-        AdColonyAppOptions mAdColonyAppOptions = AdColonyAppOptions.getMoPubAppOptions(clientOptions);
+
+        AdColonyAppOptions mAdColonyAppOptions = null;
+        if (!TextUtils.isEmpty(clientOptions)) {
+            mAdColonyAppOptions = AdColonyAppOptions.getMoPubAppOptions(clientOptions);
+        }
 
         // Pass the user consent from the MoPub SDK to AdColony as per GDPR
         PersonalInfoManager personalInfoManager = MoPub.getPersonalInformationManager();
@@ -124,19 +125,26 @@ public class AdColonyInterstitial extends CustomEventInterstitial {
 
         mAdColonyInterstitialListener = getAdColonyInterstitialListener();
         if (!isAdColonyConfigured()) {
-            AdColony.configure((Activity) context, mAdColonyAppOptions, appId, allZoneIds);
+            if (!TextUtils.isEmpty(appId)) {
+                AdColony.configure((Activity) context, mAdColonyAppOptions, appId, allZoneIds);
+            }
         } else if ((shouldReconfigure(previousAdColonyAllZoneIds, allZoneIds))) {
             // Need to check the zone IDs sent from the MoPub portal and reconfigure if they are
             // different than the zones we initially called AdColony.configure() with
-            AdColony.configure((Activity) context, mAdColonyAppOptions, appId, allZoneIds);
+            if (!TextUtils.isEmpty(appId)) {
+                AdColony.configure((Activity) context, mAdColonyAppOptions, appId, allZoneIds);
+            }
             previousAdColonyAllZoneIds = allZoneIds;
         } else {
             // If state of consent has changed and we aren't calling configure again, we need
             // to pass this via setAppOptions()
             AdColony.setAppOptions(mAdColonyAppOptions);
         }
-        AdColony.requestInterstitial(zoneId, mAdColonyInterstitialListener);
-        MoPubLog.log(zoneId, LOAD_ATTEMPTED, ADAPTER_NAME);
+
+        if (!TextUtils.isEmpty(zoneId)) {
+            AdColony.requestInterstitial(zoneId, mAdColonyInterstitialListener);
+            MoPubLog.log(zoneId, LOAD_ATTEMPTED, ADAPTER_NAME);
+        }
     }
 
     @Override
@@ -160,7 +168,6 @@ public class AdColonyInterstitial extends CustomEventInterstitial {
     protected void onInvalidate() {
         if (mAdColonyInterstitial != null) {
             mAdColonyInterstitialListener = null;
-            mAdColonyInterstitial.setListener(null);
             mAdColonyInterstitial.destroy();
             mAdColonyInterstitial = null;
         }
@@ -223,7 +230,7 @@ public class AdColonyInterstitial extends CustomEventInterstitial {
 
                 @Override
                 public void onExpiring(@NonNull com.adcolony.sdk.AdColonyInterstitial ad) {
-                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "Adcolony interstitial is expiring; requesting new ad" + ad.getZoneID());
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "AdColony interstitial is expiring; requesting new ad" + ad.getZoneID());
                     AdColony.requestInterstitial(ad.getZoneID(), mAdColonyInterstitialListener);
                 }
 
