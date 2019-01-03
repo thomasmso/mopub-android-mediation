@@ -178,7 +178,7 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
                         MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                         MoPubErrorCode.NETWORK_NO_FILL);
             } else if (finishState == UnityAds.FinishState.COMPLETED) {
-                MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME);
+                MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME, MoPubReward.NO_REWARD_AMOUNT, MoPubReward.NO_REWARD_LABEL);
 
                 MoPubRewardedVideoManager.onRewardedVideoCompleted(
                         UnityRewardedVideo.class,

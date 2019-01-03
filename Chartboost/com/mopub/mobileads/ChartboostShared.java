@@ -338,7 +338,7 @@ public class ChartboostShared {
         public void didCompleteRewardedVideo(String location, int reward) {
             super.didCompleteRewardedVideo(location, reward);
 
-            MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME);
+            MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME, reward, location);
 
             MoPubRewardedVideoManager.onRewardedVideoCompleted(
                     ChartboostRewardedVideo.class,

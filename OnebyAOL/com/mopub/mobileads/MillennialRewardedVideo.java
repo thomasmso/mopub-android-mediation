@@ -361,7 +361,7 @@ final class MillennialRewardedVideo extends CustomEventRewardedVideo {
             MillennialUtils.postOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME);
+                    MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME, MoPubReward.DEFAULT_REWARD_AMOUNT, MoPubReward.NO_REWARD_LABEL);
 
                     MoPubRewardedVideoManager
                             .onRewardedVideoCompleted(MillennialRewardedVideo.class, millennialInterstitial.placementId,

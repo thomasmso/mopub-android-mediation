@@ -245,7 +245,7 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
                 mIsPlaying = false;
 
                 if (wasSuccessfulView) {
-                    MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME);
+                    MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME, MoPubReward.NO_REWARD_AMOUNT, MoPubReward.NO_REWARD_LABEL);
 
                     // Vungle does not provide a callback when a user should be rewarded.
                     // You will need to provide your own reward logic if you receive a reward with

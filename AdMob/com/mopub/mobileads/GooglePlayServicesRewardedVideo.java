@@ -288,7 +288,7 @@ public class GooglePlayServicesRewardedVideo extends CustomEventRewardedVideo im
     @Override
     public void onRewarded(RewardItem rewardItem) {
 
-        MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME);
+        MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME, rewardItem.getAmount(), rewardItem.getType());
 
         MoPubRewardedVideoManager.onRewardedVideoCompleted(
                 GooglePlayServicesRewardedVideo.class,

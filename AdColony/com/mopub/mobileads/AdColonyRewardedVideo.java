@@ -10,6 +10,7 @@ import com.mopub.common.logging.MoPubLog;
 
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOULD_REWARD;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_FAILED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
@@ -362,6 +363,8 @@ public class AdColonyRewardedVideo extends CustomEventRewardedVideo {
                 MoPubLog.log(CUSTOM, ADAPTER_NAME, "AdColonyReward name - " + a.getRewardName());
                 MoPubLog.log(CUSTOM, ADAPTER_NAME, "AdColonyReward amount - " + a.getRewardAmount());
                 reward = MoPubReward.success(a.getRewardName(), a.getRewardAmount());
+
+                MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME, a.getRewardAmount(), a.getRewardName());
             } else {
                 MoPubLog.log(CUSTOM, ADAPTER_NAME, "AdColonyReward failed");
                 reward = MoPubReward.failure();

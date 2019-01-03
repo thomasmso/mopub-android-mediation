@@ -157,7 +157,7 @@ public class FacebookRewardedVideo extends CustomEventRewardedVideo implements R
     @Override
     public void onRewardedVideoCompleted() {
         MoPubRewardedVideoManager.onRewardedVideoCompleted(FacebookRewardedVideo.class, mPlacementId, MoPubReward.success(MoPubReward.NO_REWARD_LABEL, MoPubReward.DEFAULT_REWARD_AMOUNT));
-        MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME);
+        MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME, MoPubReward.DEFAULT_REWARD_AMOUNT, MoPubReward.NO_REWARD_LABEL);
     }
 
     @Override

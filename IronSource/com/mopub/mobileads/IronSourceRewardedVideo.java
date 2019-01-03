@@ -307,7 +307,7 @@ public class IronSourceRewardedVideo extends CustomEventRewardedVideo implements
 
         //Placement can return null if the placementName is not valid.
         if (placement != null) {
-            MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME);
+            MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME, placement.getRewardAmount(), placement.getRewardName());
 
             String rewardName = placement.getRewardName();
             int rewardAmount = placement.getRewardAmount();

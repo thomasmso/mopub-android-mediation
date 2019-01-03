@@ -300,7 +300,7 @@ public class TapjoyRewardedVideo extends CustomEventRewardedVideo {
         public void onVideoComplete() {
             MoPubLog.log(CUSTOM, ADAPTER_NAME, "Tapjoy rewarded video completed");
             MoPubRewardedVideoManager.onRewardedVideoCompleted(TapjoyRewardedVideo.class, TAPJOY_AD_NETWORK_CONSTANT, MoPubReward.success(MoPubReward.NO_REWARD_LABEL, MoPubReward.NO_REWARD_AMOUNT));
-            MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME);
+            MoPubLog.log(SHOULD_REWARD, ADAPTER_NAME, MoPubReward.NO_REWARD_AMOUNT, MoPubReward.NO_REWARD_LABEL);
         }
     }
 
