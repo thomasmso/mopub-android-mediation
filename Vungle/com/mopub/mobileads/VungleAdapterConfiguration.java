@@ -25,7 +25,7 @@ public class VungleAdapterConfiguration extends BaseAdapterConfiguration {
     public static final String VUNGLE_NETWORK_ID_DEFAULT = "vngl_id";
     // Adapter's keys
     private static final String ADAPTER_NAME = VungleAdapterConfiguration.class.getSimpleName();
-    private static final String ADAPTER_VERSION = "6.3.24.0";
+    private static final String ADAPTER_VERSION = "6.3.24.1";
     private static final String MOPUB_NETWORK_NAME = "vungle";
 
     private static VungleRouter sVungleRouter;
@@ -74,7 +74,7 @@ public class VungleAdapterConfiguration extends BaseAdapterConfiguration {
                 if (Vungle.isInitialized()) {
                     networkInitializationSucceeded = true;
 
-                } else if (configuration != null && context instanceof Activity && sVungleRouter != null) {
+                } else if (configuration != null && sVungleRouter != null) {
                     final String mAppId = configuration.get(APP_ID_KEY);
                     if (TextUtils.isEmpty(mAppId)) {
                         MoPubLog.log(CUSTOM, ADAPTER_NAME, "Vungle's initialization not " +
