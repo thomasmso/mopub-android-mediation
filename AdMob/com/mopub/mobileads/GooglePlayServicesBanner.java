@@ -2,6 +2,7 @@ package com.mopub.mobileads;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdListener;
@@ -34,6 +35,8 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
     public static final String AD_WIDTH_KEY = "adWidth";
     public static final String AD_HEIGHT_KEY = "adHeight";
     public static final String ADAPTER_NAME = GooglePlayServicesBanner.class.getSimpleName();
+    public static final String CONTENT_URL_KEY = "contentUrl";
+    public static final String TEST_DEVICES_KEY = "testDevices";
 
     private CustomEventBannerListener mBannerListener;
     private AdView mGoogleAdView;
@@ -81,6 +84,22 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
 
         AdRequest.Builder builder = new AdRequest.Builder();
         builder.setRequestAgent("MoPub");
+
+        // Publishers may append a content URL by passing it to the MoPubView.setLocalExtras() call.
+        if (localExtras.get(CONTENT_URL_KEY) != null) {
+            String contentUrl = localExtras.get(CONTENT_URL_KEY).toString();
+            if (!TextUtils.isEmpty(contentUrl)) {
+                builder.setContentUrl(contentUrl);
+            }
+        }
+
+        // Publishers may request for test ads by passing test device IDs to the MoPubView.setLocalExtras() call.
+        if (localExtras.get(TEST_DEVICES_KEY) != null) {
+            String testDeviceId = localExtras.get(TEST_DEVICES_KEY).toString();
+            if (!TextUtils.isEmpty(testDeviceId)) {
+                builder.addTestDevice(testDeviceId);
+            }
+        }
 
         // Consent collected from the MoPub’s consent dialogue should not be used to set up
         // Google's personalization preference. Publishers should work with Google to be GDPR-compliant.
