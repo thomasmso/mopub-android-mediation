@@ -33,27 +33,27 @@ public class GooglePlayServicesAdRenderer implements MoPubAdRenderer<GooglePlayS
     /**
      * Key to set and get star rating text view as an extra in the view binder.
      */
-    public static final String VIEW_BINDER_KEY_STAR_RATING = "key_star_rating";
+    private static final String VIEW_BINDER_KEY_STAR_RATING = "key_star_rating";
 
     /**
      * Key to set and get advertiser text view as an extra in the view binder.
      */
-    public static final String VIEW_BINDER_KEY_ADVERTISER = "key_advertiser";
+    private static final String VIEW_BINDER_KEY_ADVERTISER = "key_advertiser";
 
     /**
      * Key to set and get store text view as an extra in the view binder.
      */
-    public static final String VIEW_BINDER_KEY_STORE = "key_store";
+    private static final String VIEW_BINDER_KEY_STORE = "key_store";
 
     /**
      * Key to set and get price text view as an extra in the view binder.
      */
-    public static final String VIEW_BINDER_KEY_PRICE = "key_price";
+    private static final String VIEW_BINDER_KEY_PRICE = "key_price";
 
     /**
      * Key to set and get the AdChoices icon view as an extra in the view binder.
      */
-    public static final String VIEW_BINDER_KEY_AD_CHOICES_ICON_CONTAINER = "ad_choices_container";
+    private static final String VIEW_BINDER_KEY_AD_CHOICES_ICON_CONTAINER = "ad_choices_container";
 
     /**
      * ID for the frame layout that wraps the Google ad view.
@@ -80,7 +80,7 @@ public class GooglePlayServicesAdRenderer implements MoPubAdRenderer<GooglePlayS
     /**
      * String to store the simple class name for this adapter.
      */
-    public static final String ADAPTER_NAME = GooglePlayServicesAdRenderer.class.getSimpleName();
+    private static final String ADAPTER_NAME = GooglePlayServicesAdRenderer.class.getSimpleName();
 
     public GooglePlayServicesAdRenderer(MediaViewBinder viewBinder) {
         this.mViewBinder = viewBinder;

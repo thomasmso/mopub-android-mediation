@@ -13,12 +13,11 @@ import com.mopub.common.logging.MoPubLog;
 
 import java.util.Map;
 
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THROWABLE;
 
 public class GooglePlayServicesAdapterConfiguration extends BaseAdapterConfiguration {
 
-    private static final String ADAPTER_VERSION = "17.0.0.2";
+    private static final String ADAPTER_VERSION = "17.1.2.3";
     private static final String KEY_EXTRA_APPLICATION_ID = "appid";
     private static final String MOPUB_NETWORK_NAME = "admob_native";
 
@@ -62,7 +61,6 @@ public class GooglePlayServicesAdapterConfiguration extends BaseAdapterConfigura
 
         synchronized (GooglePlayServicesAdapterConfiguration.class) {
             try {
-
                 if (configuration == null || TextUtils.isEmpty(configuration.get(KEY_EXTRA_APPLICATION_ID))) {
                     MobileAds.initialize(context);
                 } else {

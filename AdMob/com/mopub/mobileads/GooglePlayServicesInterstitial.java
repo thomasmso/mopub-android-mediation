@@ -27,8 +27,8 @@ public class GooglePlayServicesInterstitial extends CustomEventInterstitial {
      */
     private static final String AD_UNIT_ID_KEY = "adUnitID";
     private static final String ADAPTER_NAME = GooglePlayServicesInterstitial.class.getSimpleName();
-    public static final String CONTENT_URL_KEY = "contentUrl";
-    public static final String TEST_DEVICES_KEY = "testDevices";
+    private static final String CONTENT_URL_KEY = "contentUrl";
+    private static final String TEST_DEVICES_KEY = "testDevices";
 
     @NonNull
     private GooglePlayServicesAdapterConfiguration mGooglePlayServicesAdapterConfiguration;

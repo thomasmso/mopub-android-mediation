@@ -31,12 +31,12 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
     /*
      * These keys are intended for MoPub internal use. Do not modify.
      */
-    public static final String AD_UNIT_ID_KEY = "adUnitID";
-    public static final String AD_WIDTH_KEY = "adWidth";
-    public static final String AD_HEIGHT_KEY = "adHeight";
-    public static final String ADAPTER_NAME = GooglePlayServicesBanner.class.getSimpleName();
-    public static final String CONTENT_URL_KEY = "contentUrl";
-    public static final String TEST_DEVICES_KEY = "testDevices";
+    private static final String AD_UNIT_ID_KEY = "adUnitID";
+    private static final String AD_WIDTH_KEY = "adWidth";
+    private static final String AD_HEIGHT_KEY = "adHeight";
+    private static final String ADAPTER_NAME = GooglePlayServicesBanner.class.getSimpleName();
+    private static final String CONTENT_URL_KEY = "contentUrl";
+    private static final String TEST_DEVICES_KEY = "testDevices";
 
     private CustomEventBannerListener mBannerListener;
     private AdView mGoogleAdView;

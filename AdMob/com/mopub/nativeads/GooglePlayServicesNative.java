@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 
 import com.google.ads.mediation.admob.AdMobAdapter;
@@ -48,17 +47,17 @@ public class GooglePlayServicesNative extends CustomEventNative {
     /**
      * Key to set and obtain the image orientation preference.
      */
-    public static final String KEY_EXTRA_ORIENTATION_PREFERENCE = "orientation_preference";
+    private static final String KEY_EXTRA_ORIENTATION_PREFERENCE = "orientation_preference";
 
     /**
      * Key to set and obtain the AdChoices icon placement preference.
      */
-    public static final String KEY_EXTRA_AD_CHOICES_PLACEMENT = "ad_choices_placement";
+    private static final String KEY_EXTRA_AD_CHOICES_PLACEMENT = "ad_choices_placement";
 
     /**
      * Key to set and obtain the experimental swap margins flag.
      */
-    public static final String KEY_EXPERIMENTAL_EXTRA_SWAP_MARGINS = "swap_margins";
+    private static final String KEY_EXPERIMENTAL_EXTRA_SWAP_MARGINS = "swap_margins";
 
     /**
      * String to store the simple class name for this adapter.
@@ -68,12 +67,12 @@ public class GooglePlayServicesNative extends CustomEventNative {
     /**
      * Key to set and obtain the content URL to be passed with AdMob's ad request.
      */
-    public static final String KEY_CONTENT_URL = "contentUrl";
+    private static final String KEY_CONTENT_URL = "contentUrl";
 
     /**
      * Key to set and obtain the test device ID String to be passed with AdMob's ad request.
      */
-    public static final String TEST_DEVICES_KEY = "testDevices";
+    private static final String TEST_DEVICES_KEY = "testDevices";
 
     /**
      * Flag to determine whether or not the adapter has been initialized.
