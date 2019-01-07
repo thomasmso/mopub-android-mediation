@@ -31,13 +31,20 @@ import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
 public class FacebookBanner extends CustomEventBanner implements AdListener {
     private static final String PLACEMENT_ID_KEY = "placement_id";
     private static final String ADAPTER_NAME = FacebookBanner.class.getSimpleName();
+    private static AtomicBoolean sIsInitialized = new AtomicBoolean(false);
+
     private AdView mFacebookBanner;
     private CustomEventBannerListener mBannerListener;
-    private static AtomicBoolean sIsInitialized = new AtomicBoolean(false);
+    @NonNull
+    private FacebookAdapterConfiguration mFacebookAdapterConfiguration;
 
     /**
      * CustomEventBanner implementation
      */
+
+    public FacebookBanner() {
+        mFacebookAdapterConfiguration = new FacebookAdapterConfiguration();
+    }
 
     @Override
     protected void loadBanner(final Context context,
@@ -55,6 +62,7 @@ public class FacebookBanner extends CustomEventBanner implements AdListener {
         final String placementId;
         if (serverExtrasAreValid(serverExtras)) {
             placementId = serverExtras.get(PLACEMENT_ID_KEY);
+            mFacebookAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
         } else {
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, MoPubErrorCode.NETWORK_NO_FILL.getIntCode(), MoPubErrorCode.NETWORK_NO_FILL);
             if (mBannerListener != null) {
@@ -145,7 +153,6 @@ public class FacebookBanner extends CustomEventBanner implements AdListener {
 
     @Override
     public void onAdClicked(Ad ad) {
-
         if (mBannerListener != null) {
             mBannerListener.onBannerClicked();
             MoPubLog.log(CLICKED, ADAPTER_NAME);

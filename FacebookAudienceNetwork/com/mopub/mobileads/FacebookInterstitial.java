@@ -34,13 +34,16 @@ public class FacebookInterstitial extends CustomEventInterstitial implements Int
     private InterstitialAd mFacebookInterstitial;
     private CustomEventInterstitialListener mInterstitialListener;
     private static final String ADAPTER_NAME = FacebookInterstitial.class.getSimpleName();
+    private static AtomicBoolean sIsInitialized = new AtomicBoolean(false);
     @NonNull
     private Handler mHandler;
     private Runnable mAdExpiration;
-    private static AtomicBoolean sIsInitialized = new AtomicBoolean(false);
+    @NonNull
+    private FacebookAdapterConfiguration mFacebookAdapterConfiguration;
 
     public FacebookInterstitial() {
         mHandler = new Handler();
+        mFacebookAdapterConfiguration = new FacebookAdapterConfiguration();
 
         mAdExpiration = new Runnable() {
             @Override
@@ -78,6 +81,7 @@ public class FacebookInterstitial extends CustomEventInterstitial implements Int
         final String placementId;
         if (extrasAreValid(serverExtras)) {
             placementId = serverExtras.get(PLACEMENT_ID_KEY);
+            mFacebookAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
         } else {
             if (mInterstitialListener != null) {
                 mInterstitialListener.onInterstitialFailed(MoPubErrorCode.NETWORK_NO_FILL);

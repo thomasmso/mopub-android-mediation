@@ -1,6 +1,7 @@
 package com.mopub.nativeads;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.facebook.ads.NativeAdListener;
 import com.mopub.common.DataKeys;
 import com.mopub.common.Preconditions;
 import com.mopub.common.logging.MoPubLog;
+import com.mopub.mobileads.FacebookAdapterConfiguration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,8 +41,14 @@ public class FacebookNative extends CustomEventNative {
     private static final String PLACEMENT_ID_KEY = "placement_id";
     private static final String ADAPTER_NAME = FacebookNative.class.getSimpleName();
     private static AtomicBoolean sIsInitialized = new AtomicBoolean(false);
+    @NonNull
+    private FacebookAdapterConfiguration mFacebookAdapterConfiguration;
 
     // CustomEventNative implementation
+    public FacebookNative() {
+        mFacebookAdapterConfiguration = new FacebookAdapterConfiguration();
+    }
+
     @Override
     protected void loadNativeAd(final Context context,
                                 final CustomEventNativeListener customEventNativeListener,
@@ -53,6 +61,7 @@ public class FacebookNative extends CustomEventNative {
         final String placementId;
         if (extrasAreValid(serverExtras)) {
             placementId = serverExtras.get(PLACEMENT_ID_KEY);
+            mFacebookAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
         } else {
             customEventNativeListener.onNativeAdFailed(NativeErrorCode.NETWORK_NO_FILL);
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, NativeErrorCode.NETWORK_NO_FILL.getIntCode(), NativeErrorCode.NETWORK_NO_FILL);

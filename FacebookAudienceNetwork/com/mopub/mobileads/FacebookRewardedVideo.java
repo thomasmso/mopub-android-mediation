@@ -36,6 +36,7 @@ public class FacebookRewardedVideo extends CustomEventRewardedVideo implements R
 
     private static final int ONE_HOURS_MILLIS = 60 * 60 * 1000;
     private static final String ADAPTER_NAME = FacebookRewardedVideo.class.getSimpleName();
+    private static AtomicBoolean sIsInitialized = new AtomicBoolean(false);
     @Nullable
     private RewardedVideoAd mRewardedVideoAd;
     @NonNull
@@ -43,10 +44,12 @@ public class FacebookRewardedVideo extends CustomEventRewardedVideo implements R
     @NonNull
     private Handler mHandler;
     private Runnable mAdExpiration;
-    private static AtomicBoolean sIsInitialized = new AtomicBoolean(false);
+    @NonNull
+    private FacebookAdapterConfiguration mFacebookAdapterConfiguration;
 
     public FacebookRewardedVideo() {
         mHandler = new Handler();
+        mFacebookAdapterConfiguration = new FacebookAdapterConfiguration();
 
         mAdExpiration = new Runnable() {
             @Override
@@ -83,6 +86,7 @@ public class FacebookRewardedVideo extends CustomEventRewardedVideo implements R
     protected void loadWithSdkInitialized(@NonNull Activity activity, @NonNull Map<String, Object> localExtras, @NonNull Map<String, String> serverExtras) throws Exception {
         if (!serverExtras.isEmpty()) {
             mPlacementId = serverExtras.get("placement_id");
+            mFacebookAdapterConfiguration.setCachedInitializationParameters(activity.getApplicationContext(), serverExtras);
 
             if (!TextUtils.isEmpty(mPlacementId)) {
                 if (mRewardedVideoAd != null) {
@@ -117,7 +121,6 @@ public class FacebookRewardedVideo extends CustomEventRewardedVideo implements R
                 mRewardedVideoAd.loadAd();
                 MoPubLog.log(mPlacementId, LOAD_ATTEMPTED, ADAPTER_NAME);
             }
-
         }
     }
 
@@ -146,7 +149,7 @@ public class FacebookRewardedVideo extends CustomEventRewardedVideo implements R
     @Override
     protected void showVideo() {
         MoPubLog.log(SHOW_ATTEMPTED, ADAPTER_NAME);
-        if (hasVideoAvailable()) {
+        if (mRewardedVideoAd != null && hasVideoAvailable()) {
             mRewardedVideoAd.show();
         } else {
             MoPubRewardedVideoManager.onRewardedVideoPlaybackError(FacebookRewardedVideo.class, mPlacementId, MoPubErrorCode.NETWORK_NO_FILL);
