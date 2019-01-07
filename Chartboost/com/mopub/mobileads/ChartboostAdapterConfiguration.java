@@ -28,7 +28,7 @@ public class ChartboostAdapterConfiguration extends BaseAdapterConfiguration {
 
     // Adapter's keys
     private static final String ADAPTER_NAME = ChartboostAdapterConfiguration.class.getSimpleName();
-    private static final String ADAPTER_VERSION = "7.2.1.1";
+    private static final String ADAPTER_VERSION = "7.3.1.1";
     private static final String MOPUB_NETWORK_NAME = "chartboost";
 
     @NonNull
@@ -84,7 +84,8 @@ public class ChartboostAdapterConfiguration extends BaseAdapterConfiguration {
                         MoPubLog.log(CUSTOM, ADAPTER_NAME, "Chartboost's initialization " +
                                 "succeeded, but unable to call Chartboost's startWithAppId(). " +
                                 "Ensure Chartboost's " + APP_ID_KEY + " and " + APP_SIGNATURE_KEY +
-                                "are populated on the MoPub dashboard.");
+                                "are populated on the MoPub dashboard. Note that initialization on " +
+                                "the first app launch is a no-op.");
                     } else {
                         Chartboost.startWithAppId((Activity) context, appId, appSignature);
                     }
@@ -96,6 +97,9 @@ public class ChartboostAdapterConfiguration extends BaseAdapterConfiguration {
                     Chartboost.setShouldDisplayLoadingViewForMoreApps(false);
 
                     networkInitializationSucceeded = true;
+                } else if (!(context instanceof Activity)) {
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "Chartboost's initialization via " +
+                            ADAPTER_NAME + " not started. An Activity Context is needed.");
                 }
             } catch (Exception e) {
                 MoPubLog.log(CUSTOM_WITH_THROWABLE, "Initializing Chartboost has encountered " +

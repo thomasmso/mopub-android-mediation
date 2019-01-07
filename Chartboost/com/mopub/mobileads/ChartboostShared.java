@@ -3,6 +3,7 @@ package com.mopub.mobileads;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.chartboost.sdk.Chartboost;
 import com.chartboost.sdk.ChartboostDelegate;
@@ -48,13 +49,6 @@ public class ChartboostShared {
     private static String mAppId;
     @Nullable
     private static String mAppSignature;
-
-    @NonNull
-    private static ChartboostAdapterConfiguration mChartboostAdapterConfiguration;
-
-    public ChartboostShared() {
-        mChartboostAdapterConfiguration = new ChartboostAdapterConfiguration();
-    }
 
     /**
      * Initialize the Chartboost SDK for the provided application id and app signature.
@@ -110,15 +104,15 @@ public class ChartboostShared {
         final String appId = serverExtras.get(APP_ID_KEY);
         final String appSignature = serverExtras.get(APP_SIGNATURE_KEY);
 
-        if (appId.equals(mAppId) && appSignature.equals(mAppSignature)) {
-            // We don't need to reinitialize.
-            return false;
+        if (!TextUtils.isEmpty(appId) && !TextUtils.isEmpty(appSignature)) {
+            if (appId.equals(mAppId) && appSignature.equals(mAppSignature)) {
+                // We don't need to reinitialize.
+                return false;
+            }
         }
 
         mAppId = appId;
         mAppSignature = appSignature;
-
-        mChartboostAdapterConfiguration.setCachedInitializationParameters(launcherActivity, serverExtras);
 
         // Perform all the common SDK initialization steps including startAppWithId
         Chartboost.startWithAppId(launcherActivity, mAppId, mAppSignature);
