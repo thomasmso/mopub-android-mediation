@@ -7,13 +7,10 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.mopub.common.BaseAdapterConfiguration;
-import com.mopub.common.MoPub;
 import com.mopub.common.OnNetworkInitializationFinishedListener;
 import com.mopub.common.Preconditions;
 import com.mopub.common.logging.MoPubLog;
-import com.tapjoy.Tapjoy;
 import com.unity3d.ads.UnityAds;
-import com.unity3d.ads.metadata.MediationMetaData;
 
 import java.util.Map;
 
@@ -21,13 +18,8 @@ import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THRO
 
 public class UnityAdsAdapterConfiguration extends BaseAdapterConfiguration {
 
-    // Unity's Keys
-    private static final String GAME_ID_KEY = "gameId";
-    private static final String ZONE_ID_KEY = "zoneId";
-    private static final String PLACEMENT_ID_KEY = "placementId";
     // Adapter's keys
-    private static final String ADAPTER_NAME = UnityAdsAdapterConfiguration.class.getSimpleName();
-    private static final String ADAPTER_VERSION = "3.0.0.0";
+    private static final String ADAPTER_VERSION = "3.0.0.1";
     private static final String MOPUB_NETWORK_NAME = "unity";
 
     @NonNull
