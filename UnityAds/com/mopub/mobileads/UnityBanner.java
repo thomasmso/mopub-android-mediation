@@ -2,6 +2,7 @@ package com.mopub.mobileads;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.mopub.common.logging.MoPubLog;
@@ -29,7 +30,12 @@ public class UnityBanner extends CustomEventBanner implements IUnityBannerListen
     private String placementId = "banner";
     private CustomEventBannerListener customEventBannerListener;
     private View bannerView;
+    @NonNull
+    private UnityAdsAdapterConfiguration mUnityAdsAdapterConfiguration;
 
+    public UnityBanner() {
+        mUnityAdsAdapterConfiguration = new UnityAdsAdapterConfiguration();
+    }
     @Override
     protected void loadBanner(Context context, CustomEventBannerListener customEventBannerListener,
                               Map<String, Object> localExtras, Map<String, String> serverExtras) {
@@ -43,6 +49,8 @@ public class UnityBanner extends CustomEventBanner implements IUnityBannerListen
         }
 
         initNoRefreshMetaData(context);
+
+        mUnityAdsAdapterConfiguration.setCachedInitializationParameters(context, serverExtras);
 
         placementId = UnityRouter.placementIdForServerExtras(serverExtras, placementId);
         this.customEventBannerListener = customEventBannerListener;

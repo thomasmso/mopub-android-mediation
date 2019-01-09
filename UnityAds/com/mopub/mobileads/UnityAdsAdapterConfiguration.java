@@ -14,6 +14,7 @@ import com.unity3d.ads.UnityAds;
 
 import java.util.Map;
 
+import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THROWABLE;
 
 public class UnityAdsAdapterConfiguration extends BaseAdapterConfiguration {
@@ -21,6 +22,7 @@ public class UnityAdsAdapterConfiguration extends BaseAdapterConfiguration {
     // Adapter's keys
     private static final String ADAPTER_VERSION = "3.0.0.1";
     private static final String MOPUB_NETWORK_NAME = "unity";
+    private static final String ADAPTER_NAME = UnityAdsAdapterConfiguration.class.getSimpleName();
 
     @NonNull
     @Override
@@ -69,9 +71,12 @@ public class UnityAdsAdapterConfiguration extends BaseAdapterConfiguration {
                     UnityRouter.initUnityAds(configuration, (Activity) context);
 
                     networkInitializationSucceeded = true;
+                } else {
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unity Ads initialization not started. " +
+                            "Context is not an Activity. Note that initialization on the first app launch is a no-op.");
                 }
             } catch (Exception e) {
-                MoPubLog.log(CUSTOM_WITH_THROWABLE, "Initializing UnityAds has encountered " +
+                MoPubLog.log(CUSTOM_WITH_THROWABLE, "Initializing Unity Ads has encountered " +
                         "an exception.", e);
             }
         }
