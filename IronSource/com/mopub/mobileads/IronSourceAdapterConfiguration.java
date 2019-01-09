@@ -26,7 +26,7 @@ public class IronSourceAdapterConfiguration extends BaseAdapterConfiguration {
     private static final String IRONSOURCE_ADAPTER_VERSION = "300";
 
     // Adapter's keys
-    private static final String ADAPTER_VERSION = "6.7.12.0";
+    private static final String ADAPTER_VERSION = "6.8.0.1.1";
     private static final String MOPUB_NETWORK_NAME = "Ironsource";
 
     @NonNull
@@ -88,6 +88,9 @@ public class IronSourceAdapterConfiguration extends BaseAdapterConfiguration {
 
                         networkInitializationSucceeded = true;
                     }
+                } else if (!(context instanceof Activity)) {
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "IronSource's initialization via " +
+                            ADAPTER_NAME + " not started. An Activity Context is needed.");
                 }
             } catch (Exception e) {
                 MoPubLog.log(CUSTOM_WITH_THROWABLE, "Initializing ironSource has encountered " +
