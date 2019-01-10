@@ -25,7 +25,7 @@ public class MillennialAdapterConfiguration extends BaseAdapterConfiguration {
 
     // Adapter's keys
     private static final String ADAPTER_NAME = MillennialAdapterConfiguration.class.getSimpleName();
-    private static final String ADAPTER_VERSION = "6.8.2.0";
+    private static final String ADAPTER_VERSION = "6.8.2.1";
     private static final String MOPUB_NETWORK_NAME = "Millennial";
 
     @NonNull
@@ -67,9 +67,12 @@ public class MillennialAdapterConfiguration extends BaseAdapterConfiguration {
                 if (configuration != null) {
                     final String apid_key = configuration.get(APID_KEY);
 
-                    MMSDK.initialize((Application) (context.getApplicationContext()));
+                    MMSDK.initialize((Activity) context, ActivityListenerManager.LifecycleState.RESUMED);
 
                     networkInitializationSucceeded = true;
+                } else if (!(context instanceof Activity)) {
+                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial's initialization via " +
+                            ADAPTER_NAME + " not started. An Activity Context is needed.");
                 }
             } catch (Exception e) {
                     MoPubLog.log(CUSTOM_WITH_THROWABLE, "Initializing AOL has encountered" +
