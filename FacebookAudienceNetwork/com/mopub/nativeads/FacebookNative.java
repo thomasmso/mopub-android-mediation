@@ -39,7 +39,7 @@ public class FacebookNative extends CustomEventNative {
                                 final Map<String, Object> localExtras,
                                 final Map<String, String> serverExtras) {
 
-        if(!sIsInitialized.getAndSet(true)) {
+        if (!sIsInitialized.getAndSet(true)) {
             AudienceNetworkAds.initialize(context);
         }
         final String placementId;
