@@ -103,7 +103,7 @@ public class AppLovinRewardedVideo extends CustomEventRewardedVideo implements A
         final String adMarkup = serverExtras.get(DataKeys.ADM_KEY);
         final boolean hasAdMarkup = !TextUtils.isEmpty(adMarkup);
 
-        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Requesting AppLovin banner with serverExtras: " + serverExtras
+        MoPubLog.log(CUSTOM, ADAPTER_NAME, "Requesting AppLovin rewarded video with serverExtras: " + serverExtras
                 + ", localExtras: " + localExtras + " and has ad markup: " + hasAdMarkup);
 
         mAppLovinAdapterConfiguration.setCachedInitializationParameters(activity, serverExtras);
