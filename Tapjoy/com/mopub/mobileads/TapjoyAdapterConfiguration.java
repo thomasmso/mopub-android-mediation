@@ -24,7 +24,7 @@ public class TapjoyAdapterConfiguration extends BaseAdapterConfiguration {
     public static final String SDK_KEY = "sdkKey";
 
     // Adapter's keys
-    private static final String ADAPTER_VERSION = "12.1.0.0";
+    private static final String ADAPTER_VERSION = "12.2.0.1";
     private static final String BIDDING_TOKEN = "1";
     private static final String MOPUB_NETWORK_NAME = "tapjoy";
 
