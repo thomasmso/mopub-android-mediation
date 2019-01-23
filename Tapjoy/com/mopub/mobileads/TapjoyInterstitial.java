@@ -25,7 +25,7 @@ import com.tapjoy.TJPlacement;
 import com.tapjoy.TJPlacementListener;
 import com.tapjoy.Tapjoy;
 import com.tapjoy.TapjoyLog;
-import com.mopub.common.logging.MoPubLog;
+
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
@@ -111,7 +111,7 @@ public class TapjoyInterstitial extends CustomEventInterstitial implements TJPla
                 // after auto-connect succeeds
                 canRequestPlacement = false;
             } else {
-                MoPubLog.log(CUSTOM, ADAPTER_NAME,"Tapjoy interstitial is initialized with empty 'sdkKey'. You must call Tapjoy.connect()");
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Tapjoy interstitial is initialized with empty 'sdkKey'. You must call Tapjoy.connect()");
             }
         }
 

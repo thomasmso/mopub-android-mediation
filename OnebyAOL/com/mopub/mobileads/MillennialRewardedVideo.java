@@ -155,7 +155,6 @@ final class MillennialRewardedVideo extends CustomEventRewardedVideo {
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                     MoPubErrorCode.NETWORK_NO_FILL);
-
         }
     }
 

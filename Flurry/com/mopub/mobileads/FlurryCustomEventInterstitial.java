@@ -11,10 +11,7 @@ import com.flurry.android.ads.FlurryAdInterstitialListener;
 import com.mopub.common.logging.MoPubLog;
 
 import java.util.Map;
-import static com.mopub.mobileads.MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR;
-import static com.mopub.mobileads.MoPubErrorCode.NETWORK_INVALID_STATE;
-import static com.mopub.mobileads.MoPubErrorCode.NETWORK_NO_FILL;
-import static com.mopub.mobileads.MoPubErrorCode.UNSPECIFIED;
+
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;

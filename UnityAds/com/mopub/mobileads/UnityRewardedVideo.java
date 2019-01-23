@@ -151,7 +151,6 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
             }
         }
 
-
         @Override
         public void onUnityAdsStart(String placementId) {
             MoPubRewardedVideoManager.onRewardedVideoStarted(UnityRewardedVideo.class, placementId);

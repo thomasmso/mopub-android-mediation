@@ -36,6 +36,7 @@ public class UnityBanner extends CustomEventBanner implements IUnityBannerListen
     public UnityBanner() {
         mUnityAdsAdapterConfiguration = new UnityAdsAdapterConfiguration();
     }
+
     @Override
     protected void loadBanner(Context context, CustomEventBannerListener customEventBannerListener,
                               Map<String, Object> localExtras, Map<String, String> serverExtras) {

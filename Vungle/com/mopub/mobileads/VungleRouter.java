@@ -21,6 +21,7 @@ import java.util.Map;
 
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THROWABLE;
+
 public class VungleRouter {
 
     // Version of the adapter, intended for Vungle internal use.
@@ -86,7 +87,7 @@ public class VungleRouter {
 
             @Override
             public void onError(Throwable throwable) {
-                MoPubLog.log(CUSTOM_WITH_THROWABLE, "Initialization is failed.", throwable);
+                MoPubLog.log(CUSTOM_WITH_THROWABLE, "Initialization failed.", throwable);
 
                 sInitState = SDKInitState.NOTINITIALIZED;
             }
@@ -120,8 +121,8 @@ public class VungleRouter {
     public void loadAdForPlacement(String placementId, VungleRouterListener routerListener) {
         switch (sInitState) {
             case NOTINITIALIZED:
-                MoPubLog.log(CUSTOM, ADAPTER_NAME, "There should not be this case. loadAdForPlacement is " +
-                        "called before initialization starts.");
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "loadAdForPlacement is called before " +
+                        "initialization starts. This is not an expect case.");
                 break;
 
             case INITIALIZING:

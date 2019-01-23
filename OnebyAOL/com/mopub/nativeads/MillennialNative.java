@@ -56,6 +56,7 @@ public class MillennialNative extends CustomEventNative {
     public MillennialNative() {
         mMillennialAdapterConfiguration = new MillennialAdapterConfiguration();
     }
+
     @Override
     protected void loadNativeAd(final Context context, final CustomEventNativeListener customEventNativeListener,
                                 final Map<String, Object> localExtras, final Map<String, String> serverExtras) {
@@ -210,9 +211,11 @@ public class MillennialNative extends CustomEventNative {
         public void handleClick(final View view) {
             notifyAdClicked();
 
-            nativeClickHandler.openClickDestinationUrl(getClickDestinationUrl(), view);
-            nativeAd.fireCallToActionClicked();
-            MoPubLog.log(CLICKED, ADAPTER_NAME);
+            if (getClickDestinationUrl() != null) {
+                nativeClickHandler.openClickDestinationUrl(getClickDestinationUrl(), view);
+                nativeAd.fireCallToActionClicked();
+                MoPubLog.log(CLICKED, ADAPTER_NAME);
+            }
         }
 
         // MM'S Native listener

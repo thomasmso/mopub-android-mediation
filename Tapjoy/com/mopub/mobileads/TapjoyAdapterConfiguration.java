@@ -13,15 +13,14 @@ import com.tapjoy.TJConnectListener;
 import com.tapjoy.Tapjoy;
 
 import java.util.Map;
+
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THROWABLE;
 
 public class TapjoyAdapterConfiguration extends BaseAdapterConfiguration {
 
     // Tapjoy's Configuration keys
-    public static final String ADM_KEY = "adm";
-    public static final String PLACEMENT_NAME = "name";
-    public static final String SDK_KEY = "sdkKey";
+    private static final String SDK_KEY = "sdkKey";
 
     // Adapter's keys
     private static final String ADAPTER_VERSION = "12.2.0.1";
@@ -64,16 +63,13 @@ public class TapjoyAdapterConfiguration extends BaseAdapterConfiguration {
         Preconditions.checkNotNull(context);
         Preconditions.checkNotNull(listener);
 
-        Boolean networkInitializationSucceeded = null;
+        boolean networkInitializationSucceeded = false;
 
         synchronized (TapjoyAdapterConfiguration.class) {
             try {
                 if (Tapjoy.isConnected()) {
                     networkInitializationSucceeded = true;
-                } else if (configuration == null
-                        || TextUtils.isEmpty(configuration.get(SDK_KEY))) {
-                    networkInitializationSucceeded = false;
-                } else {
+                } else if (configuration != null) {
                     final String sdkKey = configuration.get(SDK_KEY);
                     Tapjoy.connect(context, sdkKey, null, new TJConnectListener() {
                         @Override
@@ -86,7 +82,7 @@ public class TapjoyAdapterConfiguration extends BaseAdapterConfiguration {
                         public void onConnectFailure() {
                             listener.onNetworkInitializationFinished(TapjoyAdapterConfiguration.class,
                                     MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
-                            MoPubLog.log(CUSTOM, "Initializing Tapjoy has encountered problem");
+                            MoPubLog.log(CUSTOM, "Initializing Tapjoy has encountered a problem.");
                         }
                     });
                 }
@@ -97,9 +93,7 @@ public class TapjoyAdapterConfiguration extends BaseAdapterConfiguration {
             }
         }
 
-        if (networkInitializationSucceeded == null) {
-            return;
-        } else if (networkInitializationSucceeded) {
+        if (networkInitializationSucceeded) {
             listener.onNetworkInitializationFinished(TapjoyAdapterConfiguration.class,
                     MoPubErrorCode.ADAPTER_INITIALIZATION_SUCCESS);
         } else {

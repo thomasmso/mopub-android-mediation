@@ -105,7 +105,6 @@ public class IronSourceAdapterConfiguration extends BaseAdapterConfiguration {
         } else {
             listener.onNetworkInitializationFinished(IronSourceAdapterConfiguration.class,
                     MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
-
         }
     }
 }

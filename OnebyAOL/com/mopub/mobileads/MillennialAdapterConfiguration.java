@@ -1,7 +1,6 @@
 package com.mopub.mobileads;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,14 +14,11 @@ import com.mopub.common.Preconditions;
 import com.mopub.common.logging.MoPubLog;
 
 import java.util.Map;
+
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THROWABLE;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 
 public class MillennialAdapterConfiguration extends BaseAdapterConfiguration {
-
-    //Millennial's Keys
-    private static final String DCN_KEY = "dcn";
-    private static final String APID_KEY = "adUnitID";
 
     // Adapter's keys
     private static final String ADAPTER_NAME = MillennialAdapterConfiguration.class.getSimpleName();
@@ -65,19 +61,17 @@ public class MillennialAdapterConfiguration extends BaseAdapterConfiguration {
 
         synchronized (MillennialAdapterConfiguration.class) {
             try {
-                if (configuration != null) {
-                    final String apid_key = configuration.get(APID_KEY);
-
+                if (context instanceof Activity) {
                     MMSDK.initialize((Activity) context, ActivityListenerManager.LifecycleState.RESUMED);
 
                     networkInitializationSucceeded = true;
-                } else if (!(context instanceof Activity)) {
+                } else {
                     MoPubLog.log(CUSTOM, ADAPTER_NAME, "Millennial's initialization via " +
                             ADAPTER_NAME + " not started. An Activity Context is needed.");
                 }
             } catch (Exception e) {
-                    MoPubLog.log(CUSTOM_WITH_THROWABLE, "Initializing AOL has encountered" +
-                            "an exception.", e);
+                MoPubLog.log(CUSTOM_WITH_THROWABLE, "Initializing Millennial has encountered" +
+                        "an exception.", e);
             }
         }
         if (networkInitializationSucceeded) {
@@ -88,5 +82,4 @@ public class MillennialAdapterConfiguration extends BaseAdapterConfiguration {
                     MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
         }
     }
-
 }

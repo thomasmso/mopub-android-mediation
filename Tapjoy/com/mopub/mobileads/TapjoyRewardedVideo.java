@@ -22,7 +22,7 @@ import com.tapjoy.Tapjoy;
 import com.tapjoy.TapjoyLog;
 
 import org.json.JSONException;
-import com.mopub.common.logging.MoPubLog;
+
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOULD_REWARD;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_ATTEMPTED;
@@ -82,6 +82,7 @@ public class TapjoyRewardedVideo extends CustomEventRewardedVideo {
     @Override
     protected void onInvalidate() {
     }
+
     public TapjoyRewardedVideo() {
         mTapjoyAdapterConfiguration = new TapjoyAdapterConfiguration();
     }

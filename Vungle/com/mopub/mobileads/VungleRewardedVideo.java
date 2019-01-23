@@ -32,10 +32,10 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
     /*
      * These constants are intended for MoPub internal use. Do not modify.
      */
-    public static final String APP_ID_KEY = "appId";
-    public static final String PLACEMENT_ID_KEY = "pid";
+    private static final String APP_ID_KEY = "appId";
+    private static final String PLACEMENT_ID_KEY = "pid";
 
-    public static final String VUNGLE_NETWORK_ID_DEFAULT = "vngl_id";
+    private static final String VUNGLE_NETWORK_ID_DEFAULT = "vngl_id";
     private static final String VUNGLE_DEFAULT_APP_ID = "YOUR_APP_ID_HERE";
 
     private static final String ADAPTER_NAME = VungleRewardedVideo.class.getSimpleName();
@@ -52,7 +52,6 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
 
     private String mAdUnitId;
     private String mCustomerId;
-
 
     public VungleRewardedVideo() {
         sVungleRouter = VungleRouter.getInstance();
@@ -171,14 +170,13 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
         mVungleRewardedRouterListener = null;
     }
 
-
     //private functions
     private boolean validateIdsInServerExtras(Map<String, String> serverExtras) {
         boolean isAllDataValid = true;
 
         if (serverExtras.containsKey(APP_ID_KEY)) {
             mAppId = serverExtras.get(APP_ID_KEY);
-            if (mAppId.isEmpty()) {
+            if (mAppId != null && mAppId.isEmpty()) {
                 MoPubLog.log(CUSTOM, ADAPTER_NAME, "App ID is empty.");
                 isAllDataValid = false;
             }
@@ -189,7 +187,7 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
 
         if (serverExtras.containsKey(PLACEMENT_ID_KEY)) {
             mPlacementId = serverExtras.get(PLACEMENT_ID_KEY);
-            if (mPlacementId.isEmpty()) {
+            if (mPlacementId != null && mPlacementId.isEmpty()) {
                 MoPubLog.log(CUSTOM, ADAPTER_NAME, "Placement ID for this Ad Unit is empty.");
                 isAllDataValid = false;
             }
@@ -229,7 +227,6 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
         adConfig.setFlexViewCloseTime(mediationSettings.flexViewCloseTimeInSec);
         adConfig.setOrdinal(mediationSettings.ordinalViewCount);
     }
-
 
     /*
      * VungleRewardedRouterListener
@@ -325,7 +322,6 @@ public class VungleRewardedVideo extends CustomEventRewardedVideo {
             }
         }
     }
-
 
     public static class VungleMediationSettings implements MediationSettings {
         @Nullable

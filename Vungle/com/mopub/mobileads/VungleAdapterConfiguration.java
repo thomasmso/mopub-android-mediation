@@ -1,6 +1,5 @@
 package com.mopub.mobileads;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,9 +19,7 @@ import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 public class VungleAdapterConfiguration extends BaseAdapterConfiguration {
 
     // Vungle's keys
-    public static final String APP_ID_KEY = "appId";
-    public static final String PLACEMENT_ID_KEY = "pid";
-    public static final String VUNGLE_NETWORK_ID_DEFAULT = "vngl_id";
+    private static final String APP_ID_KEY = "appId";
     // Adapter's keys
     private static final String ADAPTER_NAME = VungleAdapterConfiguration.class.getSimpleName();
     private static final String ADAPTER_VERSION = "6.3.24.1";
@@ -33,9 +30,6 @@ public class VungleAdapterConfiguration extends BaseAdapterConfiguration {
     public VungleAdapterConfiguration() {
         sVungleRouter = VungleRouter.getInstance();
     }
-
-    @NonNull
-    private String mPlacementId = VUNGLE_NETWORK_ID_DEFAULT;
 
     @NonNull
     @Override
@@ -87,8 +81,6 @@ public class VungleAdapterConfiguration extends BaseAdapterConfiguration {
                         sVungleRouter.initVungle(context, mAppId);
 
                         networkInitializationSucceeded = true;
-                    } else {
-                        networkInitializationSucceeded = false;
                     }
                 }
             } catch (Exception e) {

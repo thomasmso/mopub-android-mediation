@@ -56,6 +56,7 @@ final class MillennialInterstitial extends CustomEventInterstitial {
     public MillennialInterstitial() {
         mMillennialAdapterConfiguration = new MillennialAdapterConfiguration();
     }
+
     @Override
     protected void loadInterstitial(final Context context,
                                     final CustomEventInterstitialListener customEventInterstitialListener, final Map<String, Object> localExtras,

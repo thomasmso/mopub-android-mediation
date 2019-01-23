@@ -27,18 +27,18 @@ public class VungleInterstitial extends CustomEventInterstitial {
     /*
      * APP_ID_KEY is intended for MoPub internal use. Do not modify.
      */
-    public static final String APP_ID_KEY = "appId";
-    public static final String PLACEMENT_ID_KEY = "pid";
-    public static final String PLACEMENT_IDS_KEY = "pids";
-    public static final String ADAPTER_NAME = VungleInterstitial.class.getSimpleName();
+    private static final String APP_ID_KEY = "appId";
+    private static final String PLACEMENT_ID_KEY = "pid";
+    private static final String PLACEMENT_IDS_KEY = "pids";
+    private static final String ADAPTER_NAME = VungleInterstitial.class.getSimpleName();
 
     /*
      * These keys can be used with MoPubInterstitial.setLocalExtras()
      * to pass additional parameters to the SDK.
      */
-    public static final String SOUND_ENABLED_KEY = "vungleSoundEnabled";
-    public static final String FLEX_VIEW_CLOSE_TIME_KEY = "vungleFlexViewCloseTimeInSec";
-    public static final String ORDINAL_VIEW_COUNT_KEY = "vungleOrdinalViewCount";
+    private static final String SOUND_ENABLED_KEY = "vungleSoundEnabled";
+    private static final String FLEX_VIEW_CLOSE_TIME_KEY = "vungleFlexViewCloseTimeInSec";
+    private static final String ORDINAL_VIEW_COUNT_KEY = "vungleOrdinalViewCount";
 
     private static VungleRouter sVungleRouter;
     private final Handler mHandler;
@@ -156,7 +156,7 @@ public class VungleInterstitial extends CustomEventInterstitial {
 
         if (serverExtras.containsKey(APP_ID_KEY)) {
             mAppId = serverExtras.get(APP_ID_KEY);
-            if (mAppId.isEmpty()) {
+            if (mAppId != null && mAppId.isEmpty()) {
                 MoPubLog.log(CUSTOM, ADAPTER_NAME, "App ID is empty.");
                 isAllDataValid = false;
             }
@@ -167,7 +167,7 @@ public class VungleInterstitial extends CustomEventInterstitial {
 
         if (serverExtras.containsKey(PLACEMENT_ID_KEY)) {
             mPlacementId = serverExtras.get(PLACEMENT_ID_KEY);
-            if (mPlacementId.isEmpty()) {
+            if (mPlacementId != null && mPlacementId.isEmpty()) {
                 MoPubLog.log(CUSTOM, ADAPTER_NAME, "Placement ID for this Ad Unit is empty.");
                 isAllDataValid = false;
             }
