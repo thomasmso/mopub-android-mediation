@@ -87,6 +87,8 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo {
         sPlacementId = UnityRouter.placementIdForServerExtras(serverExtras, sPlacementId);
         mLauncherActivity = activity;
 
+        UnityRouter.getInterstitialRouter().addListener(sPlacementId, sUnityAdsListener);
+
         if (hasVideoAvailable()) {
             MoPubRewardedVideoManager.onRewardedVideoLoadSuccess(UnityRewardedVideo.class, sPlacementId);
 
