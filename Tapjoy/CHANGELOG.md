@@ -6,7 +6,6 @@
          * store adapter and SDK versions for logging purpose
          * return the Advanced Biding token previously returned by `TapjoyAdvancedBidder.java`
     * Streamline adapter logs via `MoPubLog` to make debugging more efficient. For more details, check the [Android Initialization guide](https://developers.mopub.com/docs/android/initialization/) and [Writing Custom Events guide](https://developers.mopub.com/docs/android/custom-events/).
-    * Allow supported mediated networks and publishers to opt-in to process a user’s personal data based on legitimate interest basis. More details [here](https://developers.mopub.com/docs/publisher/gdpr-guide/#legitimate-interest-support).
 
   * 12.2.0.0
     * This version of the adapters has been certified with Tapjoy 12.2.0.
