@@ -1,4 +1,7 @@
 ## Changelog
+  * 5.1.0.2
+    * Fix an ANR when getting the bidding token by calling Facebook's `BidderTokenProvider.getBidderToken()` from a background thread.
+
   * 5.1.0.1
     * **Note**: This version is only compatible with the 5.5.0+ release of the MoPub SDK.
     * Add the `FacebookAdapterConfiguration` class to: 
