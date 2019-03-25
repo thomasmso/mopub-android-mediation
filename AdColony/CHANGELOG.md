@@ -1,4 +1,7 @@
 ## Changelog
+  * 3.3.8.1
+    * AdColony Adapter will now be released as an Android Archive (AAR) file that includes manifest file for [AdColony manifest changes](https://github.com/AdColony/AdColony-Android-SDK-3/wiki/Project-Setup#step-2-edit-manifest).
+
   * 3.3.8.0
     * This version of the adapters has been certified with AdColony 3.3.8.
 

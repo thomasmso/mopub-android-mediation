@@ -1,4 +1,7 @@
 ## Changelog
+  * 3.0.1.1
+    * UnityAds Adapter will now be released as an Android Archive (AAR) file that includes manifest file for UnityAds.
+
   * 3.0.1.0
     * This version of the adapters has been certified with Unity Ads 3.0.1.
     

@@ -1,4 +1,7 @@
 ## Changelog
+* 6.8.2.1
+    *  IronSource Adapter will now be released as an Android Archive (AAR) file that includes manifest file for [IronSource manifest changes](https://developers.ironsrc.com/ironsource-mobile/android/android-sdk/#step-2).
+
  * 6.8.2.0
     * This version of the adapters has been certified with ironSource 6.8.2.
 
