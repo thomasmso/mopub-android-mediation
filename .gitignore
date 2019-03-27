@@ -9,3 +9,5 @@ captures/
 .gitmodules
 Testing/
 */*/libs/
+mopub-android/
+mopub-android-sdk/
