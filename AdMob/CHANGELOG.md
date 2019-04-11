@@ -1,4 +1,7 @@
 ## Changelog
+  * 17.2.0.1
+    * Refactor the `MediationSettings` implementation to maintain consistency with the MoPub Unity SDK.
+
   * 17.2.0.0
     * This version of the adapters has been certified with AdMob 17.2.0.
     * Update the rewarded ad adapter to use AdMob's new Rewarded Video API. For more details, check AdMob's [Rewarded Ads - New APIs guide](https://developers.google.com/admob/android/rewarded-ads).

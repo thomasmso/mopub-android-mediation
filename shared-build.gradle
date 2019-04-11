@@ -50,7 +50,7 @@ android {
         buildConfigField("String", "NETWORK_NAME", "\"${project.ext.networkName}\"")
 
         // Set the .aar filename to mopub-NETWORK-adapters-VERSION-release.aar"
-        project.ext.set("archivesBaseName", "mopub-" + project.ext.artifactName + "-adapters-" + project.version)
+        project.ext.set("archivesBaseName", "mopub-" + project.ext.artifactName + "-" + project.version)
     }
 }
 
@@ -67,7 +67,7 @@ task copyAAR(type: Copy) {
 
 task removeAAR(type: Delete) {
     delete fileTree("$rootDir/libs") {
-        include "mopub-${project.ext.artifactName}-adapters-*.aar"
+        include "mopub-${project.ext.artifactName}-*.aar"
     }
 }
 

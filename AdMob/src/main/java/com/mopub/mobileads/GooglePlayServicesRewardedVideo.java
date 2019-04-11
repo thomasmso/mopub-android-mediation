@@ -389,6 +389,9 @@ public class GooglePlayServicesRewardedVideo extends CustomEventRewardedVideo {
         private static Boolean taggedForChildDirectedTreatment;
         private static Boolean taggedForUnderAgeOfConsent;
 
+        public GooglePlayServicesMediationSettings() {
+        }
+
         public GooglePlayServicesMediationSettings(@NonNull Bundle bundle) {
             if (bundle.containsKey(KEY_CONTENT_URL)) {
                 contentUrl = bundle.getString(KEY_CONTENT_URL);
