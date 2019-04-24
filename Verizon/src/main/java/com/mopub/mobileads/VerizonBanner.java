@@ -28,7 +28,6 @@ import java.util.Map;
 
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CLICKED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
-import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THROWABLE;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_FAILED;
@@ -43,8 +42,8 @@ public class VerizonBanner extends CustomEventBanner {
 
     private static final String PLACEMENT_ID_KEY = "placementId";
     private static final String SITE_ID_KEY = "siteId";
-    private static final String HEIGHT_KEY = "height";
-    private static final String WIDTH_KEY = "width";
+    private static final String HEIGHT_KEY = "com_mopub_ad_height";
+    private static final String WIDTH_KEY = "com_mopub_ad_width";
 
     private InlineAdView verizonInlineAd;
     private CustomEventBannerListener bannerListener;
@@ -109,34 +108,27 @@ public class VerizonBanner extends CustomEventBanner {
         }
 
         final String placementId = serverExtras.get(getPlacementIdKey());
-        final String widthString = serverExtras.get(getWidthKey());
-        final String heightString = serverExtras.get(getHeightKey());
 
-        if (TextUtils.isEmpty(placementId) || TextUtils.isEmpty(widthString)
-                || TextUtils.isEmpty(heightString)) {
+        if (localExtras == null || localExtras.isEmpty()) {
+            MoPubLog.log(CUSTOM, ADAPTER_NAME, "localExtras is null. Unable to extract banner sizes");
+
+            logAndNotifyBannerFailed(LOAD_FAILED, ADAPTER_CONFIGURATION_ERROR);
+
+            return;
+        }
+
+        if (localExtras.get(getWidthKey()) != null) {
+            adWidth = (int) localExtras.get(getWidthKey());
+        }
+
+        if (localExtras.get(getHeightKey()) != null) {
+            adHeight = (int) localExtras.get(getHeightKey());
+        }
+
+        if (TextUtils.isEmpty(placementId) || adWidth <= 0 || adHeight <= 0) {
             MoPubLog.log(CUSTOM, ADAPTER_NAME,
                     "Ad request to Verizon failed because either the placement ID, or width, or " +
-                            "height is empty/null");
-
-            logAndNotifyBannerFailed(LOAD_FAILED, INTERNAL_ERROR);
-
-            return;
-        }
-
-        try {
-            adWidth = Integer.parseInt(widthString);
-            adHeight = Integer.parseInt(heightString);
-        } catch (NumberFormatException e) {
-            MoPubLog.log(CUSTOM_WITH_THROWABLE, "Failed to parse ad's width and/or height.", e);
-
-            logAndNotifyBannerFailed(LOAD_FAILED, INTERNAL_ERROR);
-
-            return;
-        }
-
-        if (adWidth <= 0 || adHeight <= 0) {
-            MoPubLog.log(CUSTOM, ADAPTER_NAME,
-                    "Ad request to Verizon failed because the width or height is not greater than 0");
+                            "height is <= 0");
 
             logAndNotifyBannerFailed(LOAD_FAILED, INTERNAL_ERROR);
 
