@@ -1,4 +1,7 @@
 ## Changelog
+  * 3.3.10.0
+    * This version of the adapters has been certified with AdColony 3.3.10.
+
   * 3.3.9.0
     * This version of the adapters has been certified with AdColony 3.3.9.
     * Refactor the `MediationSettings` implementation to maintain consistency with the MoPub Unity SDK.
