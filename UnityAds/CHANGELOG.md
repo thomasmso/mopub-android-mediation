@@ -1,4 +1,7 @@
 ## Changelog
+  * 3.0.3.0
+    * This version of the adapters has been certified with Unity Ads 3.0.3.
+
   * 3.0.1.3
     * Make `placementId` not static in `UnityRewardedVideo` to fix missing callbacks for multiple rewarded video ad requests.
 
