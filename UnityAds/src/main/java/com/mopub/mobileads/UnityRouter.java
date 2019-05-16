@@ -71,6 +71,7 @@ public class UnityRouter {
         mediationMetaData.setName("MoPub");
         mediationMetaData.setVersion(MoPub.SDK_VERSION);
         mediationMetaData.set("enable_metadata_load", new Boolean(true));
+        mediationMetaData.set("adaptor_version", "3.1.0");
         mediationMetaData.commit();
     }
 
