@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+- "8.16.0"
+cache: npm
+before_install:
+  - npm i -g grunt-cli
+  - npm i firebase-tools@3.17.2 -g
+script:
+  - chmod 777 android-automate-release.sh
+  - ./android-automate-release.sh
+# branch whitelist
+branches:
+  only:
+  - Test-branch
