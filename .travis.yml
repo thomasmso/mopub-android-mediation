@@ -10,6 +10,7 @@ before_install:
   - npm i -g grunt-cli
   - npm i firebase-tools@3.17.2 -g
 script:
+  - chmod 777 ./android-mediation/AdColony/CHANGELOG.md
   - chmod 777 ./travis/script/android-release-automate.sh
   - ./travis/script/android-release-automate.sh
 # branch whitelist
