@@ -65,7 +65,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>
   echo $tagname
 
   ### Publish release in Github
-  curl -H "Authorization: token ${GITHUB_KEY}" --data '{"tag_name": "'"$tagname"'","target_commitish": "'"$commitId"'","name": "'"$versionnumber"'","body": "Refer https://github.com/mopub/mopub-android-mediation/blob/master/'"$1"'/CHANGELOG.md.","draft": false,"prerelease": false}' https://api.github.com/repos/mopub/android-mediation/releases
+  curl -H "Authorization: token ${GITHUB_KEY}" --data '{"tag_name": "'"$tagname"'","target_commitish": "'"$commitId"'","name": "'"$tagname"'","body": "Refer https://github.com/mopub/mopub-android-mediation/blob/master/'"$1"'/CHANGELOG.md.","draft": false,"prerelease": false}' https://api.github.com/repos/mopub/android-mediation/releases
 
   ### RELEASING aar AND pom TO BINTRAY ###
   #curl -T ./libs/$lowercaseselection-$versionnumber.aar -u${USER_NAME_MOPUB}:${BINTRAY_MOPUB} https://api.bintray.com/content/mopub/mopub-android-mediation/com.mopub.mediation.$lowercaseselection/$versionnumber/com/mopub/mediation/$lowercaseselection/$versionnumber/
