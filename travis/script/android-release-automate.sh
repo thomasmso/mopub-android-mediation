@@ -79,8 +79,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>
 
     echo $i
     echo $versionnumber
-    if [ -z "$FIREBASE_ACCESS" ]; then
-        print_red_line "\$FIREBASE_ACCESS environment variable not set!"
+    if [ -z "${FIREBASE_TOKEN}" ]; then
+        echo "\${FIREBASE_TOKEN} environment variable not set!"
     else
         #firebase database:set --confirm "/releaseInfo/$name/Android/version/adapter/" --data "\"$versionnumber\"" --project $firebase_project --token ${FIREBASE_TOKEN}
         #firebase database:set --confirm "/releaseInfo/$name/Android/version/sdk/" --data "\"$sdkverion\"" --project $firebase_project --token ${FIREBASE_TOKEN}
