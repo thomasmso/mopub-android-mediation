@@ -6,7 +6,7 @@ git:
  submodules: false
 before_install:
   - git submodule add https://${GITHUB_KEY}@github.com/mopub/android-mediation.git
-  - git submodule update --init
+  - git submodule --init
   - npm i -g grunt-cli
   - npm i firebase-tools@3.17.2 -g
 script:
