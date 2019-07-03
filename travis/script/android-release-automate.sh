@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 
 # ==================================================== #
-echo "running script testing"
-USER_NAME=${USER_NAME_MOPUB}
-API_KEY=${BINTRAY_MOPUB}
-GITHUB_TOKEN=${GITHUB_KEY}
-FIREBASE_ACCESS=${FIREBASE_TOKEN}
+echo "running release script"
 
 # Networks this script checks for
 NETWORKS=( 
@@ -68,14 +64,12 @@ echo '<?xml version="1.0" encoding="UTF-8"?>
   tagname="$lowercaseselection-$versionnumber"
   echo $tagname
 
-  ### Publish release in Github [TO_DO]
-  #curl -H "Authorization: token $GITHUB_TOKEN" --data '{"tag_name": "'"$tagname"'","target_commitish": "$commitId","name": "$versionnumber","body": "Release of version $versionnumber. Refer https://github.com/mopub/mopub-android-mediation/blob/master/$1/CHANGELOG.md.", "draft": false, "prerelease": false}' https://api.github.com/repos/mopub/mopub-android-mediation/releases
-
-  #curl -H "Authorization: token $GITHUB_TOKEN" --data '{"tag_name": "'"$tagname"'","target_commitish": "'"$commitId"'","name": "'"$versionnumber"'","body": "Refer https://github.com/mopub/mopub-android-mediation/blob/master/'"$1"'/CHANGELOG.md.","draft": false,"prerelease": false}' https://api.github.com/repos/mopub/mopub-android-mediation/releases
+  ### Publish release in Github
+  curl -H "Authorization: token ${GITHUB_KEY}" --data '{"tag_name": "'"$tagname"'","target_commitish": "'"$commitId"'","name": "'"$versionnumber"'","body": "Refer https://github.com/mopub/mopub-android-mediation/blob/master/'"$1"'/CHANGELOG.md.","draft": false,"prerelease": false}' https://api.github.com/repos/mopub/android-mediation/releases
 
   ### RELEASING aar AND pom TO BINTRAY ###
-  #curl -T ./libs/$lowercaseselection-$versionnumber.aar -u$USER_NAME:$API_KEY https://api.bintray.com/content/mopub/mopub-android-mediation/com.mopub.mediation.$lowercaseselection/$versionnumber/com/mopub/mediation/$lowercaseselection/$versionnumber/
-  #curl -T ./libs/$lowercaseselection-$versionnumber.pom -u$USER_NAME:$API_KEY https://api.bintray.com/content/mopub/mopub-android-mediation/com.mopub.mediation.$lowercaseselection/$versionnumber/com/mopub/mediation/$lowercaseselection/$versionnumber/
+  #curl -T ./libs/$lowercaseselection-$versionnumber.aar -u${USER_NAME_MOPUB}:${BINTRAY_MOPUB} https://api.bintray.com/content/mopub/mopub-android-mediation/com.mopub.mediation.$lowercaseselection/$versionnumber/com/mopub/mediation/$lowercaseselection/$versionnumber/
+  #curl -T ./libs/$lowercaseselection-$versionnumber.pom -u${USER_NAME_MOPUB}:${BINTRAY_MOPUB} https://api.bintray.com/content/mopub/mopub-android-mediation/com.mopub.mediation.$lowercaseselection/$versionnumber/com/mopub/mediation/$lowercaseselection/$versionnumber/
   if [ $? -eq 0 ]; then
     ### UPDATE FIREBASE ###
     echo "Updating firebase JSON..."
@@ -88,8 +82,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>
     if [ -z "$FIREBASE_ACCESS" ]; then
         print_red_line "\$FIREBASE_ACCESS environment variable not set!"
     else
-        #firebase database:set --confirm "/releaseInfo/$name/Android/version/adapter/" --data "\"$versionnumber\"" --project $firebase_project --token $FIREBASE_ACCESS
-        #firebase database:set --confirm "/releaseInfo/$name/Android/version/sdk/" --data "\"$sdkverion\"" --project $firebase_project --token $FIREBASE_ACCESS
+        #firebase database:set --confirm "/releaseInfo/$name/Android/version/adapter/" --data "\"$versionnumber\"" --project $firebase_project --token ${FIREBASE_TOKEN}
+        #firebase database:set --confirm "/releaseInfo/$name/Android/version/sdk/" --data "\"$sdkverion\"" --project $firebase_project --token ${FIREBASE_TOKEN}
         if [[ $? -ne 0 ]]; then
             echo "ERROR: Failed to run firebase commands; please follow instructions at: https://firebase.google.com/docs/cli/"
         else
