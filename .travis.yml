@@ -1,4 +1,4 @@
- language: node_js
+language: node_js
 node_js:
 - "8.16.0"
 cache: npm
@@ -15,4 +15,4 @@ script:
 # branch whitelist
 branches:
   only:
-  - master
+  - travis-test
