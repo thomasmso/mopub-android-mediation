@@ -1,4 +1,7 @@
 ## Changelog
+  * 1.1.3.0
+    * This version of the adapters has been certified with Verizon 1.1.3.
+
   * 1.1.1.1
     * Add support for parsing banner's width and height from `serverExtras`. This provides backwards compatibility for legacy Millennial adapters.
 
