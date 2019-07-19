@@ -91,7 +91,7 @@ public class AppLovinBanner extends CustomEventBanner {
             MoPubLog.log(CUSTOM, ADAPTER_NAME, "Requesting AppLovin banner with serverExtras: " +
                     serverExtras + ", localExtras: " + localExtras + " and has ad markup: " + hasAdMarkup);
 
-            AppLovinSdk sdk = retrieveSdk(serverExtras, context);
+            AppLovinSdk sdk = retrieveSdk(context);
             sdk.setMediationProvider(AppLovinMediationProvider.MOPUB);
             sdk.setPluginVersion(AppLovinAdapterConfiguration.APPLOVIN_PLUGIN_VERSION);
 
@@ -298,8 +298,9 @@ public class AppLovinBanner extends CustomEventBanner {
     /**
      * Retrieves the appropriate instance of AppLovin's SDK from the SDK key given in the server parameters, or Android Manifest.
      */
-    private static AppLovinSdk retrieveSdk(final Map<String, String> serverExtras, final Context context) {
-        final String sdkKey = serverExtras != null ? serverExtras.get("sdk_key") : null;
+    private static AppLovinSdk retrieveSdk(final Context context) {
+        final String sdkKey = AppLovinAdapterConfiguration.getSdkKey();
+
         final AppLovinSdk sdk;
 
         if (!TextUtils.isEmpty(sdkKey)) {
