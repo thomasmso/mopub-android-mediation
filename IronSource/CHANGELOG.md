@@ -1,4 +1,7 @@
 ## Changelog
+ * 6.9.0.0
+      * This version of the adapters has been certified with ironSource 6.9.0.
+
  * 6.8.5.0
      * This version of the adapters has been certified with ironSource 6.8.5.
 
