@@ -1,4 +1,8 @@
 ## Changelog
+ * 9.8.0.0
+    * This version of the adapters has been certified with AppLovin 9.8.0.
+    * Fix banner size passing as part of ad format unification. This version is only compatible with the 5.8.0+ release of the MoPub SDK.
+
  * 9.7.2.1
     * Persist the AppLovin SDK Key from cached AdapterConfiguration so other AppLovin adapter classes can read it. 
 
