@@ -5,6 +5,7 @@
 package com.mopub.mobileads.testing;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ import static com.mopub.mobileads.testing.Utils.logToast;
 public abstract class AbstractBannerDetailFragment extends Fragment implements BannerAdListener {
     private MoPubView mMoPubView;
     private MoPubSampleAdUnit mMoPubSampleAdUnit;
+    private View view;
 
     public abstract int getWidth();
 
@@ -37,16 +39,12 @@ public abstract class AbstractBannerDetailFragment extends Fragment implements B
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        final View view = inflater.inflate(R.layout.banner_detail_fragment, container, false);
+        view = inflater.inflate(R.layout.banner_detail_fragment, container, false);
         final DetailFragmentViewHolder views = DetailFragmentViewHolder.fromView(view);
 
         mMoPubSampleAdUnit = MoPubSampleAdUnit.fromBundle(getArguments());
-        mMoPubView = (MoPubView) view.findViewById(R.id.banner_mopubview);
-        LinearLayout.LayoutParams layoutParams =
-                (LinearLayout.LayoutParams) mMoPubView.getLayoutParams();
-        layoutParams.width = getWidth();
-        layoutParams.height = getHeight();
-        mMoPubView.setLayoutParams(layoutParams);
+        // Creating a banner view programmatically (and not referencing it from the XML)
+        mMoPubView = new MoPubView(getContext());
 
         views.mKeywordsField.setText(getArguments().getString(MoPubListFragment.KEYWORDS_KEY, ""));
         views.mUserDataKeywordsField.setText(getArguments().getString(MoPubListFragment.USER_DATA_KEYWORDS_KEY, ""));
@@ -97,6 +95,19 @@ public abstract class AbstractBannerDetailFragment extends Fragment implements B
     @Override
     public void onBannerLoaded(MoPubView banner) {
         logToast(getActivity(), getName() + " loaded.");
+
+        // Disable refreshes
+        mMoPubView.setAutorefreshEnabled(false);
+
+        // Use a delayed timer to simulate waiting for the user scrolling to the ad slot
+        final Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            if (mMoPubView != null) {
+                LinearLayout rootLayout = view.findViewById(R.id.rootLayout);
+                rootLayout.addView(mMoPubView); // Add the ad view to the view hierarchy.
+                // The impression triggers at this time
+            }
+        }, 2000);
     }
 
     @Override
