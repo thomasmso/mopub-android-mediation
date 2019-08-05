@@ -242,28 +242,20 @@ public class AppLovinBanner extends CustomEventBanner {
             return null;
         }
 
+        // Default to standard banner size
+        AppLovinAdSize adSize = AppLovinAdSize.BANNER;
+
         try {
             final int width = (Integer) localExtras.get(AD_WIDTH_KEY);
             final int height = (Integer) localExtras.get(AD_HEIGHT_KEY);
 
-            // We have valid dimensions
             if (width > 0 && height > 0) {
-                MoPubLog.log(CUSTOM, ADAPTER_NAME, "Valid width (" + width + ") and height " +
-                        "(" + height + ") provided");
-
-                // Assume fluid width, and check for height with offset tolerance
-                final int bannerOffset = Math.abs(BANNER_STANDARD_HEIGHT - height);
-                final int leaderOffset = Math.abs(LEADER_STANDARD_HEIGHT - height);
-
-                if (bannerOffset <= BANNER_HEIGHT_OFFSET_TOLERANCE) {
-                    return AppLovinAdSize.BANNER;
-                } else if (leaderOffset <= LEADER_HEIGHT_OFFSET_TOLERANCE) {
-                    return AppLovinAdSize.LEADER;
-                } else if (height <= AppLovinAdSize.MREC.getHeight()) {
-                    return AppLovinAdSize.MREC;
-                } else {
-                    MoPubLog.log(CUSTOM, ADAPTER_NAME, "Provided dimensions does not meet the dimensions " +
-                            "required of banner or mrec ads");
+                // Size can contain an AppLovin leaderboard ad size of 728x90
+                if (width >= 728 && height >= 90) {
+                    adSize = AppLovinAdSize.LEADER;
+                } else if (width >= 300 && height >= 250) {
+                 // Size can contain an AppLovin medium rectangle
+                    adSize = AppLovinAdSize.MREC;
                 }
             } else {
                 MoPubLog.log(CUSTOM, ADAPTER_NAME, "Invalid width (" + width + ") and height " +
@@ -274,7 +266,7 @@ public class AppLovinBanner extends CustomEventBanner {
                     "height from serverExtras", th);
         }
 
-        return null;
+        return adSize;
     }
 
     //
@@ -300,7 +292,6 @@ public class AppLovinBanner extends CustomEventBanner {
      */
     private static AppLovinSdk retrieveSdk(final Context context) {
         final String sdkKey = AppLovinAdapterConfiguration.getSdkKey();
-
         final AppLovinSdk sdk;
 
         if (!TextUtils.isEmpty(sdkKey)) {
