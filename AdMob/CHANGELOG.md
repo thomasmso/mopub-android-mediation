@@ -1,4 +1,7 @@
 ## Changelog
+  * 17.2.1.1
+    * Add Google Ad Manager API.
+
   * 17.2.1.0
     * This version of the adapters has been certified with AdMob 17.2.1.
 

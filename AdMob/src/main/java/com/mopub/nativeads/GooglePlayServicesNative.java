@@ -492,11 +492,11 @@ public class GooglePlayServicesNative extends CustomEventNative {
         private void forwardNpaIfSet(AdRequest.Builder builder) {
 
             // Only forward the "npa" bundle if it is explicitly set. Otherwise, don't attach it with the ad request.
-            Bundle npaBundle = GooglePlayServicesAdapterConfiguration.getNpaBundle();
-
-            if (npaBundle != null && !npaBundle.isEmpty()) {
-                builder.addNetworkExtrasBundle(AdMobAdapter.class, npaBundle);
-            }
+//            Bundle npaBundle = GooglePlayServicesAdapterConfiguration.getNpaBundle();
+//
+//            if (npaBundle != null && !npaBundle.isEmpty()) {
+//                builder.addNetworkExtrasBundle(AdMobAdapter.class, npaBundle);
+//            }
         }
 
         /**
