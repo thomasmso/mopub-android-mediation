@@ -1,4 +1,7 @@
 ## Changelog
+ * 5.5.0.1
+    * Support additional interstitial and rewarded video callbacks from the `InterstitialAdExtendedListener` interface.
+
  * 5.5.0.0
     * This version of the adapters has been certified with Facebook Audience Network 5.5.0.
     * Bidder token generation doesn't depend on Facebook SDK initialization.
