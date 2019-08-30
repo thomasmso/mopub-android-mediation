@@ -104,7 +104,8 @@ public class FacebookInterstitial extends CustomEventInterstitial implements Int
     @Override
     protected void showInterstitial() {
         MoPubLog.log(SHOW_ATTEMPTED, ADAPTER_NAME);
-        if (mFacebookInterstitial != null && mFacebookInterstitial.isAdLoaded()) {
+        if (mFacebookInterstitial != null && mFacebookInterstitial.isAdLoaded() &&
+                !mFacebookInterstitial.isAdInvalidated()) {
             mFacebookInterstitial.show();
             cancelExpirationTimer();
         } else {

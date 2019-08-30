@@ -1,4 +1,7 @@
 ## Changelog
+ * 5.5.0.2
+    * Check if the Facebook ad (interstitial / rewarded video) has been invalidated before showing.
+
  * 5.5.0.1
     * Support additional interstitial and rewarded video callbacks from the `InterstitialAdExtendedListener` interface.
 

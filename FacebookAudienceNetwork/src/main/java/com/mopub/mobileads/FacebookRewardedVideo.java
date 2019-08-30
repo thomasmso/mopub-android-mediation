@@ -139,7 +139,8 @@ public class FacebookRewardedVideo extends CustomEventRewardedVideo implements R
 
     @Override
     protected boolean hasVideoAvailable() {
-        return mRewardedVideoAd != null && mRewardedVideoAd.isAdLoaded();
+        return mRewardedVideoAd != null && mRewardedVideoAd.isAdLoaded()
+                && !mRewardedVideoAd.isAdInvalidated();
     }
 
     @Override
