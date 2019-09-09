@@ -1,4 +1,7 @@
 ## Changelog
+ * 5.5.0.3
+    * Throw a playback error (instead of load failure) when a rewarded video has expired.
+
  * 5.5.0.2
     * Check if the Facebook ad (interstitial / rewarded video) has been invalidated before showing.
 

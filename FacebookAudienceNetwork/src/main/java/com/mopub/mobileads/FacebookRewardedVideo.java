@@ -53,7 +53,7 @@ public class FacebookRewardedVideo extends CustomEventRewardedVideo implements R
             @Override
             public void run() {
                 MoPubLog.log(CUSTOM, ADAPTER_NAME, "Expiring unused Facebook Rewarded Video ad due to Facebook's 60-minute expiration policy.");
-                MoPubRewardedVideoManager.onRewardedVideoLoadFailure(FacebookRewardedVideo.class, mPlacementId, EXPIRED);
+                MoPubRewardedVideoManager.onRewardedVideoPlaybackError(FacebookRewardedVideo.class, mPlacementId, EXPIRED);
                 MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, MoPubErrorCode.EXPIRED.getIntCode(), MoPubErrorCode.EXPIRED);
 
                 onInvalidate();
