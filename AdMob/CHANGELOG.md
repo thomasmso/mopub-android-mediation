@@ -1,4 +1,7 @@
 ## Changelog
+  * 17.2.1.1
+    * Add support for AndroidX. This is the minimum version compatible with MoPub 5.9.0.
+
   * 17.2.1.0
     * This version of the adapters has been certified with AdMob 17.2.1.
 
