@@ -1,4 +1,7 @@
 ## Changelog
+ * 5.5.0.4
+    * Add support for AndroidX. This is the minimum version compatible with MoPub 5.9.0.
+
  * 5.5.0.3
     * Throw a playback error (instead of load failure) when a rewarded video has expired.
 
