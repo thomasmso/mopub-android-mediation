@@ -1,4 +1,8 @@
 ## Changelog
+  * 18.2.0.0
+    * This version of the adapters has been certified with AdMob 18.2.0.
+    * Use `RequestConfiguration` in place of `AdRequest.Builder` to pass targeting data to Google. 
+
   * 17.2.1.1
     * Add support for AndroidX. This is the minimum version compatible with MoPub 5.9.0.
 
