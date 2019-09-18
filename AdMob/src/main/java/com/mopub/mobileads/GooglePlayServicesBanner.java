@@ -11,6 +11,7 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.RequestConfiguration;
+import com.mopub.common.DataKeys;
 import com.mopub.common.logging.MoPubLog;
 import com.mopub.common.util.Views;
 
@@ -38,8 +39,6 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
      * These keys are intended for MoPub internal use. Do not modify.
      */
     private static final String AD_UNIT_ID_KEY = "adUnitID";
-    private static final String AD_WIDTH_KEY = "adWidth";
-    private static final String AD_HEIGHT_KEY = "adHeight";
     private static final String ADAPTER_NAME = GooglePlayServicesBanner.class.getSimpleName();
     private static final String CONTENT_URL_KEY = "contentUrl";
     private static final String TAG_FOR_CHILD_DIRECTED_KEY = "tagForChildDirectedTreatment";
@@ -57,14 +56,15 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
             final Map<String, String> serverExtras) {
         mBannerListener = customEventBannerListener;
 
-        final int adWidth;
-        final int adHeight;
+        final Integer adWidth;
+        final Integer adHeight;
 
         String adUnitId = "";
-        if (extrasAreValid(serverExtras)) {
+
+        if (localExtras != null && !localExtras.isEmpty()) {
             adUnitId = serverExtras.get(AD_UNIT_ID_KEY);
-            adWidth = Integer.parseInt(serverExtras.get(AD_WIDTH_KEY));
-            adHeight = Integer.parseInt(serverExtras.get(AD_HEIGHT_KEY));
+            adWidth = (Integer) localExtras.get(DataKeys.AD_WIDTH);
+            adHeight = (Integer) localExtras.get(DataKeys.AD_HEIGHT);
         } else {
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
@@ -78,8 +78,13 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
         mGoogleAdView.setAdListener(new AdViewListener());
         mGoogleAdView.setAdUnitId(adUnitId);
 
-        final AdSize adSize = calculateAdSize(adWidth, adHeight);
-        if (adSize == null) {
+        final AdSize adSize = (adWidth == null || adHeight == null)
+                ? null
+                : calculateAdSize(adWidth, adHeight);
+
+        if (adSize != null) {
+            mGoogleAdView.setAdSize(adSize);
+        } else {
             MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                     MoPubErrorCode.NETWORK_NO_FILL);
@@ -87,8 +92,6 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
             mBannerListener.onBannerFailed(MoPubErrorCode.NETWORK_NO_FILL);
             return;
         }
-
-        mGoogleAdView.setAdSize(adSize);
 
         AdRequest.Builder builder = new AdRequest.Builder();
         builder.setRequestAgent("MoPub");
@@ -178,17 +181,6 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
         if (npaBundle != null && !npaBundle.isEmpty()) {
             builder.addNetworkExtrasBundle(AdMobAdapter.class, npaBundle);
         }
-    }
-
-    private boolean extrasAreValid(Map<String, String> serverExtras) {
-        try {
-            Integer.parseInt(serverExtras.get(AD_WIDTH_KEY));
-            Integer.parseInt(serverExtras.get(AD_HEIGHT_KEY));
-        } catch (NumberFormatException e) {
-            return false;
-        }
-
-        return serverExtras.containsKey(AD_UNIT_ID_KEY);
     }
 
     private AdSize calculateAdSize(int width, int height) {
