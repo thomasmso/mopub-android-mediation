@@ -1,4 +1,7 @@
 ## Changelog
+ * 5.5.0.5
+    * Remove native video handling code and associated comments. Publishers can enable/disable video on the Facebook Audience Network dashboard.
+
  * 5.5.0.4
     * Add support for AndroidX. This is the minimum version compatible with MoPub 5.9.0.
 
