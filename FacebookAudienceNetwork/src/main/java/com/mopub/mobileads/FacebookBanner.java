@@ -126,10 +126,10 @@ public class FacebookBanner extends CustomEventBanner implements AdListener {
         MoPubLog.log(CUSTOM, ADAPTER_NAME, "Facebook banner ad failed to load.");
 
         if (mBannerListener != null) {
-            if (error == AdError.NO_FILL) {
+            if (error.getErrorCode() == AdError.NO_FILL.getErrorCode()) {
                 mBannerListener.onBannerFailed(MoPubErrorCode.NETWORK_NO_FILL);
                 MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, MoPubErrorCode.NETWORK_NO_FILL.getIntCode(), MoPubErrorCode.NETWORK_NO_FILL);
-            } else if (error == AdError.INTERNAL_ERROR) {
+            } else if (error.getErrorCode() == AdError.INTERNAL_ERROR.getErrorCode()) {
                 mBannerListener.onBannerFailed(MoPubErrorCode.NETWORK_INVALID_STATE);
                 MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, MoPubErrorCode.NETWORK_INVALID_STATE.getIntCode(), MoPubErrorCode.NETWORK_INVALID_STATE);
             } else {

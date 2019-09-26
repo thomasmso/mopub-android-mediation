@@ -1,4 +1,7 @@
 ## Changelog
+ * 5.5.0.7
+    * Fix error codes mapping for the banner and interstitial adapters. 
+
  * 5.5.0.6
     * Fix banner size checks so 250 doesn't always get treated as 90.
 
