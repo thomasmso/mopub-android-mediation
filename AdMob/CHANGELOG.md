@@ -1,4 +1,7 @@
 ## Changelog
+  * 18.2.0.2
+    * Prioritize reading data from `localExtras` and fall back to `MediationSettings` if necessary for GooglePlayServicesRewardedVideo.java.
+
   * 18.2.0.1
     * Read banner ad size from `localExtras` instead of `serverExtras`. To ensure an optimal ad experience, publishers should use the MoPub 5.8.0+ SDK and unified banner ad units. If you are using a pre-5.8.0 MoPub SDK or unable to pass the safe area in the 5.8.0 MoPub SDK, check your ad unit setup in the Advanced Options section on the MoPub UI (more info at https://developers.mopub.com/publishers/ui/apps/manage-ad-units/#create-an-ad-unit).
 
