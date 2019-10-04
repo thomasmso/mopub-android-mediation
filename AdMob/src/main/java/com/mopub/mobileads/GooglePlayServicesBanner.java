@@ -19,8 +19,10 @@ import java.util.Map;
 
 import static com.google.android.gms.ads.AdSize.BANNER;
 import static com.google.android.gms.ads.AdSize.FULL_BANNER;
+import static com.google.android.gms.ads.AdSize.LARGE_BANNER;
 import static com.google.android.gms.ads.AdSize.LEADERBOARD;
 import static com.google.android.gms.ads.AdSize.MEDIUM_RECTANGLE;
+import static com.google.android.gms.ads.AdSize.WIDE_SKYSCRAPER;
 import static com.google.android.gms.ads.RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_FALSE;
 import static com.google.android.gms.ads.RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE;
 import static com.google.android.gms.ads.RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_UNSPECIFIED;
@@ -183,16 +185,20 @@ public class GooglePlayServicesBanner extends CustomEventBanner {
         }
     }
 
-    private AdSize calculateAdSize(int width, int height) {
-        // Use the smallest AdSize that will properly contain the adView
-        if (width <= BANNER.getWidth() && height <= BANNER.getHeight()) {
-            return BANNER;
-        } else if (width <= MEDIUM_RECTANGLE.getWidth() && height <= MEDIUM_RECTANGLE.getHeight()) {
+    private static AdSize calculateAdSize(int width, int height) {
+        // Use the largest AdSize that fits into MoPubView
+        if (height >= WIDE_SKYSCRAPER.getHeight() && width >= WIDE_SKYSCRAPER.getWidth()) {
+            return WIDE_SKYSCRAPER;
+        } else if (height >= MEDIUM_RECTANGLE.getHeight() && width >= MEDIUM_RECTANGLE.getWidth()) {
             return MEDIUM_RECTANGLE;
-        } else if (width <= FULL_BANNER.getWidth() && height <= FULL_BANNER.getHeight()) {
-            return FULL_BANNER;
-        } else if (width <= LEADERBOARD.getWidth() && height <= LEADERBOARD.getHeight()) {
+        } else if (height >= LARGE_BANNER.getHeight() && width >= LARGE_BANNER.getWidth()) {
+            return LARGE_BANNER;
+        } else if (height >= LEADERBOARD.getHeight() && width >= LEADERBOARD.getWidth()) {
             return LEADERBOARD;
+        } else if (height >= FULL_BANNER.getHeight() && width >= FULL_BANNER.getWidth()) {
+            return FULL_BANNER;
+        } else if (height >= BANNER.getHeight() && width >= BANNER.getWidth()) {
+            return BANNER;
         } else {
             return null;
         }
