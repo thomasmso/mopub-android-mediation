@@ -126,6 +126,7 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo implements IUni
             MoPubLog.log(CUSTOM, ADAPTER_NAME, "Attempted to show Unity rewarded video before it was " +
                     "available.");
 
+            MoPubRewardedVideoManager.onRewardedVideoPlaybackError(UnityRewardedVideo.class, mPlacementId, MoPubErrorCode.NETWORK_NO_FILL);
             MoPubLog.log(SHOW_FAILED, ADAPTER_NAME,
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                     MoPubErrorCode.NETWORK_NO_FILL);

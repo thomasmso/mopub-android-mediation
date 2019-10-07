@@ -1,4 +1,7 @@
 ## Changelog
+  * 3.2.0.2
+    * Fire a playback error callback when the rewarded video is unable to show.
+
   * 3.2.0.1
     * Add support for AndroidX. This is the minimum version compatible with MoPub 5.9.0.
 
