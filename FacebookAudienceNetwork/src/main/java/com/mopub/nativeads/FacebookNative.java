@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 
 import com.facebook.ads.Ad;
 import com.facebook.ads.AdError;
-import com.facebook.ads.AdIconView;
 import com.facebook.ads.AudienceNetworkAds;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAd;
@@ -77,7 +76,7 @@ public class FacebookNative extends CustomEventNative {
     }
 
     private static void registerChildViewsForInteraction(final View view, final NativeAd nativeAd,
-                                                         final MediaView mediaView, final AdIconView adIconView) {
+                                                         final MediaView mediaView, final MediaView adIconView) {
         if (nativeAd == null) {
             return;
         }
@@ -276,7 +275,7 @@ public class FacebookNative extends CustomEventNative {
         }
 
         void registerChildViewsForInteraction(final View view, final MediaView mediaView,
-                                              final AdIconView adIconView) {
+                                              final MediaView adIconView) {
             FacebookNative.registerChildViewsForInteraction(view, mNativeAd, mediaView, adIconView);
         }
 

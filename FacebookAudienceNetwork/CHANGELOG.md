@@ -1,4 +1,7 @@
 ## Changelog
+ * 5.5.0.8
+    * Replace `AdIconView` with `MediaView` for the ad icon view as it has been deprecated by Facebook. 
+
  * 5.5.0.7
     * Fix error codes mapping for the banner and interstitial adapters. 
 
