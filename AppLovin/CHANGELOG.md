@@ -1,4 +1,16 @@
 ## Changelog
+ * 9.9.2.1
+    * Fail fast when the AppLovin SDK Key is not inputted.
+
+ * 9.9.2.0
+    * This version of the adapters has been certified with AppLovin 9.9.2.
+
+ * 9.9.1.0
+    * This version of the adapters has been certified with AppLovin 9.9.1.
+
+ * 9.8.4.1
+    * Add support for AndroidX. This is the minimum version compatible with MoPub 5.9.0.
+
  * 9.8.4.0
     * This version of the adapters has been certified with AppLovin 9.8.4.
 

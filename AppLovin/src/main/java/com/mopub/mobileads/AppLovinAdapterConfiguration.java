@@ -4,9 +4,10 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinSdk;
@@ -112,7 +113,7 @@ public class AppLovinAdapterConfiguration extends BaseAdapterConfiguration {
         return sdkKey;
     }
 
-    private boolean androidManifestContainsValidSdkKey(final Context context) {
+    static boolean androidManifestContainsValidSdkKey(final Context context) {
         try {
             final PackageManager pm = context.getPackageManager();
             final ApplicationInfo ai = pm.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);

@@ -1,8 +1,8 @@
 package com.mopub.mobileads;
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.mopub.common.BaseLifecycleListener;
 import com.mopub.common.LifecycleListener;
@@ -126,6 +126,7 @@ public class UnityRewardedVideo extends CustomEventRewardedVideo implements IUni
             MoPubLog.log(CUSTOM, ADAPTER_NAME, "Attempted to show Unity rewarded video before it was " +
                     "available.");
 
+            MoPubRewardedVideoManager.onRewardedVideoPlaybackError(UnityRewardedVideo.class, mPlacementId, MoPubErrorCode.NETWORK_NO_FILL);
             MoPubLog.log(SHOW_FAILED, ADAPTER_NAME,
                     MoPubErrorCode.NETWORK_NO_FILL.getIntCode(),
                     MoPubErrorCode.NETWORK_NO_FILL);

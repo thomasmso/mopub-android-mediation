@@ -4,8 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 import com.applovin.adview.AppLovinAdView;
 import com.applovin.adview.AppLovinAdViewDisplayErrorCode;
@@ -37,19 +38,11 @@ import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
 
 public class AppLovinBanner extends CustomEventBanner {
 
-    private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
-
-    private static final int BANNER_STANDARD_HEIGHT = 50;
-    private static final int BANNER_HEIGHT_OFFSET_TOLERANCE = 10;
-    private static final int LEADER_STANDARD_HEIGHT = 90;
-    private static final int LEADER_HEIGHT_OFFSET_TOLERANCE = 16;
-
+    private static final String ADAPTER_NAME = AppLovinBanner.class.getSimpleName();
     private static final String AD_WIDTH_KEY = "com_mopub_ad_width";
     private static final String AD_HEIGHT_KEY = "com_mopub_ad_height";
-
+    private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
     private static final String ZONE_ID_SERVER_EXTRAS_KEY = "zone_id";
-
-    private static final String ADAPTER_NAME = AppLovinBanner.class.getSimpleName();
 
     @NonNull
     private AppLovinAdapterConfiguration mAppLovinAdapterConfiguration;
@@ -92,6 +85,21 @@ public class AppLovinBanner extends CustomEventBanner {
                     serverExtras + ", localExtras: " + localExtras + " and has ad markup: " + hasAdMarkup);
 
             AppLovinSdk sdk = retrieveSdk(context);
+
+            if (sdk == null) {
+                MoPubLog.log(CUSTOM, ADAPTER_NAME, "AppLovinSdk instance is null likely because " +
+                        "no AppLovin SDK key is available. Failing ad request.");
+                MoPubLog.log(LOAD_FAILED, ADAPTER_NAME,
+                        MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR.getIntCode(),
+                        MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+
+                if (customEventBannerListener != null) {
+                    customEventBannerListener.onBannerFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+                }
+
+                return;
+            }
+
             sdk.setMediationProvider(AppLovinMediationProvider.MOPUB);
             sdk.setPluginVersion(AppLovinAdapterConfiguration.APPLOVIN_PLUGIN_VERSION);
 
@@ -288,18 +296,21 @@ public class AppLovinBanner extends CustomEventBanner {
     }
 
     /**
-     * Retrieves the appropriate instance of AppLovin's SDK from the SDK key given in the server parameters, or Android Manifest.
+     * Retrieves the appropriate instance of AppLovin's SDK from the SDK key. This check prioritizes
+     * the SDK Key in the AndroidManifest, and only uses the one passed in to the AdapterConfiguration
+     * if the former is not available.
      */
     private static AppLovinSdk retrieveSdk(final Context context) {
-        final String sdkKey = AppLovinAdapterConfiguration.getSdkKey();
-        final AppLovinSdk sdk;
 
-        if (!TextUtils.isEmpty(sdkKey)) {
-            sdk = AppLovinSdk.getInstance(sdkKey, new AppLovinSdkSettings(), context);
+        if (!AppLovinAdapterConfiguration.androidManifestContainsValidSdkKey(context)) {
+            final String sdkKey = AppLovinAdapterConfiguration.getSdkKey();
+
+            return !TextUtils.isEmpty(sdkKey)
+                    ? AppLovinSdk.getInstance(sdkKey, new AppLovinSdkSettings(), context)
+                    : null;
         } else {
-            sdk = AppLovinSdk.getInstance(context);
+            return AppLovinSdk.getInstance(context);
         }
-        return sdk;
     }
 
     /**

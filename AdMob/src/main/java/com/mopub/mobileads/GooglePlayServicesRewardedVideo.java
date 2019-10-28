@@ -2,13 +2,15 @@ package com.mopub.mobileads;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdCallback;
@@ -22,9 +24,12 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.google.android.gms.ads.AdRequest.TAG_FOR_UNDER_AGE_OF_CONSENT_FALSE;
-import static com.google.android.gms.ads.AdRequest.TAG_FOR_UNDER_AGE_OF_CONSENT_TRUE;
-
+import static com.google.android.gms.ads.RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_FALSE;
+import static com.google.android.gms.ads.RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE;
+import static com.google.android.gms.ads.RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_UNSPECIFIED;
+import static com.google.android.gms.ads.RequestConfiguration.TAG_FOR_UNDER_AGE_OF_CONSENT_FALSE;
+import static com.google.android.gms.ads.RequestConfiguration.TAG_FOR_UNDER_AGE_OF_CONSENT_TRUE;
+import static com.google.android.gms.ads.RequestConfiguration.TAG_FOR_UNDER_AGE_OF_CONSENT_UNSPECIFIED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.DID_DISAPPEAR;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_ATTEMPTED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
@@ -184,13 +189,20 @@ public class GooglePlayServicesRewardedVideo extends CustomEventRewardedVideo {
         mWeakActivity = new WeakReference<>(activity);
         mRewardedAd = new RewardedAd(activity, mAdUnitId);
 
-        AdRequest.Builder builder = new AdRequest.Builder();
+        final AdRequest.Builder builder = new AdRequest.Builder();
         builder.setRequestAgent("MoPub");
 
         // Publishers may append a content URL by passing it to the
         // GooglePlayServicesMediationSettings instance when initializing the MoPub SDK:
         // https://developers.mopub.com/docs/mediation/networks/google/#android
-        String contentUrl = GooglePlayServicesMediationSettings.getContentUrl();
+        final Object contentUrlObject = localExtras.get(KEY_CONTENT_URL);
+        final String contentUrl;
+
+        if (contentUrlObject instanceof String) {
+            contentUrl = (String) contentUrlObject;
+        } else {
+            contentUrl = GooglePlayServicesMediationSettings.getContentUrl();
+        }
 
         if (!TextUtils.isEmpty(contentUrl)) {
             builder.setContentUrl(contentUrl);
@@ -199,7 +211,14 @@ public class GooglePlayServicesRewardedVideo extends CustomEventRewardedVideo {
         // Publishers may request for test ads by passing test device IDs to the
         // GooglePlayServicesMediationSettings instance when initializing the MoPub SDK:
         // https://developers.mopub.com/docs/mediation/networks/google/#android
-        String testDeviceId = GooglePlayServicesMediationSettings.getTestDeviceId();
+        final Object testDeviceIdObject = localExtras.get(TEST_DEVICES_KEY);
+        final String testDeviceId;
+
+        if (testDeviceIdObject instanceof String) {
+            testDeviceId = (String) testDeviceIdObject;
+        } else {
+            testDeviceId = GooglePlayServicesMediationSettings.getTestDeviceId();
+        }
 
         if (!TextUtils.isEmpty(testDeviceId)) {
             builder.addTestDevice(testDeviceId);
@@ -210,27 +229,54 @@ public class GooglePlayServicesRewardedVideo extends CustomEventRewardedVideo {
         // Publishers should work with Google to be GDPR-compliant.
         forwardNpaIfSet(builder);
 
+        final RequestConfiguration.Builder requestConfigurationBuilder = new RequestConfiguration.Builder();
+
         // Publishers may want to indicate that their content is child-directed and
         // forward this information to Google.
-        Boolean isTFCD = GooglePlayServicesMediationSettings.isTaggedForChildDirectedTreatment();
+        final Object isTFCDObject = localExtras.get(TAG_FOR_CHILD_DIRECTED_KEY);
+        final Boolean isTFCD;
+
+        if (isTFCDObject instanceof Boolean) {
+            isTFCD = (Boolean) isTFCDObject;
+        } else {
+            isTFCD = GooglePlayServicesMediationSettings.isTaggedForChildDirectedTreatment();
+        }
 
         if (isTFCD != null) {
-            builder.tagForChildDirectedTreatment(isTFCD);
+            if (isTFCD) {
+                requestConfigurationBuilder.setTagForChildDirectedTreatment(TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE);
+            } else {
+                requestConfigurationBuilder.setTagForChildDirectedTreatment(TAG_FOR_CHILD_DIRECTED_TREATMENT_FALSE);
+            }
+        } else {
+            requestConfigurationBuilder.setTagForChildDirectedTreatment(TAG_FOR_CHILD_DIRECTED_TREATMENT_UNSPECIFIED);
         }
 
         // Publishers may want to mark their requests to receive treatment for users
         // in the European Economic Area (EEA) under the age of consent.
-        Boolean isTFUA = GooglePlayServicesMediationSettings.isTaggedForUnderAgeOfConsent();
+        final Object isTFUAObject = localExtras.get(TAG_FOR_UNDER_AGE_OF_CONSENT_KEY);
+        final Boolean isTFUA;
+
+        if (isTFUAObject instanceof Boolean) {
+            isTFUA = (Boolean) isTFUAObject;
+        } else {
+            isTFUA = GooglePlayServicesMediationSettings.isTaggedForUnderAgeOfConsent();
+        }
 
         if (isTFUA != null) {
             if (isTFUA) {
-                builder.setTagForUnderAgeOfConsent(TAG_FOR_UNDER_AGE_OF_CONSENT_TRUE);
+                requestConfigurationBuilder.setTagForUnderAgeOfConsent(TAG_FOR_UNDER_AGE_OF_CONSENT_TRUE);
             } else {
-                builder.setTagForUnderAgeOfConsent(TAG_FOR_UNDER_AGE_OF_CONSENT_FALSE);
+                requestConfigurationBuilder.setTagForUnderAgeOfConsent(TAG_FOR_UNDER_AGE_OF_CONSENT_FALSE);
             }
+        } else {
+            requestConfigurationBuilder.setTagForUnderAgeOfConsent(TAG_FOR_UNDER_AGE_OF_CONSENT_UNSPECIFIED);
         }
 
-        AdRequest adRequest = builder.build();
+        final RequestConfiguration requestConfiguration = requestConfigurationBuilder.build();
+        MobileAds.setRequestConfiguration(requestConfiguration);
+
+        final AdRequest adRequest = builder.build();
         mRewardedAd.loadAd(adRequest, mRewardedAdLoadCallback);
 
         MoPubLog.log(getAdNetworkId(), LOAD_ATTEMPTED, ADAPTER_NAME);
@@ -239,7 +285,7 @@ public class GooglePlayServicesRewardedVideo extends CustomEventRewardedVideo {
     private void forwardNpaIfSet(AdRequest.Builder builder) {
         // Only forward the "npa" bundle if it is explicitly set.
         // Otherwise, don't attach it with the ad request.
-        Bundle npaBundle = GooglePlayServicesAdapterConfiguration.getNpaBundle();
+        final Bundle npaBundle = GooglePlayServicesAdapterConfiguration.getNpaBundle();
 
         if (npaBundle != null && !npaBundle.isEmpty()) {
             builder.addNetworkExtrasBundle(AdMobAdapter.class, npaBundle);

@@ -1,4 +1,10 @@
 ## Changelog
+  * 7.5.0.2
+    * Prioritize reading data from `localExtras` and fall back to `MediationSettings` if necessary for ChartboostRewardedVideo.java.
+
+  * 7.5.0.1
+    * Add support for AndroidX. This is the minimum version compatible with MoPub 5.9.0.
+
   * 7.5.0.0
     * This version of the adapters has been certified with Chartboost 7.5.0.
 

@@ -1,14 +1,14 @@
 package com.mopub.nativeads;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.ads.Ad;
 import com.facebook.ads.AdError;
-import com.facebook.ads.AdIconView;
 import com.facebook.ads.AudienceNetworkAds;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAd;
@@ -31,12 +31,6 @@ import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_FAILED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.LOAD_SUCCESS;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
 
-/**
- * FacebookAdRenderer is also necessary in order to show video ads.
- * Video ads will only be shown if VIDEO_ENABLED is set to true or a server configuration
- * "video_enabled" flag is set to true. The server configuration will override the local
- * configuration.
- */
 public class FacebookNative extends CustomEventNative {
     private static final String PLACEMENT_ID_KEY = "placement_id";
     private static final String ADAPTER_NAME = FacebookNative.class.getSimpleName();
@@ -70,10 +64,10 @@ public class FacebookNative extends CustomEventNative {
 
         final String bid = serverExtras.get(DataKeys.ADM_KEY);
 
-        final FacebookVideoEnabledNativeAd facebookVideoEnabledNativeAd =
-                new FacebookVideoEnabledNativeAd(context,
+        final FacebookNativeAd facebookNativeAd =
+                new FacebookNativeAd(context,
                         new NativeAd(context, placementId), customEventNativeListener, bid);
-        facebookVideoEnabledNativeAd.loadAd();
+        facebookNativeAd.loadAd();
     }
 
     private boolean extrasAreValid(final Map<String, String> serverExtras) {
@@ -82,7 +76,7 @@ public class FacebookNative extends CustomEventNative {
     }
 
     private static void registerChildViewsForInteraction(final View view, final NativeAd nativeAd,
-                                                         final MediaView mediaView, final AdIconView adIconView) {
+                                                         final MediaView mediaView, final MediaView adIconView) {
         if (nativeAd == null) {
             return;
         }
@@ -121,7 +115,7 @@ public class FacebookNative extends CustomEventNative {
         clickableViews.add(view);
     }
 
-    static class FacebookVideoEnabledNativeAd extends BaseNativeAd implements NativeAdListener {
+    static class FacebookNativeAd extends BaseNativeAd implements NativeAdListener {
         private static final String SOCIAL_CONTEXT_FOR_AD = "socialContextForAd";
 
         private final Context mContext;
@@ -132,10 +126,10 @@ public class FacebookNative extends CustomEventNative {
 
         private final String mBid;
 
-        FacebookVideoEnabledNativeAd(final Context context,
-                                     final NativeAd nativeAd,
-                                     final CustomEventNativeListener customEventNativeListener,
-                                     final String bid) {
+        FacebookNativeAd(final Context context,
+                         final NativeAd nativeAd,
+                         final CustomEventNativeListener customEventNativeListener,
+                         final String bid) {
             mContext = context.getApplicationContext();
             mNativeAd = nativeAd;
             mCustomEventNativeListener = customEventNativeListener;
@@ -204,7 +198,7 @@ public class FacebookNative extends CustomEventNative {
             }
 
             addExtra(SOCIAL_CONTEXT_FOR_AD, mNativeAd.getAdSocialContext());
-            mCustomEventNativeListener.onNativeAdLoaded(FacebookVideoEnabledNativeAd.this);
+            mCustomEventNativeListener.onNativeAdLoaded(FacebookNativeAd.this);
             MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
         }
 
@@ -281,7 +275,7 @@ public class FacebookNative extends CustomEventNative {
         }
 
         void registerChildViewsForInteraction(final View view, final MediaView mediaView,
-                                              final AdIconView adIconView) {
+                                              final MediaView adIconView) {
             FacebookNative.registerChildViewsForInteraction(view, mNativeAd, mediaView, adIconView);
         }
 
