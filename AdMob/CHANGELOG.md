@@ -1,4 +1,7 @@
 ## Changelog
+  * 18.2.0.4
+    * Allow publishers to set a new npa without re-initializing the MoPub SDK.
+
   * 18.2.0.3
     * Map banner ad sizes starting from largest height x width.
 
