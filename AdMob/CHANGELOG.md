@@ -1,4 +1,8 @@
 ## Changelog
+  * 18.3.0.0
+    * This version of the adapters has been certified with AdMob 18.3.0.
+    * Allow publishers to reset previously-supplied npa without re-initializing the MoPub SDK. This change expands upon the one introduced in v18.2.0.4.
+
   * 18.2.0.4
     * Allow publishers to set a new npa without re-initializing the MoPub SDK.
 
