@@ -1,4 +1,9 @@
 ## Changelog
+
+  * 4.1.0.1
+    * Add support for banners which was introduced on AdColony 4.1.0.
+    * Move AdColony parameters to the `AdColonyAdapterConfiguration`.
+
   * 4.1.0.0
     * This version of the adapters has been certified with AdColony 4.1.0.
 
