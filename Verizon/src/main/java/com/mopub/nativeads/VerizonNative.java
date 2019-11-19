@@ -3,18 +3,16 @@ package com.mopub.nativeads;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.text.TextUtils;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import android.text.TextUtils;
-import android.view.View;
 
 import com.mopub.common.MoPub;
 import com.mopub.common.logging.MoPubLog;
 import com.mopub.mobileads.MoPubErrorCode;
 import com.mopub.mobileads.VerizonAdapterConfiguration;
-import com.mopub.mobileads.VerizonUtils;
 import com.verizon.ads.ActivityStateManager;
 import com.verizon.ads.Component;
 import com.verizon.ads.CreativeInfo;
@@ -143,7 +141,7 @@ public class VerizonNative extends CustomEventNative {
     @Override
     protected void onInvalidate() {
 
-        VerizonUtils.postOnUiThread(new Runnable() {
+        VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
             @Override
             public void run() {
                 // Destroy any hanging references
@@ -216,7 +214,7 @@ public class VerizonNative extends CustomEventNative {
         @Override
         public void onLoaded(final NativeAdFactory nativeAdFactory, final NativeAd nativeAd) {
 
-            VerizonUtils.postOnUiThread(new Runnable() {
+            VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
                 @Override
                 public void run() {
 
@@ -253,11 +251,11 @@ public class VerizonNative extends CustomEventNative {
         @Override
         public void onError(final NativeAdFactory nativeAdFactory, final ErrorInfo errorInfo) {
 
-            VerizonUtils.postOnUiThread(new Runnable() {
+            VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     MoPubLog.log(CUSTOM, ADAPTER_NAME, "Error Loading: " + errorInfo);
-                    NativeErrorCode errorCode = VerizonUtils.convertErrorInfoToMoPubNative(errorInfo);
+                    NativeErrorCode errorCode = VerizonAdapterConfiguration.convertErrorInfoToMoPubNative(errorInfo);
                     MoPubLog.log(LOAD_FAILED, ADAPTER_NAME, errorCode.getIntCode(), errorCode);
                 }
             });
@@ -342,10 +340,10 @@ public class VerizonNative extends CustomEventNative {
         public void onError(final NativeAd nativeAd, final ErrorInfo errorInfo) {
 
             MoPubLog.log(CUSTOM, ADAPTER_NAME, "Error: " + errorInfo);
-            VerizonUtils.postOnUiThread(new Runnable() {
+            VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    NativeErrorCode errorCode = VerizonUtils.convertErrorInfoToMoPubNative(errorInfo);
+                    NativeErrorCode errorCode = VerizonAdapterConfiguration.convertErrorInfoToMoPubNative(errorInfo);
                     customEventNativeListener.onNativeAdFailed(errorCode);
                     MoPubLog.log(SHOW_FAILED, ADAPTER_NAME, errorCode.getIntCode(), errorCode);
                 }

@@ -3,11 +3,12 @@ package com.mopub.mobileads;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
+
+import androidx.annotation.NonNull;
 
 import com.mopub.common.MoPub;
 import com.mopub.common.Preconditions;
@@ -37,7 +38,7 @@ import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_FAILED;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_LEAVE_APPLICATION;
 import static com.mopub.mobileads.MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR;
 import static com.mopub.mobileads.MoPubErrorCode.INTERNAL_ERROR;
-import static com.mopub.mobileads.VerizonUtils.convertErrorInfoToMoPub;
+import static com.mopub.mobileads.VerizonAdapterConfiguration.convertErrorInfoToMoPub;
 
 public class VerizonBanner extends CustomEventBanner {
 
@@ -237,7 +238,7 @@ public class VerizonBanner extends CustomEventBanner {
 
     @Override
     protected void onInvalidate() {
-        VerizonUtils.postOnUiThread(new Runnable() {
+        VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
 
             @Override
             public void run() {
@@ -287,7 +288,7 @@ public class VerizonBanner extends CustomEventBanner {
 
             verizonInlineAd = inlineAdView;
 
-            VerizonUtils.postOnUiThread(new Runnable() {
+            VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
@@ -319,7 +320,7 @@ public class VerizonBanner extends CustomEventBanner {
             MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unable to load Verizon banner due to error: "
                     + errorInfo.toString());
 
-            VerizonUtils.postOnUiThread(new Runnable() {
+            VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
@@ -337,7 +338,7 @@ public class VerizonBanner extends CustomEventBanner {
             MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unable to show Verizon banner due to error: "
                     + errorInfo.toString());
 
-            VerizonUtils.postOnUiThread(new Runnable() {
+            VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
@@ -357,7 +358,7 @@ public class VerizonBanner extends CustomEventBanner {
         public void onExpanded(final InlineAdView inlineAdView) {
             MoPubLog.log(CUSTOM, ADAPTER_NAME, "Verizon banner expanded");
 
-            VerizonUtils.postOnUiThread(new Runnable() {
+            VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
@@ -372,7 +373,7 @@ public class VerizonBanner extends CustomEventBanner {
         public void onCollapsed(final InlineAdView inlineAdView) {
             MoPubLog.log(CUSTOM, ADAPTER_NAME, "Verizon banner collapsed");
 
-            VerizonUtils.postOnUiThread(new Runnable() {
+            VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
@@ -387,7 +388,7 @@ public class VerizonBanner extends CustomEventBanner {
         public void onClicked(final InlineAdView inlineAdView) {
             MoPubLog.log(CLICKED, ADAPTER_NAME);
 
-            VerizonUtils.postOnUiThread(new Runnable() {
+            VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {

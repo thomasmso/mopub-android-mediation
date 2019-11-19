@@ -3,8 +3,9 @@ package com.mopub.mobileads;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 import com.mopub.common.MoPub;
 import com.mopub.common.Preconditions;
@@ -33,7 +34,7 @@ import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.WILL_LEAVE_APPLICATION;
 import static com.mopub.mobileads.MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR;
 import static com.mopub.mobileads.MoPubErrorCode.INTERNAL_ERROR;
-import static com.mopub.mobileads.VerizonUtils.convertErrorInfoToMoPub;
+import static com.mopub.mobileads.VerizonAdapterConfiguration.convertErrorInfoToMoPub;
 
 public class VerizonInterstitial extends CustomEventInterstitial {
 
@@ -171,7 +172,7 @@ public class VerizonInterstitial extends CustomEventInterstitial {
 
         MoPubLog.log(SHOW_ATTEMPTED, ADAPTER_NAME);
 
-        VerizonUtils.postOnUiThread(new Runnable() {
+        VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
 
             @Override
             public void run() {
@@ -188,7 +189,7 @@ public class VerizonInterstitial extends CustomEventInterstitial {
     @Override
     protected void onInvalidate() {
 
-        VerizonUtils.postOnUiThread(new Runnable() {
+        VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
 
             @Override
             public void run() {
@@ -231,7 +232,7 @@ public class VerizonInterstitial extends CustomEventInterstitial {
 
             MoPubLog.log(LOAD_SUCCESS, ADAPTER_NAME);
 
-            VerizonUtils.postOnUiThread(new Runnable() {
+            VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
@@ -259,7 +260,7 @@ public class VerizonInterstitial extends CustomEventInterstitial {
 
             MoPubLog.log(CUSTOM, ADAPTER_NAME, "Failed to load Verizon interstitial due to " +
                     "error: " + errorInfo.toString());
-            VerizonUtils.postOnUiThread(new Runnable() {
+            VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
@@ -277,7 +278,7 @@ public class VerizonInterstitial extends CustomEventInterstitial {
 
             MoPubLog.log(CUSTOM, ADAPTER_NAME, "Failed to show Verizon interstitial due to " +
                     "error: " + errorInfo.toString());
-            VerizonUtils.postOnUiThread(new Runnable() {
+            VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
@@ -290,7 +291,7 @@ public class VerizonInterstitial extends CustomEventInterstitial {
         public void onShown(final InterstitialAd interstitialAd) {
 
             MoPubLog.log(SHOW_SUCCESS, ADAPTER_NAME);
-            VerizonUtils.postOnUiThread(new Runnable() {
+            VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
@@ -305,7 +306,7 @@ public class VerizonInterstitial extends CustomEventInterstitial {
         public void onClosed(final InterstitialAd interstitialAd) {
 
             MoPubLog.log(DID_DISAPPEAR, ADAPTER_NAME);
-            VerizonUtils.postOnUiThread(new Runnable() {
+            VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
@@ -320,7 +321,7 @@ public class VerizonInterstitial extends CustomEventInterstitial {
         public void onClicked(final InterstitialAd interstitialAd) {
 
             MoPubLog.log(CLICKED, ADAPTER_NAME);
-            VerizonUtils.postOnUiThread(new Runnable() {
+            VerizonAdapterConfiguration.postOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
