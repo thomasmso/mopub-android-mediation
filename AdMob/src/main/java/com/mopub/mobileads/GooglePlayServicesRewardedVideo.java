@@ -42,40 +42,40 @@ import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.SHOW_SUCCESS;
 public class GooglePlayServicesRewardedVideo extends CustomEventRewardedVideo {
 
     /**
-     * String to represent the simple class name to be used in log entries.
-     */
-    private static final String ADAPTER_NAME = GooglePlayServicesRewardedVideo.class.getSimpleName();
-
-    /**
      * Key to obtain AdMob application ID from the server extras provided by MoPub.
      */
-    private static final String KEY_EXTRA_APPLICATION_ID = "appid";
+    public static final String KEY_EXTRA_APPLICATION_ID = "appid";
 
     /**
      * Key to obtain AdMob ad unit ID from the extras provided by MoPub.
      */
-    private static final String KEY_EXTRA_AD_UNIT_ID = "adunit";
+    public static final String KEY_EXTRA_AD_UNIT_ID = "adunit";
 
     /**
      * Key to set and obtain the content URL to be passed with AdMob's ad request.
      */
-    private static final String KEY_CONTENT_URL = "contentUrl";
+    public static final String KEY_CONTENT_URL = "contentUrl";
 
     /**
      * Key to set and obtain the flag whether the application's content is child-directed.
      */
-    private static final String TAG_FOR_CHILD_DIRECTED_KEY = "tagForChildDirectedTreatment";
+    public static final String TAG_FOR_CHILD_DIRECTED_KEY = "tagForChildDirectedTreatment";
 
     /**
      * Key to set and obtain the flag to mark ad requests to Google to receive treatment for
      * users in the European Economic Area (EEA) under the age of consent.
      */
-    private static final String TAG_FOR_UNDER_AGE_OF_CONSENT_KEY = "tagForUnderAgeOfConsent";
+    public static final String TAG_FOR_UNDER_AGE_OF_CONSENT_KEY = "tagForUnderAgeOfConsent";
 
     /**
      * Key to set and obtain the test device ID String to be passed with AdMob's ad request.
      */
-    private static final String TEST_DEVICES_KEY = "testDevices";
+    public static final String TEST_DEVICES_KEY = "testDevices";
+
+    /**
+     * String to represent the simple class name to be used in log entries.
+     */
+    private static final String ADAPTER_NAME = GooglePlayServicesRewardedVideo.class.getSimpleName();
 
     /**
      * Flag to determine whether or not the adapter has been initialized.
