@@ -1,4 +1,6 @@
 ## Changelog
+  * 4.1.0.2
+    * Fail initialization only if `allZoneIds` parameter is missing in `AdColonyAdapterConfiguration`.
 
   * 4.1.0.1
     * Add support for banners which was introduced on AdColony 4.1.0.
