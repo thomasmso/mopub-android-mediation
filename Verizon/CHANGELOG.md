@@ -1,4 +1,7 @@
 ## Changelog
+  * 1.2.1.3
+    * Log the Verizon placement ID in ad lifecycle events.
+
   * 1.2.1.2
     * Add support for Advanced Bidding for banner and interstitial.
 

@@ -66,6 +66,7 @@ public class VerizonAdapterConfiguration extends BaseAdapterConfiguration {
     public static final String SERVER_EXTRAS_AD_CONTENT_KEY = "adm";
     public static final String VAS_SITE_ID_KEY = "siteId";
 
+    private static String mSiteId;
     static final String REQUEST_METADATA_AD_CONTENT_KEY = "adContent";
 
     @NonNull
@@ -124,21 +125,21 @@ public class VerizonAdapterConfiguration extends BaseAdapterConfiguration {
             VASAds.setLogLevel(Logger.INFO);
         }
 
-        String siteId = null;
+        mSiteId = null;
 
         if (configuration != null) {
-            siteId = configuration.get(VAS_SITE_ID_KEY);
+            mSiteId = configuration.get(VAS_SITE_ID_KEY);
         }
 
         // The Verizon SDK needs a meaningful siteId to initialize. siteId is cached on the first request.
-        if (TextUtils.isEmpty(siteId)) {
+        if (TextUtils.isEmpty(mSiteId)) {
             listener.onNetworkInitializationFinished(VerizonAdapterConfiguration.class,
                     MoPubErrorCode.ADAPTER_INITIALIZATION_SUCCESS);
 
             return;
         }
 
-        final String finalSiteId = siteId;
+        final String finalSiteId = mSiteId;
         ThreadUtils.postOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -153,6 +154,10 @@ public class VerizonAdapterConfiguration extends BaseAdapterConfiguration {
         });
     }
 
+    private static String getAdNetworkId() {
+        return mSiteId;
+    }
+
     private static String buildBiddingToken(final RequestMetadata requestMetadata, final EnvironmentInfo environmentInfo) {
         try {
             final JSONObject json = new JSONObject();
@@ -162,7 +167,7 @@ public class VerizonAdapterConfiguration extends BaseAdapterConfiguration {
 
             return json.toString();
         } catch (Exception e) {
-            MoPubLog.log(CUSTOM_WITH_THROWABLE, ADAPTER_NAME, "Error creating JSON: " + e);
+            MoPubLog.log(getAdNetworkId(), CUSTOM_WITH_THROWABLE, ADAPTER_NAME, "Error creating JSON: " + e);
         }
 
         return null;
@@ -361,7 +366,8 @@ public class VerizonAdapterConfiguration extends BaseAdapterConfiguration {
 
     private static void putIfNotNull(final JSONObject jsonObject, final String key, final Object value) {
         if (key == null) {
-            MoPubLog.log(CUSTOM, ADAPTER_NAME, "Unable to put value, specified key is null");
+            MoPubLog.log(getAdNetworkId(), CUSTOM, ADAPTER_NAME, "Unable to put value, " +
+                    "specified key is null");
 
             return;
         }
@@ -373,7 +379,8 @@ public class VerizonAdapterConfiguration extends BaseAdapterConfiguration {
         try {
             jsonObject.put(key, value);
         } catch (Exception e) {
-            MoPubLog.log(CUSTOM_WITH_THROWABLE, ADAPTER_NAME, "Error adding " + key + ":" + value + " to JSON: " + e);
+            MoPubLog.log(getAdNetworkId(), CUSTOM_WITH_THROWABLE, ADAPTER_NAME, "Error " +
+                    "adding " + key + ":" + value + " to JSON: " + e);
         }
     }
 
@@ -415,7 +422,8 @@ public class VerizonAdapterConfiguration extends BaseAdapterConfiguration {
                 json.put(entry.getKey(), buildFromObject(entry.getValue()));
             }
         } catch (Exception e) {
-            MoPubLog.log(CUSTOM_WITH_THROWABLE, ADAPTER_NAME, "Error building JSON from Map: " + e);
+            MoPubLog.log(getAdNetworkId(), CUSTOM_WITH_THROWABLE, ADAPTER_NAME, "Error " +
+                    "building JSON from Map: " + e);
         }
 
         return json;
@@ -431,7 +439,8 @@ public class VerizonAdapterConfiguration extends BaseAdapterConfiguration {
                 return value;
             }
         } catch (Exception e) {
-            MoPubLog.log(CUSTOM_WITH_THROWABLE, ADAPTER_NAME, "Error building JSON from Object: " + e);
+            MoPubLog.log(getAdNetworkId(), CUSTOM_WITH_THROWABLE, ADAPTER_NAME, "Error " +
+                    "building JSON from Object: " + e);
         }
 
         return "";
