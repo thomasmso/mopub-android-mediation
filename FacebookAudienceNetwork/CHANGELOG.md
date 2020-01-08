@@ -1,4 +1,7 @@
 ## Changelog
+ * 5.6.1.0
+   * This version of the adapters has been certified with Facebook Audience Network 5.6.1.
+ 
  * 5.6.0.1
     * Log the Facebook placement name in ad lifecycle events.
     * Map additional error codes for failure cases.
