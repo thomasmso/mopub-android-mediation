@@ -1,4 +1,7 @@
 ## Changelog
+ * 9.11.1.0
+    * This version of the adapters has been certified with AppLovin 9.11.1.
+
  * 9.10.4.1
     * Log the AppLovin zone id in ad lifecycle events.
     * Map additional error codes for failure cases.
