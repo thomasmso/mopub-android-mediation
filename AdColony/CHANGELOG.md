@@ -1,4 +1,7 @@
 ## Changelog
+  * 4.1.1.0
+    * This version of the adapters has been certified with AdColony 4.1.1.
+
   * 4.1.0.2
     * Fail initialization only if `allZoneIds` parameter is missing in `AdColonyAdapterConfiguration`.
 
