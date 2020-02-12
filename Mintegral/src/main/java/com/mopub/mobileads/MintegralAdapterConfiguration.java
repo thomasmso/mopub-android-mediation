@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+
 import com.mintegral.msdk.MIntegralSDK;
 import com.mintegral.msdk.MIntegralUser;
 import com.mintegral.msdk.base.common.net.Aa;
@@ -36,6 +37,8 @@ public class MintegralAdapterConfiguration extends BaseAdapterConfiguration {
     private static final String ADAPTER_VERSION = BuildConfig.VERSION_NAME;
     private static final String SDK_VERSION = MTGConfiguration.SDK_VERSION;
     private static final String MOPUB_NETWORK_NAME = BuildConfig.NETWORK_NAME;
+
+    private static boolean isSDKInitialized = false;
 
     private static int mAge;
     private static String mCustomData;
@@ -101,6 +104,9 @@ public class MintegralAdapterConfiguration extends BaseAdapterConfiguration {
     }
 
     public static void configureMintegral(String appId, String appKey, Context context) {
+
+        if (isSDKInitialized) return;
+
         final MIntegralSDK sdk = MIntegralSDKFactory.getMIntegralSDK();
 
         if (sdk != null) {
@@ -111,6 +117,8 @@ public class MintegralAdapterConfiguration extends BaseAdapterConfiguration {
             } else if (context instanceof Application) {
                 sdk.init(mtgConfigurationMap, context);
             }
+
+            isSDKInitialized = true;
 
         } else {
             MoPubLog.log(CUSTOM, "Failed to initialize the Mintegral SDK because the SDK " +
