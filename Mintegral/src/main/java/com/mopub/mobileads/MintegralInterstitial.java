@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.mintegral.msdk.MIntegralConstans;
 import com.mintegral.msdk.interstitialvideo.out.InterstitialVideoListener;
 import com.mintegral.msdk.interstitialvideo.out.MTGBidInterstitialVideoHandler;
 import com.mintegral.msdk.interstitialvideo.out.MTGInterstitialVideoHandler;
@@ -196,6 +197,22 @@ public class MintegralInterstitial extends CustomEventInterstitial implements In
     @Override
     public void onVideoComplete(String message) {
         MoPubLog.log(getAdNetworkId(), CUSTOM, ADAPTER_NAME, "onVideoComplete: " + message);
+    }
+
+    @Override
+    public void onAdCloseWithIVReward(boolean isComplete, int rewardAlertStatus) {
+        String rewardStatus = null;
+
+        if (rewardAlertStatus == MIntegralConstans.IVREWARDALERT_STATUS_NOTSHOWN) {
+            rewardStatus = "The dialog was not shown.";
+        } else if (rewardAlertStatus == MIntegralConstans.IVREWARDALERT_STATUS_CLICKCONTINUE) {
+            rewardStatus = "The dialog's continue button was clicked.";
+        } else if (rewardAlertStatus == MIntegralConstans.IVREWARDALERT_STATUS_CLICKCANCEL) {
+            rewardStatus = "The dialog's cancel button was clicked.";
+        }
+
+        MoPubLog.log(getAdNetworkId(), CUSTOM, ADAPTER_NAME, isComplete ? "Video playback is " +
+                "complete." : "Video playback is not complete. " + rewardStatus);
     }
 
     @Override
