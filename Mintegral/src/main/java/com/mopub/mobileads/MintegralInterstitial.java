@@ -44,6 +44,7 @@ public class MintegralInterstitial extends CustomEventInterstitial implements In
                                     final CustomEventInterstitialListener customEventInterstitialListener,
                                     final Map<String, Object> localExtras, Map<String, String> serverExtras) {
 
+        setAutomaticImpressionAndClickTracking(false);
         mCustomEventInterstitialListener = customEventInterstitialListener;
 
         if (!serverDataIsValid(serverExtras, context)) {
@@ -180,6 +181,7 @@ public class MintegralInterstitial extends CustomEventInterstitial implements In
 
         if (mCustomEventInterstitialListener != null) {
             mCustomEventInterstitialListener.onInterstitialShown();
+            mCustomEventInterstitialListener.onInterstitialImpression();
         }
     }
 
