@@ -85,7 +85,7 @@ public class VerizonNative extends CustomEventNative {
 
         String siteId = serverExtras.get(SITE_ID_KEY);
         mPlacementId = serverExtras.get(PLACEMENT_ID_KEY);
-        String[] adTypes = {"inline"}; //currently only ad type.
+        String[] adTypes = {"100", "simpleImage", "simpleVideo"};
 
         if (!VASAds.isInitialized()) {
 
