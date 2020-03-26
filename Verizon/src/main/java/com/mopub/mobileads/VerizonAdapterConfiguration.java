@@ -1,5 +1,8 @@
 package com.mopub.mobileads;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
@@ -27,9 +30,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.Map;
 import java.util.zip.DeflaterOutputStream;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THROWABLE;
 import static com.verizon.ads.VASAds.ERROR_AD_REQUEST_FAILED;
 import static com.verizon.ads.VASAds.ERROR_AD_REQUEST_TIMED_OUT;
@@ -40,10 +40,10 @@ public class VerizonAdapterConfiguration extends BaseAdapterConfiguration {
     private static final String ADAPTER_VERSION = BuildConfig.VERSION_NAME;
     private static final String MOPUB_NETWORK_NAME = BuildConfig.NETWORK_NAME;
     private static final Handler handler = new Handler(Looper.getMainLooper());
-    private static final String VERIZON_ADS_DOMAIN = "com.verizon.ads";
+    private static final String BIDDING_TOKEN_VERSION = "1.0";
     private static final String EDITION_NAME_KEY = "editionName";
     private static final String EDITION_VERSION_KEY = "editionVersion";
-    private static final String BIDDING_TOKEN_VERSION = "1.0";
+    private static final String VERIZON_ADS_DOMAIN = "com.verizon.ads";
     private static String biddingToken = null;
 
     public static final String MEDIATOR_ID = "MoPubVAS-" + ADAPTER_VERSION;
@@ -64,7 +64,7 @@ public class VerizonAdapterConfiguration extends BaseAdapterConfiguration {
 
         if (biddingToken == null) {
             String uncompressedToken = getBiddingToken();
-            biddingToken = compressAndEncodeBiddingToken(uncompressedToken);
+            biddingToken = getCompressedToken(uncompressedToken);
         }
         return biddingToken;
     }
@@ -181,11 +181,11 @@ public class VerizonAdapterConfiguration extends BaseAdapterConfiguration {
 
         JSONObject biddingTokenJSON = new JSONObject();
         JSONObject envJSON = new JSONObject();
-        JSONObject sdkInfoJSON = new JSONObject();
+        final JSONObject sdkInfoJSON = new JSONObject();
         try {
             String editionName = Configuration.getString(VERIZON_ADS_DOMAIN, EDITION_NAME_KEY, null);
-            String editionVersion = Configuration.getString(VERIZON_ADS_DOMAIN, EDITION_VERSION_KEY, null);
-            if ((editionName != null) && (editionVersion != null)) {
+            final String editionVersion = Configuration.getString(VERIZON_ADS_DOMAIN, EDITION_VERSION_KEY, null);
+            if (editionName != null && editionVersion != null) {
                 sdkInfoJSON.put("editionId", String.format("%s-%s", editionName, editionVersion));
             }
             sdkInfoJSON.put("version", BIDDING_TOKEN_VERSION);
@@ -194,28 +194,29 @@ public class VerizonAdapterConfiguration extends BaseAdapterConfiguration {
             biddingTokenJSON.put("env", envJSON);
             return biddingTokenJSON.toString();
         } catch (JSONException e) {
-            MoPubLog.log(getMoPubNetworkName(), CUSTOM_WITH_THROWABLE, "Unable to get bidding token.", e);
+            MoPubLog.log(CUSTOM_WITH_THROWABLE, "Unable to get bidding token.", e);
         }
 
         return null;
     }
 
 
-    private String compressAndEncodeBiddingToken(final String stringToCompress) {
+    private String getCompressedToken(final String stringToCompress) {
 
         if (TextUtils.isEmpty(stringToCompress)) {
             return null;
         }
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        DeflaterOutputStream deflaterOutputStream = new DeflaterOutputStream(byteArrayOutputStream);
+        final DeflaterOutputStream deflaterOutputStream = new DeflaterOutputStream(byteArrayOutputStream);
         try {
             deflaterOutputStream.write(stringToCompress.getBytes());
             deflaterOutputStream.flush();
             deflaterOutputStream.close();
+
             return Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
         } catch (Exception e) {
-            MoPubLog.log(getMoPubNetworkName(), CUSTOM_WITH_THROWABLE, "Unable to compress bidding token.", e);
+            MoPubLog.log(CUSTOM_WITH_THROWABLE, "Unable to compress bidding token.", e);
         }
 
         return null;
