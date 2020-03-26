@@ -15,6 +15,7 @@ import com.mintegral.msdk.mtgbid.out.BidManager;
 import com.mintegral.msdk.out.MIntegralSDKFactory;
 import com.mintegral.msdk.out.MTGConfiguration;
 import com.mopub.common.BaseAdapterConfiguration;
+import com.mopub.common.MoPub;
 import com.mopub.common.OnNetworkInitializationFinishedListener;
 import com.mopub.common.Preconditions;
 import com.mopub.common.logging.MoPubLog;
@@ -23,6 +24,9 @@ import com.mopub.mobileads.mintegral.BuildConfig;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import static com.mintegral.msdk.MIntegralConstans.AUTHORITY_ALL_INFO;
+import static com.mintegral.msdk.MIntegralConstans.IS_SWITCH_OFF;
+import static com.mintegral.msdk.MIntegralConstans.IS_SWITCH_ON;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM;
 import static com.mopub.common.logging.MoPubLog.AdapterLogEvent.CUSTOM_WITH_THROWABLE;
 
@@ -116,6 +120,11 @@ public class MintegralAdapterConfiguration extends BaseAdapterConfiguration {
             } else if (context instanceof Application) {
                 sdk.init(mtgConfigurationMap, context);
             }
+
+            final boolean canCollectPersonalInfo = MoPub.canCollectPersonalInformation();
+            final int switchState = canCollectPersonalInfo ? IS_SWITCH_ON : IS_SWITCH_OFF;
+
+            sdk.setUserPrivateInfoType(context, AUTHORITY_ALL_INFO, switchState);
 
             sdkInitialized = true;
 
