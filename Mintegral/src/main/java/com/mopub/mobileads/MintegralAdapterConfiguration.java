@@ -113,6 +113,10 @@ public class MintegralAdapterConfiguration extends BaseAdapterConfiguration {
         final MIntegralSDK sdk = MIntegralSDKFactory.getMIntegralSDK();
 
         if (sdk != null) {
+            final boolean canCollectPersonalInfo = MoPub.canCollectPersonalInformation();
+            final int switchState = canCollectPersonalInfo ? IS_SWITCH_ON : IS_SWITCH_OFF;
+            sdk.setUserPrivateInfoType(context, AUTHORITY_ALL_INFO, switchState);
+
             final Map<String, String> mtgConfigurationMap = sdk.getMTGConfigurationMap(appId, appKey);
 
             if (context instanceof Activity) {
@@ -120,11 +124,6 @@ public class MintegralAdapterConfiguration extends BaseAdapterConfiguration {
             } else if (context instanceof Application) {
                 sdk.init(mtgConfigurationMap, context);
             }
-
-            final boolean canCollectPersonalInfo = MoPub.canCollectPersonalInformation();
-            final int switchState = canCollectPersonalInfo ? IS_SWITCH_ON : IS_SWITCH_OFF;
-
-            sdk.setUserPrivateInfoType(context, AUTHORITY_ALL_INFO, switchState);
 
             sdkInitialized = true;
 
