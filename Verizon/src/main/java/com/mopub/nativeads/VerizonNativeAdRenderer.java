@@ -89,8 +89,8 @@ public class VerizonNativeAdRenderer implements MoPubAdRenderer<VerizonNative.Ve
             if (extras != null && verizonNativeViewHolder.videoView != null) {
 
                 videoPlayerView = new VerizonVideoPlayerView(verizonNativeViewHolder.videoView.getContext());
-                FrameLayout.LayoutParams videoParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-                    FrameLayout.LayoutParams.MATCH_PARENT);
+                final FrameLayout.LayoutParams videoParams = new FrameLayout.LayoutParams(FrameLayout
+                        .LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
 
                 verizonNativeViewHolder.videoView.addView(videoPlayerView, videoParams);
 

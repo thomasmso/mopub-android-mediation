@@ -1,14 +1,14 @@
 package com.mopub.mobileads;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Base64;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.mopub.common.BaseAdapterConfiguration;
 import com.mopub.common.OnNetworkInitializationFinishedListener;
@@ -38,12 +38,13 @@ import static com.verizon.ads.VASAds.ERROR_NO_FILL;
 public class VerizonAdapterConfiguration extends BaseAdapterConfiguration {
 
     private static final String ADAPTER_VERSION = BuildConfig.VERSION_NAME;
-    private static final String MOPUB_NETWORK_NAME = BuildConfig.NETWORK_NAME;
-    private static final Handler handler = new Handler(Looper.getMainLooper());
     private static final String BIDDING_TOKEN_VERSION = "1.0";
     private static final String EDITION_NAME_KEY = "editionName";
     private static final String EDITION_VERSION_KEY = "editionVersion";
+    private static final String MOPUB_NETWORK_NAME = BuildConfig.NETWORK_NAME;
     private static final String VERIZON_ADS_DOMAIN = "com.verizon.ads";
+
+    private static final Handler handler = new Handler(Looper.getMainLooper());
     private static String biddingToken = null;
 
     public static final String MEDIATOR_ID = "MoPubVAS-" + ADAPTER_VERSION;
@@ -61,11 +62,11 @@ public class VerizonAdapterConfiguration extends BaseAdapterConfiguration {
     @Nullable
     @Override
     public String getBiddingToken(@NonNull Context context) {
-
         if (biddingToken == null) {
-            String uncompressedToken = getBiddingToken();
-            biddingToken = getCompressedToken(uncompressedToken);
+            final String token = getToken();
+            biddingToken = getCompressedToken(token);
         }
+
         return biddingToken;
     }
 
@@ -176,23 +177,26 @@ public class VerizonAdapterConfiguration extends BaseAdapterConfiguration {
         }
     }
 
+    private String getToken() {
+        final JSONObject biddingTokenJson = new JSONObject();
+        final JSONObject envJson = new JSONObject();
+        final JSONObject sdkInfoJson = new JSONObject();
 
-    private String getBiddingToken() {
-
-        JSONObject biddingTokenJSON = new JSONObject();
-        JSONObject envJSON = new JSONObject();
-        final JSONObject sdkInfoJSON = new JSONObject();
         try {
-            String editionName = Configuration.getString(VERIZON_ADS_DOMAIN, EDITION_NAME_KEY, null);
-            final String editionVersion = Configuration.getString(VERIZON_ADS_DOMAIN, EDITION_VERSION_KEY, null);
-            if (editionName != null && editionVersion != null) {
-                sdkInfoJSON.put("editionId", String.format("%s-%s", editionName, editionVersion));
-            }
-            sdkInfoJSON.put("version", BIDDING_TOKEN_VERSION);
+            final String editionName = Configuration.getString(VERIZON_ADS_DOMAIN, EDITION_NAME_KEY,
+                    null);
+            final String editionVersion = Configuration.getString(VERIZON_ADS_DOMAIN, EDITION_VERSION_KEY,
+                    null);
 
-            envJSON.put("sdkInfo", sdkInfoJSON);
-            biddingTokenJSON.put("env", envJSON);
-            return biddingTokenJSON.toString();
+            if (editionName != null && editionVersion != null) {
+                sdkInfoJson.put("editionId", String.format("%s-%s", editionName, editionVersion));
+            }
+
+            sdkInfoJson.put("version", BIDDING_TOKEN_VERSION);
+            envJson.put("sdkInfo", sdkInfoJson);
+            biddingTokenJson.put("env", envJson);
+
+            return biddingTokenJson.toString();
         } catch (JSONException e) {
             MoPubLog.log(CUSTOM_WITH_THROWABLE, "Unable to get bidding token.", e);
         }
@@ -207,8 +211,9 @@ public class VerizonAdapterConfiguration extends BaseAdapterConfiguration {
             return null;
         }
 
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         final DeflaterOutputStream deflaterOutputStream = new DeflaterOutputStream(byteArrayOutputStream);
+
         try {
             deflaterOutputStream.write(stringToCompress.getBytes());
             deflaterOutputStream.flush();

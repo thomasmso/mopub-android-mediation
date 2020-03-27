@@ -1,7 +1,7 @@
 ## Changelog
   * 1.5.0.0
-    * Update Advanced Bidding token to adhere to MoPub spec.
-    * This version of the adapters has been certified with Verizon 1.5.0.
+    * Compress the Advanced Bidding token to adhere to MoPub's spec.
+    * This version of the adapters has been certified with Verizon 1.5.0 and MoPub 5.11.1.
 
   * 1.4.0.0
     * Update Advanced Bidding API
