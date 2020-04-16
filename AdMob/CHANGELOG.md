@@ -1,4 +1,27 @@
 ## Changelog
+  * 19.0.1.0
+    * This version of the adapters has been certified with AdMob 19.0.1 and MoPub 5.11.1.
+
+  * 19.0.0.0
+    * This version of the adapters has been certified with AdMob 19.0.0.
+    * Deprecated `AdRequest.Builder.addTestDevice()` in favor of `RequestConfiguration.Builder.setTestDeviceIds()`.
+
+  * 18.3.0.3
+    * MoPub now collects GDPR consent on behalf of Google.
+
+  * 18.3.0.2
+    * Log the AdMob ad unit ID in ad lifecycle events.
+
+  * 18.3.0.1
+    * Make the adapter keys public.
+
+  * 18.3.0.0
+    * This version of the adapters has been certified with AdMob 18.3.0.
+    * Allow publishers to reset previously-supplied npa without re-initializing the MoPub SDK. This change expands upon the one introduced in v18.2.0.4.
+
+  * 18.2.0.4
+    * Allow publishers to set a new npa without re-initializing the MoPub SDK.
+
   * 18.2.0.3
     * Map banner ad sizes starting from largest height x width.
 
